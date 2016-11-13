@@ -1,1 +1,1 @@
-export EDITOR='lime'
+export EDITOR='subl'
