@@ -1,0 +1,27 @@
+{
+  "install": "npm i -D eslint eslint-config-standard eslint-config-standard-jsx eslint-config-standard-react eslint-plugin-babel eslint-plugin-promise eslint-plugin-react eslint-plugin-standard",
+  "extends": ["standard", "standard-react"],
+  "ecmaFeatures": {
+    "jsx": true,
+    "modules": true
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "quotes": [2, "single"],
+    "strict": [2, "never"],
+    "react/jsx-uses-react": 2,
+    "react/jsx-uses-vars": 2,
+    "react/react-in-jsx-scope": 2,
+    "brace-style": ["error", "stroustrup"],
+    "comma-dangle": ["error", "only-multiline"],
+    "curly": ["error", "all"]
+  },
+  "plugins": [
+    "react"
+  ]
+}
