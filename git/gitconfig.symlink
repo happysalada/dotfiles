@@ -17,6 +17,7 @@
 [core]
         excludesfile = ~/.gitignore
         editor = vim
+	mergeoptions = --no-edit
 [apply]
         whitespace = nowarn
 [mergetool]
@@ -24,7 +25,7 @@
 [difftool]
         prompt = false
 [help]
-        autocorrect = 1
+	autocorrect = 1
 [push]
         # See `git help config` (search for push.default)
         # for more information on different options of the below setting.
@@ -39,5 +40,6 @@
 	trustExitCode = true
 [user]
 	username = happysalada
+	signingkey = 87AB3E5D
 [credential]
 	helper = osxkeychain
