@@ -44,3 +44,5 @@
 	signingkey = 87AB3E5D
 [credential]
 	helper = osxkeychain
+[http]
+	sslVerify = false

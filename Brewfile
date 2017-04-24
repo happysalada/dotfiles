@@ -2,7 +2,7 @@ cask_args appdir: 'Users/Raphael/Applications'
 
 tap 'homebrew/bundle'
 tap 'caskroom/versions'
-tap 'Raphael/python'
+tap 'derekkwok/python'
 
 # pre-req for libcaca and libgit2 can work
 cask 'xquartz'
