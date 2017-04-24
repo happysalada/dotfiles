@@ -1,8 +1,8 @@
-cask_args appdir: '/Applications'
+cask_args appdir: 'Users/Raphael/Applications'
 
 tap 'homebrew/bundle'
 tap 'caskroom/versions'
-tap 'derekkwok/python'
+tap 'Raphael/python'
 
 # pre-req for libcaca and libgit2 can work
 cask 'xquartz'
@@ -28,17 +28,4 @@ brew 'wget'
 brew 'sqlite'
 brew 'git'
 brew 'heroku'
-brew 'python'
 brew 'python3'
-
-cask 'google-chrome'
-cask 'dropbox'
-cask 'karabiner'
-cask 'dash'
-cask 'iterm2'
-cask 'alfred'
-cask 'skype'
-cask 'postico'
-cask 'sublime-text3'
-cask 'transmission'
-cask 'vlc'

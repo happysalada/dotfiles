@@ -5,7 +5,7 @@
 # This installs a default version of ruby for you
 
 # Check for Ruby already installed
-ruby_version=2.3.1
+ruby_version=2.3.3
 
 if [ ! -d "$HOME/.rbenv/versions/$ruby_version" ]; then
   echo "› rbenv install $ruby_version"

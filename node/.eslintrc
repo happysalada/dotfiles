@@ -1,5 +1,5 @@
 {
-  "install": "install": "npm i -D eslint eslint-config-standard eslint-plugin-babel eslint-plugin-promise eslint-plugin-standard babel-eslint",
+  "install": "npm i -D eslint eslint-config-standard eslint-plugin-babel eslint-plugin-promise eslint-plugin-standard babel-eslint",
   "extends": ["standard"],
   "ecmaFeatures": {
     "modules": true

@@ -18,6 +18,7 @@
         excludesfile = ~/.gitignore
         editor = vim
 	mergeoptions = --no-edit
+	whitespace = fix
 [apply]
         whitespace = nowarn
 [mergetool]
