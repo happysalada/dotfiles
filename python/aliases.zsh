@@ -1,2 +1,2 @@
-alias alemgr='alembic revision --autogenerate -m'
-alias alemuh='alembic upgrade head'
+alias agm='alembic revision --autogenerate -m'
+alias auh='alembic upgrade head'

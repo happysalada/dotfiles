@@ -27,3 +27,5 @@ alias gro= "grep -lr '<<<<<<<' . | xargs git checkout --ours"
 alias grt= "grep -lr '<<<<<<<' . | xargs git checkout --theirs"
 alias gmo= 'git merge -Xours'
 alias gmt= 'git merge -Xtheirs'
+alias gr='git remote -v'
+alias git-nuke='git reset --hard && git clean -fd'

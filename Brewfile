@@ -15,7 +15,7 @@ brew 'jp2a'
 brew 'libcaca', args: ['with-imlib2']
 brew 'libgit2'
 brew 'openssl'
-brew 'node'
+brew 'node@8'
 brew 'readline'
 brew 'postgresql'
 brew 'ruby-build'
