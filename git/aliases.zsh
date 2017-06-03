@@ -23,3 +23,7 @@ alias gs='git status -sb' # upgrade your git if -sb breaks for you. it's fun.
 alias gac='git add -A && git commit -S -m'
 alias grh='git reset --hard && git clean -f -d'
 alias gcf='git diff --name-only --diff-filter=U'
+alias gro= "grep -lr '<<<<<<<' . | xargs git checkout --ours"
+alias grt= "grep -lr '<<<<<<<' . | xargs git checkout --theirs"
+alias gmo= 'git merge -Xours'
+alias gmt= 'git merge -Xtheirs'
