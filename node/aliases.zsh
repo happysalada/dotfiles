@@ -8,3 +8,6 @@ alias nrs='npm run start'
 alias nrst='npm run storybook'
 alias nrl='npm run lint'
 alias nrf='npm run fix'
+
+alias yad='yarn add --dev'
+alias ys='yarn start'
