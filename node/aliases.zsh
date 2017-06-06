@@ -11,3 +11,4 @@ alias nrf='npm run fix'
 
 alias yad='yarn add --dev'
 alias ys='yarn start'
+alias yb='yarn build'
