@@ -1,0 +1,1 @@
+function package-size() { curl -sL wzrd.in/standalone/"$1"|wc -c;}
