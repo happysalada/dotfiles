@@ -39,3 +39,10 @@ do
 done
 
 unset config_files
+
+# tabtab source for serverless package
+# uninstall by removing these lines or running `tabtab uninstall serverless`
+[[ -f /Users/Raphael/.npm/_npx/13021/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh ]] && . /Users/Raphael/.npm/_npx/13021/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh
+# tabtab source for sls package
+# uninstall by removing these lines or running `tabtab uninstall sls`
+[[ -f /Users/Raphael/.npm/_npx/13021/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/Raphael/.npm/_npx/13021/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh
