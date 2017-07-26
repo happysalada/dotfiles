@@ -28,4 +28,5 @@ alias grt= "grep -lr '<<<<<<<' . | xargs git checkout --theirs"
 alias gmo= 'git merge -Xours'
 alias gmt= 'git merge -Xtheirs'
 alias gr='git remote -v'
+alias gph='git push heroku master'
 alias git-nuke='git reset --hard && git clean -fd'
