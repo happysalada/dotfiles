@@ -1,11 +1,3 @@
-if [[ -n $SSH_CONNECTION ]]; then
-  export PS1='%m:%3~$(git_info_for_prompt)%# '
-elif test ${DOCKER_MACHINE_NAME}; then
-  export PS1='[\u@\h \W$(__docker_machine_ps1 " [%s]")]\$ '
-else
-  export PS1='%3~$(git_info_for_prompt)%# '
-fi
-
 export LSCOLORS="exfxcxdxbxegedabagacad"
 export CLICOLOR=true
 
@@ -15,6 +7,9 @@ export CHANGELOG_GITHUB_TOKEN="63c80c59ec78c49098ea4688b4b33bbc34863390"
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
+
+# POWERLEVEL9K_MODE="compatible"
+# ZSH_THEME="powerlevel9k/powerlevel9k"
 ZSH_THEME="random"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
