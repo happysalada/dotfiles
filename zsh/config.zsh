@@ -3,6 +3,8 @@ export CLICOLOR=true
 
 # github token used to generate the changelogs
 export CHANGELOG_GITHUB_TOKEN="63c80c59ec78c49098ea4688b4b33bbc34863390"
+export HOMEBREW_GITHUB_API_TOKEN="b3d2a427bd4d779d7f34d5f255bda8a6954d9642"
+
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each

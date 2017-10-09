@@ -1,4 +1,4 @@
-export PATH="./bin:/usr/local/bin:/usr/sbin:/Applications:$ZSH/bin:$PATH:$(yarn global bin):/Users/${USER}/Library/Android/sdk/platform-tools/"
+export PATH="/usr/local/Cellar:./bin:/usr/local/bin:/usr/sbin:/Applications:$ZSH/bin:$PATH:$(yarn global bin):/Users/${USER}/Library/Android/sdk/platform-tools"
 export MANPATH="/usr/local/man:/Applications:/usr/local/git/man:$MANPATH"
 export MONGOPATH="/Applications:/usr/local/Caskroom/mongodb:$MONGOPATH"
 
