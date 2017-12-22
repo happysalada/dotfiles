@@ -156,6 +156,10 @@ curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
 # github.com/rupa/z   - oh how i love you
 git clone https://github.com/rupa/z.git ~/code/z
 
+# https://github.com/jamiew/git-friendly
+git clone https://github.com/jamiew/git-friendly ~/code/git-friendly
+sh ~/code/git-friendly/install.sh
+
 # Install global NPM packages
 npm install --global yarn
 

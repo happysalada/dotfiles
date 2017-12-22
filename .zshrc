@@ -4,10 +4,10 @@
 # history
 SAVEHIST=100000
 
+source ~/code/z/z.sh
 
 # antigen time!
 source ~/code/antigen/antigen.zsh
-
 
 ######################################################################
 ### install some antigen bundles
