@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Quick shortcut to an editor.
+#
+# This means that as I travel back and forth between editors, hey, I don't have
+# to re-learn any arcane commands. Neat.
+#
+# NOTE: maybe this only works for sublime, but ea is like e but adds it to your open editor
+#
+# USAGE:
+#
+#   $ ea
+#   # => opens the current directory in your currently open editor
+#
+#   $ ea .
+#   $ ea /usr/local
+#   # => opens the specified directory in your currently openeditor
+
+if [ "$1" = "" ] ; then
+  exec $EDITOR -a .
+else
+  exec $EDITOR -a "$1"
+fi
