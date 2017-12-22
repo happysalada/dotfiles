@@ -1,5 +1,0 @@
-#!/bin/sh
-#
-# Get the details of your last commit
-
-git log -1 HEAD
