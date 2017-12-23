@@ -166,6 +166,9 @@ npm install --global yarn
 # plugin manager for oh-my-zh
 git clone https://github.com/zsh-users/antigen ~/code/antigen
 
+# plugin for autosuggestions on the shell
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/code/zsh-autosuggestions
+
 # github.com/thebitguru/play-button-itunes-patch
 # disable itunes opening on media keys
 git clone https://github.com/thebitguru/play-button-itunes-patch ~/code/play-button-itunes-patch

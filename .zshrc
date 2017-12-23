@@ -9,6 +9,8 @@ source ~/code/z/z.sh
 # antigen time!
 source ~/code/antigen/antigen.zsh
 
+source ~/code/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 ######################################################################
 ### install some antigen bundles
 
@@ -32,9 +34,6 @@ antigen bundles <<EOBUNDLES
 
   # history search
   zsh-users/zsh-history-substring-search ./zsh-history-substring-search.zsh
-
-  # suggestions
-  tarruda/zsh-autosuggestions
 
   # colors for all files!
   trapd00r/zsh-syntax-highlighting-filetypes
@@ -66,15 +65,6 @@ auto-ls () {
   hash gls >/dev/null 2>&1 && CLICOLOR_FORCE=1 gls -aFh --color --group-directories-first || ls
 }
 chpwd_functions=( auto-ls $chpwd_functions )
-
-
-# Enable autosuggestions automatically
-zle-line-init() {
-    zle autosuggest-start
-}
-
-zle -N zle-line-init
-
 
 # history mgmt
 # http://www.refining-linux.org/archives/49/ZSH-Gem-15-Shared-history/
