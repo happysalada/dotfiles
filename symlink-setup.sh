@@ -183,3 +183,5 @@ main() {
 }
 
 main
+
+ln -fs $(pwd)/karabiner.json $HOME/.config/karabiner/karabiner.json
