@@ -1,5 +1,5 @@
 {
-  "//": "    ln -sf $HOME/code/dotfiles/node_modules $HOME/.node_libraries     ",
+  "//": "ln -sf $HOME/code/dotfiles/node_modules $HOME/.node_libraries",
   "license" : "MIT",
   "devDependencies": {
     "eslint": "^3.19.0",

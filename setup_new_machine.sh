@@ -160,8 +160,32 @@ git clone https://github.com/rupa/z.git ~/code/z
 git clone https://github.com/jamiew/git-friendly ~/code/git-friendly
 sh ~/code/git-friendly/install.sh
 
+# install asdf version manager for multiple languages https://github.com/asdf-vm/asdf
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.4.1
+
+# install basic languages
+asdf plugin-add elm
+asdf install elm 0.18.0
+
+asdf plugin-add ruby
+asdf install ruby 2.5.0
+
+asdf plugin-add elixir
+asdf install elixir 1.6.0
+
+asdf plugin-add erlang
+asdf install erlang 20.2.2
+
+asdf plugin-add python
+asdf install python 3.6.4
+
+asdf plugin-add nodejs
+asdf install nodejs 9.4.0
 # Install global NPM packages
 npm install --global yarn
+
+# tldr command line tool utility
+yarn global add tldr
 
 # plugin manager for oh-my-zh
 git clone https://github.com/zsh-users/antigen ~/code/antigen
@@ -172,12 +196,6 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ~/code/zsh-autosugges
 # github.com/thebitguru/play-button-itunes-patch
 # disable itunes opening on media keys
 git clone https://github.com/thebitguru/play-button-itunes-patch ~/code/play-button-itunes-patch
-
-# tldr command line tool utility
-yarn global add tldr
-
-# intsall ruby 2.4.3
-rbenv install 2.4.3
 
 # my magic photobooth symlink -> dropbox. I love it.
 # 	 + first move Photo Booth folder out of Pictures
