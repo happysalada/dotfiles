@@ -171,7 +171,7 @@ asdf plugin-add ruby
 asdf install ruby 2.5.0
 
 asdf plugin-add elixir
-asdf install elixir 1.6.0
+asdf install elixir 1.6.1
 
 asdf plugin-add erlang
 asdf install erlang 20.2.2
@@ -186,6 +186,9 @@ npm install --global yarn
 
 # tldr command line tool utility
 yarn global add tldr
+
+# global eslint config
+yarn global add eslint eslint-plugin-unicorn eslint-plugin-import eslint-plugin-json eslint-plugin-eslint-comments eslint-plugin-optimize-regex eslint-plugin-promise eslint-config-google eslint-config-xo eslint-config-kentcdodds
 
 # plugin manager for oh-my-zh
 git clone https://github.com/zsh-users/antigen ~/code/antigen
