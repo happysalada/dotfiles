@@ -1,10 +1,5 @@
 #!/bin/sh
 
-# Create a new directory and enter it
-function md() {
-  mkdir -p "$@" && cd "$@"
-}
-
 # List all files, long format, colorized, permissions in octal
 function la(){
   ls -l  "$@" | awk '

@@ -153,6 +153,13 @@ bash < <( curl https://raw.github.com/jamiew/git-friendly/master/install.sh)
 # https://github.com/scopatz/nanorc
 curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
 
+mkdir -p ~/code
+
+# golang stuff
+mkdir -p ~/code/go/bin
+mkdir -p ~/code/go/pkg
+mkdir -p ~/code/go/src/github.com/happysalada
+
 # github.com/rupa/z   - oh how i love you
 git clone https://github.com/rupa/z.git ~/code/z
 

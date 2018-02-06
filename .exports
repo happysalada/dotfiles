@@ -20,3 +20,5 @@ eval "$(gdircolors -b ~/.dircolors)"
 
 # Erlang and Elixir shell history:
 export ERL_AFLAGS="-kernel shell_history enabled"
+
+export GOPATH=$HOME/code/go
