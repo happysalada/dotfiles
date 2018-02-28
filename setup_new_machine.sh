@@ -191,8 +191,6 @@ asdf install nodejs 9.4.0
 
 asdf plugin-add golang
 asdf install golang 1.9.3
-# Install global NPM packages
-npm install --global yarn
 
 # tldr command line tool utility
 yarn global add tldr
