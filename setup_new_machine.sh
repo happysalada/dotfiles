@@ -178,10 +178,10 @@ asdf plugin-add ruby
 asdf install ruby 2.5.0
 
 asdf plugin-add elixir
-asdf install elixir 1.6.2
+asdf install elixir 1.6.3
 
 asdf plugin-add erlang
-asdf install erlang 20.2.2
+asdf install erlang 20.3
 
 asdf plugin-add python
 asdf install python 3.6.4
