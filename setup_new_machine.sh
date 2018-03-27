@@ -178,7 +178,7 @@ asdf plugin-add ruby
 asdf install ruby 2.5.0
 
 asdf plugin-add elixir
-asdf install elixir 1.6.3
+asdf install elixir 1.6.4
 
 asdf plugin-add erlang
 asdf install erlang 20.3
@@ -207,6 +207,10 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ~/code/zsh-autosugges
 # github.com/thebitguru/play-button-itunes-patch
 # disable itunes opening on media keys
 git clone https://github.com/thebitguru/play-button-itunes-patch ~/code/play-button-itunes-patch
+
+# host files
+git clone https://github.com/StevenBlack/hosts.git ~/code
+cd ~/code/hosts &&  pip3 install --user -r requirements.txt && python3 updateHostsFile.py --auto
 
 # my magic photobooth symlink -> dropbox. I love it.
 # 	 + first move Photo Booth folder out of Pictures
