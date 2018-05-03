@@ -8,7 +8,6 @@ brew update
 # Upgrade any already-installed formulae
 brew upgrade
 
-
 # GNU core utilities (those that come with OS X are outdated)
 brew install coreutils
 brew install moreutils
@@ -76,6 +75,8 @@ brew install ncdu # find where your diskspace went
 
 brew install zsh
 brew install yarn --without-node
+
+brew install pgcli
 
 # Remove outdated versions from the cellar
 brew cleanup
