@@ -178,7 +178,7 @@ asdf plugin-add ruby
 asdf install ruby 2.5.0
 
 asdf plugin-add elixir
-asdf install elixir 1.6.4
+asdf install elixir 1.6.5
 
 asdf plugin-add erlang
 asdf install erlang 20.3
