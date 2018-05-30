@@ -192,6 +192,9 @@ asdf install nodejs 10.2.1
 asdf plugin-add golang
 asdf install golang 1.9.3
 
+asdf plugin-add rebar
+asdf install rebar 3.5.2
+
 # tldr command line tool utility
 yarn global add tldr
 
