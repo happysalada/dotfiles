@@ -187,7 +187,7 @@ asdf plugin-add python
 asdf install python 3.6.4
 
 asdf plugin-add nodejs
-asdf install nodejs 10.2.1
+asdf install nodejs 10.3.0
 
 asdf plugin-add golang
 asdf install golang 1.9.3
