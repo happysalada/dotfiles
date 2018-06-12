@@ -45,6 +45,10 @@ brew install entr
 # github util. gotta love `hub fork`, `hub create`, `hub checkout <PRurl>`
 brew install hub
 
+# siege for stress testing
+brew install siege
+siege -C
+ln -sf $HOME/.dotfiles/siege.conf $HOME/.siege/siege.conf
 
 # mtr - ping & traceroute. best.
 brew install mtr
