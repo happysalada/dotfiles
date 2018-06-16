@@ -195,6 +195,8 @@ asdf install golang 1.9.3
 asdf plugin-add rebar
 asdf install rebar 3.5.2
 
+asdf plugin-add rust https://github.com/code-lever/asdf-rust.git
+asdf install rust 1.26.2
 # tldr command line tool utility
 yarn global add tldr
 
