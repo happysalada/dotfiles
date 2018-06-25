@@ -16,21 +16,15 @@ brew cask install flux
 # dev
 brew cask install iterm2
 brew cask install vscode
-brew cask install mysqlworkbench
 brew cask install alfred
 
-# browsers
-# brew cask install google-chrome-canary
-# brew cask install firefoxnightly
-# brew cask install webkit-nightly
-# brew cask install chromium
 brew cask install torbrowser
 
 # less often
 brew cask install disk-inventory-x
 brew cask install vlc
 brew cask install gpgtools
-brew cask install utorrent
+brew cask install transmission
 
 brew tap caskroom/fonts
 brew cask install font-fira-code

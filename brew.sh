@@ -42,8 +42,9 @@ brew install z
 # run this script when this file changes guy.
 brew install entr
 
-# github util. gotta love `hub fork`, `hub create`, `hub checkout <PRurl>`
-brew install hub
+# required for erlang/OTP
+brew install fop
+brew install psqlodbc
 
 # wrk for stress testing
 brew install wrk
