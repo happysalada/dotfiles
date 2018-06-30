@@ -22,3 +22,6 @@ eval "$(gdircolors -b ~/.dircolors)"
 export ERL_AFLAGS="-kernel shell_history enabled"
 
 export GOPATH=$HOME/code/go
+
+# rust: share build artefact amongst all rust workspaces
+export RUSTC_WRAPPER=sccache
