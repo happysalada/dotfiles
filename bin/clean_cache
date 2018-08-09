@@ -1,0 +1,4 @@
+brew cleanup -s
+rm -rf $(brew --cache)
+yarn cache clean
+npm cache clean --force

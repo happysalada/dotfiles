@@ -178,16 +178,16 @@ asdf plugin-add ruby
 asdf install ruby 2.5.0
 
 asdf plugin-add elixir
-asdf install elixir 1.6.5
+asdf install elixir 1.7.2
 
 asdf plugin-add erlang
-asdf install erlang 20.3
+asdf install erlang 21.0.4
 
 asdf plugin-add python
 asdf install python 3.6.4
 
 asdf plugin-add nodejs
-asdf install nodejs 10.3.0
+asdf install nodejs 10.8.0
 
 asdf plugin-add golang
 asdf install golang 1.9.3
@@ -195,9 +195,9 @@ asdf install golang 1.9.3
 asdf plugin-add rebar
 asdf install rebar 3.5.2
 
-# don't install rust with asdf yet https://github.com/code-lever/asdf-rust/issues/12
-# asdf plugin-add rust https://github.com/code-lever/asdf-rust.git
-# asdf install rust 1.26.2
+asdf plugin-add rust https://github.com/code-lever/asdf-rust.git
+asdf install rust 1.26.2
+
 # tldr command line tool utility
 yarn global add tldr
 
