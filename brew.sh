@@ -81,5 +81,9 @@ brew install yarn --without-node
 
 brew install pgcli
 
+# have the system autoupdate itself
+brew tap domt4/autoupdate
+brew autoupdate --start --upgrade --cleanup
+
 # Remove outdated versions from the cellar
 brew cleanup
