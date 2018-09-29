@@ -78,8 +78,14 @@ zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 
 # uncomment to finish profiling
 # zprof
 
+#fzf related
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
+fzf-history-widget-accept() {
+  fzf-history-widget
+  zle accept-line
+}
+zle     -N     fzf-history-widget-accept
+bindkey '^X^R' fzf-history-widget-accept
 
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
