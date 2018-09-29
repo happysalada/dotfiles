@@ -1,0 +1,5 @@
+brew -v update
+brew upgrade
+brew cask upgrade
+brew cleanup -s
+rm -rf "$(brew --cache)"

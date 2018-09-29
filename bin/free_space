@@ -1,0 +1,4 @@
+
+# Clean up system logs and temporary files
+#   http://www.thexlab.com/faqs/maintscripts.html
+sudo periodic daily weekly monthly

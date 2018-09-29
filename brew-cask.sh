@@ -13,6 +13,9 @@ brew tap caskroom/versions
 # daily
 brew cask install flux
 
+# window manager
+brew cask install spectacle
+
 # dev
 brew cask install iterm2
 brew cask install vscode

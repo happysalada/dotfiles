@@ -57,9 +57,9 @@ brew install mtr
     sudo chmod 4755 $mtrlocation/sbin/mtr
     sudo chown root $mtrlocation/sbin/mtr
 
-
 # Install other useful binaries
 brew install the_silver_searcher
+#fuzzy finder
 brew install fzf
 
 brew install git
@@ -79,11 +79,20 @@ brew install ncdu # find where your diskspace went
 brew install zsh
 brew install yarn --without-node
 
-brew install pgcli
+# find out how many lines of code in a project
+brew install tokei
 
-# have the system autoupdate itself
-brew tap domt4/autoupdate
-brew autoupdate --start --upgrade --cleanup
+# add fd to find files
+# find all hidden env file including the ones ignored by git
+# fd --hidden --no-ignore env
+# find all files with md extensions
+# fd -e md
+# remove ds_store files
+# fd '^*.DS_Store$' --hidden --no-ignore -x rm
+brew install fd
+
+# editor
+brew install emacs --with-cocoa
 
 # Remove outdated versions from the cellar
 brew cleanup
