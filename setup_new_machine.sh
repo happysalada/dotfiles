@@ -198,6 +198,13 @@ asdf install rebar 3.5.2
 asdf plugin-add rust https://github.com/code-lever/asdf-rust.git
 asdf install rust 1.26.2
 
+# prevent advertising requests
+git clone https://github.com/StevenBlack/hosts.git ~/code/hosts
+cd ~/code/hosts
+pip3 install --user -r requirements.txt
+python3 updateHostsFile.py --auto --replace --extensions social fakenews gambling
+sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder
+
 # tldr command line tool utility
 yarn global add tldr
 
