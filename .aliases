@@ -110,3 +110,6 @@ alias emptytrash=" \
 "
 
 alias du="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
+
+alias ping='prettyping --nolegend'
+alias vim='mvim -v'

@@ -50,12 +50,7 @@ brew install psqlodbc
 brew install wrk
 
 # mtr - ping & traceroute. best.
-brew install mtr
-
-    # allow mtr to run without sudo
-    mtrlocation=$(brew info mtr | grep Cellar | sed -e 's/ (.*//') #  e.g. `/Users/paulirish/.homebrew/Cellar/mtr/0.86`
-    sudo chmod 4755 $mtrlocation/sbin/mtr
-    sudo chown root $mtrlocation/sbin/mtr
+brew install prettyping
 
 # Install other useful binaries
 brew install the_silver_searcher
@@ -94,5 +89,7 @@ brew install fd
 # editor
 brew install emacs --with-cocoa
 
+brew install macvim
+curl -L https://bit.ly/janus-bootstrap | bash
 # Remove outdated versions from the cellar
 brew cleanup
