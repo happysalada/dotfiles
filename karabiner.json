@@ -1103,6 +1103,14 @@
           "to": {
             "key_code": "left_command"
           }
+        },
+        {
+          "from": {
+            "key_code": "international5"
+          },
+          "to": {
+            "key_code": "escape"
+          }
         }
       ],
       "virtual_hid_keyboard": {

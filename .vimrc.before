@@ -1,5 +1,0 @@
-" for all the settings that janus actually uses
-let NERDTreeShowHidden=1
-call janus#disable_plugin('vroom')
-let g:mix_format_on_save = 1
-let mapleader = ","

@@ -88,6 +88,7 @@ brew install fd
 
 # editor
 brew install emacs --with-cocoa
+git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 
 brew install macvim
 curl -L https://bit.ly/janus-bootstrap | bash

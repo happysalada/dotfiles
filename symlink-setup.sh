@@ -186,7 +186,5 @@ main
 
 ln -fs $(pwd)/karabiner.json $HOME/.config/karabiner/karabiner.json
 
-ln -fs $(pwd)/.vimrc.after $HOME/.vimrc.after
-ln -fs $(pwd)/.vimrc.before $HOME/.vimrc.before
-ln -fs $(pwd)/.janus $HOME/.janus
+ln -fs $(pwd)/.spacemacs $HOME/.spacemacs
 ln -fs $(pwd)/spectacle.json "$HOME/Library/Application Support/Spectacle/Shortcuts.json"
