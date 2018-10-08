@@ -318,6 +318,10 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (setq magit-repository-directories `(("~/Documents/Projects" . 2) ("~/.dotfiles/" . 0)))
+  (require 'bind-key)
+  (bind-key* "C-;" 'comment-dwim-line)
+  (bind-key* "C-S-c" 'mc/edit-lines)
+  (bind-key* "M-j" 'ace-jump-mode)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
