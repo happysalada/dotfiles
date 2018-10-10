@@ -1,9 +1,10 @@
-nodejs 10.8.0
+nodejs 10.11.0
 ruby 2.5.0
-elixir 1.7.2
-erlang 21.0.4
+elixir 1.7.3
+erlang 21.1
 elm 0.18.0
 python 3.6.4
 golang 1.9.3
 rebar 3.5.2
 rust 1.26.2
+postgres 10.5.0
