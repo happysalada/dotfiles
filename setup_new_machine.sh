@@ -172,31 +172,31 @@ git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.4.1
 
 # install basic languages
 asdf plugin-add elm
-asdf install elm 0.18.0
+asdf install elm 0.19.0
 
 asdf plugin-add ruby
 asdf install ruby 2.5.0
 
 asdf plugin-add elixir
-asdf install elixir 1.7.2
+asdf install elixir 1.7.3
 
 asdf plugin-add erlang
-asdf install erlang 21.0.4
+asdf install erlang 21.1.1
 
 asdf plugin-add python
 asdf install python 3.6.4
 
 asdf plugin-add nodejs
-asdf install nodejs 10.8.0
+asdf install nodejs 10.12.0
 
 asdf plugin-add golang
 asdf install golang 1.9.3
 
 asdf plugin-add rebar
-asdf install rebar 3.5.2
+asdf install rebar 3.6.2
 
 asdf plugin-add rust https://github.com/code-lever/asdf-rust.git
-asdf install rust 1.26.2
+asdf install rust 1.29.2
 
 # prevent advertising requests
 git clone https://github.com/StevenBlack/hosts.git ~/code/hosts

@@ -21,7 +21,11 @@ brew cask install iterm2
 brew cask install vscode
 brew cask install alfred
 
+# browser stuff
+brew cask install firefox
 brew cask install torbrowser
+brew cask install chrome
+brew cask install chromedriver
 
 # less often
 brew cask install disk-inventory-x

@@ -90,7 +90,10 @@ brew install fd
 brew install emacs --with-cocoa
 git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 
-brew install macvim
-curl -L https://bit.ly/janus-bootstrap | bash
+brew install vscode
+
+# browser testing
+brew install selenium-server-standalone
+
 # Remove outdated versions from the cellar
 brew cleanup
