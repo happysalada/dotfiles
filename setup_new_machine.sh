@@ -160,6 +160,10 @@ mkdir -p ~/code/go/bin
 mkdir -p ~/code/go/pkg
 mkdir -p ~/code/go/src/github.com/happysalada
 
+# terminal
+git clone https://github.com/jwilm/alacritty.git ~/code/alacritty
+cd ~/code/alacritty && cargo install cargo-deb && cargo deb --install
+
 # github.com/rupa/z   - oh how i love you
 git clone https://github.com/rupa/z.git ~/code/z
 

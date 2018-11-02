@@ -185,6 +185,5 @@ main() {
 main
 
 ln -fs $(pwd)/karabiner.json $HOME/.config/karabiner/karabiner.json
-
-ln -fs $(pwd)/.spacemacs $HOME/.spacemacs
+ln -fs $(pwd)/alacritty.yml $HOME/.config/alacritty/alacritty.yml
 ln -fs $(pwd)/spectacle.json "$HOME/Library/Application Support/Spectacle/Shortcuts.json"
