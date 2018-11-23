@@ -62,7 +62,8 @@ chpwd_functions=( auto-ls $chpwd_functions )
 # http://www.refining-linux.org/archives/49/ZSH-Gem-15-Shared-history/
 setopt inc_append_history
 setopt share_history
-
+# ignore commands prefixed with a space. Will still persist for one command
+setopt HIST_IGNORE_SPAC
 
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
