@@ -92,8 +92,5 @@ git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 
 brew install vscode
 
-# browser testing
-brew install selenium-server-standalone
-
 # Remove outdated versions from the cellar
 brew cleanup
