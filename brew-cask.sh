@@ -18,6 +18,7 @@ brew cask install spectacle
 
 # dev
 brew cask install vscode
+brew cask install alacritty
 brew cask install alfred
 
 # browser stuff

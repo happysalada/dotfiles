@@ -73,6 +73,7 @@ brew install ncdu # find where your diskspace went
 
 brew install zsh
 brew install yarn --without-node
+brew install tmux
 
 # find out how many lines of code in a project
 brew install tokei
