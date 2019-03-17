@@ -49,6 +49,9 @@ brew install psqlodbc
 # wrk for stress testing
 brew install wrk
 
+# better ls
+brew install exa
+
 # mtr - ping & traceroute. best.
 brew install prettyping
 

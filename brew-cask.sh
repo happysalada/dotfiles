@@ -21,9 +21,11 @@ brew cask install vscode
 brew cask install alacritty
 brew cask install alfred
 
+# backup
+brew cask install borgbackup
+
 # browser stuff
 brew cask install firefox
-brew cask install torbrowser
 brew cask install chrome
 
 # less often
@@ -32,6 +34,7 @@ brew cask install vlc
 brew cask install gpgtools
 brew cask install transmission
 
+# fonts
 brew tap caskroom/fonts
 brew cask install font-fira-code
 brew cask install font-source-code-pro-for-powerline
