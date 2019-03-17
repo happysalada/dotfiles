@@ -97,15 +97,6 @@ alias ungz="gunzip -k"
 # File size
 alias fs="stat -f \"%z bytes\""
 
-# Empty the Trash on all mounted volumes and the main HDD. then clear the useless sleepimage
-alias emptytrash=" \
-  sudo rm -rfv /Volumes/*/.Trashes; \
-  rm -rfv ~/.Trash/*; \
-  sudo rm -v /private/var/vm/sleepimage; \
-  rm -rv \"/Users/paulirish/Library/Application Support/stremio/Cache\";  \
-  rm -rv \"/Users/paulirish/Library/Application Support/stremio/stremio-cache\" \
-"
-
 alias du="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
 
 alias ping='prettyping --nolegend'

@@ -8,5 +8,5 @@ cd ~/code/hosts
 grh
 gl
 pip3 install --user -r requirements.txt
-python3 updateHostsFile.py --auto --replace --extensions social fakenews gambling
+python3 updateHostsFile.py --auto --replace --extensions fakenews gambling
 sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder
