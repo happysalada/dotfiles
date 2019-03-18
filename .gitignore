@@ -20,7 +20,6 @@ Thumbs.db
 # Compiled Python files
 *.pyc
 
-.extra
 
 #### macos ####
 *.DS_Store
@@ -204,3 +203,7 @@ erl_crash.dump
 
 #### custom ####
 .vscode
+
+# belonging to dotfile repo
+.extra
+backup/

@@ -13,9 +13,6 @@ brew tap caskroom/versions
 # daily
 brew cask install flux
 
-# window manager
-brew cask install spectacle
-
 # dev
 brew cask install vscode
 brew cask install alacritty
@@ -29,10 +26,20 @@ brew cask install firefox
 brew cask install chrome
 
 # less often
-brew cask install disk-inventory-x
 brew cask install vlc
 brew cask install gpgtools
-brew cask install transmission
+brew cask install qbittorent
+brew cask install dynalist
+brew cask install docker
+brew cask install karabiner-elements
+brew cask install macpass
+brew cask install metabase
+brew cask install virtualbox
+brew cask install fantastical
+brew cask install dash
+brew cask anki
+brew install popsql
+echo "add canary mail"
 
 # fonts
 brew tap caskroom/fonts
