@@ -1,12 +1,20 @@
 #!/bin/bash
 set -x
 
-# `crontab -l` sez this runs every month on the first
+# `crontab -l` sez this runs every night at 3am
+brew_update
+yarn cache clean
+clean_docker
 
-# update the list of hosts to block requests from
-cd ~/code/hosts
-grh
-gl
-pip3 install --user -r requirements.txt
-python3 updateHostsFile.py --auto --replace --extensions fakenews gambling
-sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder
+asdf update
+asdf plugin-update --all
+
+rm -rf ~/.Trash/*
+# XCODE is enormous
+#   kill cache
+rm -rf ~/Library/Caches/com.apple.dt.Xcode
+rm -rf ~/Library/Caches/Firefox
+
+# run backup
+../backup/backup.sh
+echo "don't forget to run your physical backup !!!"
