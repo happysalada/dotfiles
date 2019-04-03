@@ -16,5 +16,5 @@ rm -rf ~/Library/Caches/com.apple.dt.Xcode
 rm -rf ~/Library/Caches/Firefox
 
 # run backup
-../backup/backup.sh
+$HOME/.dotfiles/backup/backup.sh
 echo "don't forget to run your physical backup !!!"
