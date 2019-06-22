@@ -370,6 +370,7 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
+     org
      helm
      auto-completion
      better-defaults
@@ -378,7 +379,6 @@ values."
      markdown
      elixir
      rust
-     ;; org
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
