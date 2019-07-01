@@ -13,7 +13,6 @@ rm -rf ~/.Trash/*
 # XCODE is enormous
 #   kill cache
 rm -rf ~/Library/Caches/com.apple.dt.Xcode
-rm -rf ~/Library/Caches/Firefox
 
 # run backup
 $HOME/.dotfiles/backup/backup.sh

@@ -39,8 +39,10 @@ brew install homebrew/dupes/screen
 # z hopping around folders
 brew install z
 
-# run this script when this file changes guy.
-brew install entr
+# spacemacs
+brew tap d12frosted/emacs-plus
+brew install emacs-plus
+git clone --single-branch --branch develop https://github.com/syl20bnr/spacemacs ~/.emacs.d
 
 # required for erlang/OTP
 brew install fop
