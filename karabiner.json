@@ -1111,6 +1111,14 @@
           "to": {
             "key_code": "escape"
           }
+        },
+        {
+          "from": {
+            "key_code": "delete_forward"
+          },
+          "to": {
+            "key_code": "tab"
+          }
         }
       ],
       "virtual_hid_keyboard": {
