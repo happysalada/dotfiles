@@ -31,7 +31,8 @@ brew cask install fantastical
 brew cask install dash
 brew cask install anki
 brew cask install popsql
-echo "add canary mail"
+brew cask install mailspring
+brew cask install ngrok
 
 # fonts
 brew tap caskroom/fonts

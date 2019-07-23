@@ -36,6 +36,8 @@ brew install z
 brew cask install java
 brew install fop
 brew install psqlodbc
+brew install autoconf
+brew install wxmac
 
 # wrk for stress testing
 brew install wrk
@@ -49,7 +51,7 @@ brew install prettyping
 # Install other useful binaries
 brew install the_silver_searcher
 #fuzzy finder
-brew install fzf
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install
 
 brew install git
 brew install imagemagick 
