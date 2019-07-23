@@ -127,9 +127,7 @@ fi
 ##############################################################################################################
 ### homebrew!
 
-# (if your machine has /usr/local locked down (like google's), you can do this to place everything in ~/.homebrew
-mkdir $HOME/.homebrew && curl -L https://github.com/mxcl/homebrew/tarball/master | tar xz --strip 1 -C $HOME/.homebrew
-export PATH=$HOME/.homebrew/bin:$HOME/.homebrew/sbin:$PATH
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # install all the things
 ./brew.sh
@@ -145,31 +143,14 @@ export PATH=$HOME/.homebrew/bin:$HOME/.homebrew/sbin:$PATH
 ### install of common things
 ###
 
-# github.com/jamiew/git-friendly
-# the `push` command which copies the github compare URL to my clipboard is heaven
-bash < <( curl https://raw.github.com/jamiew/git-friendly/master/install.sh)
-
 # install better nanorc config
 # https://github.com/scopatz/nanorc
 curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
 
 mkdir -p ~/code
 
-# golang stuff
-mkdir -p ~/code/go/bin
-mkdir -p ~/code/go/pkg
-mkdir -p ~/code/go/src/github.com/happysalada
-
-# terminal
-git clone https://github.com/jwilm/alacritty.git ~/code/alacritty
-cd ~/code/alacritty && cargo install cargo-deb && cargo deb --install
-
 # github.com/rupa/z   - oh how i love you
 git clone https://github.com/rupa/z.git ~/code/z
-
-# https://github.com/jamiew/git-friendly
-git clone https://github.com/jamiew/git-friendly ~/code/git-friendly
-sh ~/code/git-friendly/install.sh
 
 # install asdf version manager for multiple languages https://github.com/asdf-vm/asdf
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.4.1

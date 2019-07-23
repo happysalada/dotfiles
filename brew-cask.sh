@@ -5,30 +5,22 @@
 #     brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup`
 
 
-# Install native apps
-
-brew install caskroom/cask/brew-cask
-brew tap caskroom/versions
-
 # daily
 brew cask install flux
 
 # dev
-brew cask install vscode
+brew cask install visual-studio-code
 brew cask install alacritty
 brew cask install alfred
 
-# backup
-brew cask install borgbackup
-
 # browser stuff
 brew cask install firefox
-brew cask install chrome
+brew cask install chromium
 
 # less often
 brew cask install vlc
-brew cask install gpgtools
-brew cask install qbittorent
+brew cask install tunnelblick
+brew cask install qbittorrent
 brew cask install dynalist
 brew cask install docker
 brew cask install karabiner-elements
@@ -37,8 +29,8 @@ brew cask install metabase
 brew cask install virtualbox
 brew cask install fantastical
 brew cask install dash
-brew cask anki
-brew install popsql
+brew cask install anki
+brew cask install popsql
 echo "add canary mail"
 
 # fonts

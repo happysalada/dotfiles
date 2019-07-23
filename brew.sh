@@ -14,7 +14,7 @@ brew install moreutils
 # GNU `find`, `locate`, `updatedb`, and `xargs`, `g`-prefixed
 brew install findutils
 # GNU `sed`, overwriting the built-in `sed`
-brew install gnu-sed --with-default-names
+brew install gnu-sed
 
 # for embedded development (e.g. Nerves)
 brew install fwup squashfs
@@ -25,26 +25,15 @@ brew install bash
 
 brew install bash-completion
 
-brew install homebrew/completions/brew-cask-completion
-
 # Install wget with IRI support
-brew install wget --with-iri
-
-# Install more recent versions of some OS X tools
-brew install homebrew/dupes/nano
-brew install homebrew/dupes/grep
-brew install homebrew/dupes/openssh
-brew install homebrew/dupes/screen
+brew install wget
 
 # z hopping around folders
 brew install z
 
-# spacemacs
-brew tap d12frosted/emacs-plus
-brew install emacs-plus
-git clone --single-branch --branch develop https://github.com/syl20bnr/spacemacs ~/.emacs.d
-
 # required for erlang/OTP
+# java is required for these dependencies
+brew cask install java
 brew install fop
 brew install psqlodbc
 
@@ -63,12 +52,12 @@ brew install the_silver_searcher
 brew install fzf
 
 brew install git
-brew install imagemagick --with-webp
+brew install imagemagick 
 brew install pv
 brew install rename
 brew install tree
 brew install zopfli
-brew install ffmpeg --with-libvpx
+brew install ffmpeg
 
 brew install terminal-notifier
 
@@ -77,7 +66,10 @@ brew install pidcat   # colored logcat guy
 brew install ncdu # find where your diskspace went
 
 brew install zsh
-brew install yarn --without-node
+brew install zsh-completions
+# change shell to zsh
+sudo sh -c "echo $(which zsh) >> /etc/shells"
+chsh -s $(/bin/zsh)
 brew install tmux
 
 # find out how many lines of code in a project
@@ -92,11 +84,7 @@ brew install tokei
 # fd '^*.DS_Store$' --hidden --no-ignore -x rm
 brew install fd
 
-# editor
-brew install emacs --with-cocoa
-git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
-
-brew install vscode
+brew install ripgrep
 
 # Remove outdated versions from the cellar
 brew cleanup
