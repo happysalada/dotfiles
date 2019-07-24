@@ -100,3 +100,7 @@ alias fs="stat -f \"%z bytes\""
 alias du="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
 
 alias ping='prettyping --nolegend'
+
+# backup
+alias backup="rsync -avP --exclude '_build/*' --exclude '.elixir_ls/' --exclude 'deps/*' --exclude 'node_modules/*' --exclude 'target/*' --exclude -r"
+ 

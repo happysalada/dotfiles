@@ -15,5 +15,4 @@ rm -rf ~/.Trash/*
 rm -rf ~/Library/Caches/com.apple.dt.Xcode
 
 # run backup
-$HOME/.dotfiles/backup/backup.sh
-echo "don't forget to run your physical backup !!!"
+echo "RUN YOUR BACKUP PLEASE"
