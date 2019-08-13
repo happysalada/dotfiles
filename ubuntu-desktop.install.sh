@@ -22,7 +22,7 @@ apt-get install zsh
 # no package zsh-completions on 18.04
 apt-get install zsh-completions
 sudo sh -c "echo $(which zsh) >> /etc/shells"
-chsh -s $(/bin/zsh)
+chsh -s /bin/zsh
 mkdir -p ~/code
 # plugin manager for oh-my-zh
 git clone https://github.com/zsh-users/antigen ~/code/antigen
