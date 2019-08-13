@@ -23,8 +23,9 @@ apt-get install zsh
 apt-get install zsh-completions
 sudo sh -c "echo $(which zsh) >> /etc/shells"
 chsh -s $(/bin/zsh)
-sudo apt-get install zsh-antigen
 mkdir -p ~/code
+# plugin manager for oh-my-zh
+git clone https://github.com/zsh-users/antigen ~/code/antigen
 # plugin for autosuggestions on the shell
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/code/zsh-autosuggestions
 
