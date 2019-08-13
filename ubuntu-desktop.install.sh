@@ -19,19 +19,17 @@ apt-get install rsync
 
 # shell
 apt-get install zsh
+# no package zsh-completions on 18.04
 apt-get install zsh-completions
 sudo sh -c "echo $(which zsh) >> /etc/shells"
 chsh -s $(/bin/zsh)
+sudo apt-get install zsh-antigen
 mkdir -p ~/code
-# plugin manager for zsh
-git clone https://github.com/zsh-users/antigen ~/code/antigen
 # plugin for autosuggestions on the shell
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/code/zsh-autosuggestions
 
 # terminal
 apt-get install tmux
-add-apt-repository ppa:mmstick76/alacritty
-apt install alacritty
 
 # required for erlang/OTP
 # java is required for these dependencies
@@ -57,18 +55,12 @@ sudo apt install docker-ce
 # enable security upgrades
 apt-get install unattended-upgrades
 
-vim /etc/apt/apt.conf.d/10periodic
+vi /etc/apt/apt.conf.d/10periodic
 # add the following
 # APT::Periodic::Update-Package-Lists "1";
 # APT::Periodic::Download-Upgradeable-Packages "1";
 # APT::Periodic::AutocleanInterval "7";
 # APT::Periodic::Unattended-Upgrade "1";
-vim /etc/apt/apt.conf.d/50unattended-upgrades
-# add the following
-# Unattended-Upgrade::Allowed-Origins {
-#         "Ubuntu lucid-security";
-# //      "Ubuntu lucid-updates";
-# };
 
 # apps
 apt-get install vlc
@@ -85,6 +77,7 @@ asdf plugin-add erlang
 asdf install erlang 22.0.7
 
 asdf plugin-add nodejs
+bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
 asdf install nodejs 12.8.0
 
 asdf plugin-add rust 
