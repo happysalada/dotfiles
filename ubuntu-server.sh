@@ -1,3 +1,4 @@
+#!/bin/bash
 apt-get update
 apt-get upgrade -y
 # monitor login attemps and ban bad actors

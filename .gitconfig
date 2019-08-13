@@ -109,3 +109,5 @@
 [user]
   name = happysalada
   email = raphael.megzari@gmail.com
+[credential]
+	helper = store
