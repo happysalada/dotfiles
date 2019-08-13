@@ -63,7 +63,15 @@ vi /etc/apt/apt.conf.d/10periodic
 # APT::Periodic::Unattended-Upgrade "1";
 
 # apps
-apt-get install vlc
+sudo apt-get install vlc
+sudo apt-get install pass
+git clone https://github.com/happysalada/psswrds.git ~/.password-store
+sudo apt-get install redshift
+
+# albert
+sudo sh -c "echo 'deb http://download.opensuse.org/repositories/home:/manuelschneid3r/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/home:manuelschneid3r.list"
+sudo apt-get update
+sudo apt-get install albert
 
 # asdf
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf
