@@ -14,3 +14,6 @@ keyboard modifications
 
 http://xahlee.info/linux/linux_swap_capslock_esc_key.html
 https://medium.com/@damko/a-simple-humble-but-comprehensive-guide-to-xkb-for-linux-6f1ad5e13450
+
+i3
+https://i3wm.org/docs/userguide.html#keybindings
