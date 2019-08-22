@@ -1,7 +1,7 @@
-nodejs 12.8.0
+nodejs 12.9.0
 elixir 1.9.1
 erlang 22.0.7
-rust 1.36.0
+rust 1.37.0
 yarn 1.17.3
 
 # not used
