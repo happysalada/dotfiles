@@ -1,7 +1,7 @@
 # update system
 sudo pacman -Syyu
 
-sudo pacman -S exa fasd ffmpeg ncdu rsync zsh zsh-completions tmux
+sudo pacman -S exa git ffmpeg ncdu rsync zsh zsh-completions tmux
 
 chsh -s /usr/bin/zsh
 
