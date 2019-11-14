@@ -186,3 +186,7 @@ main
 
 ln -fs $(pwd)/karabiner.json $HOME/.config/karabiner/karabiner.json
 ln -fs $(pwd)/alacritty.yml $HOME/.config/alacritty/alacritty.yml
+ln -fs $(pwd)/starship.toml $HOME/.config/starship.toml
+ln -fs $(pwd)/config.fish $HOME/.config/fish/config.fish
+ln -fs $(pwd)/functions/fish_user_key_bindings.fish $HOME/.config/fish/functions/fish_user_key_bindings.fish
+ln -fs $(pwd)/post_cargo_install_hook $HOME/post_cargo_install_hook
