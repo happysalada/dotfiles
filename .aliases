@@ -4,8 +4,8 @@ alias cd..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
-alias ~="cd ~" # `cd` is probably faster to type though
-alias -- -="cd -"
+# alias ~="cd ~" # `cd` is probably faster to type though
+# alias -- -="cd -"
 
 # mv, rm, cp
 alias mv='mv -v'
@@ -44,11 +44,6 @@ alias catc='pygmentize -O style=monokai -f console256 -g'
 ###
 # GIT STUFF
 
-function clone() {
-    git clone --depth=1 $1
-    cd $(basename ${1%.*})
-    yarn install
-}
 alias push="git push"
 
 # Undo a `git push`
@@ -86,7 +81,7 @@ alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias wget="curl -O"
 
 # Recursively delete `.DS_Store` files
-alias cleanup_dsstore="fd '^*.DS_Store$' --hidden --no-ignore -x rm"
+# alias cleanup_dsstore="fd '^*.DS_Store$' --hidden --no-ignore -x rm"
 
 alias diskspace_report="df -P -kHl"
 
