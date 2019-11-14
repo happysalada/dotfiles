@@ -111,3 +111,5 @@
   email = raphael.megzari@gmail.com
 [credential]
 	helper = store
+[diff "sopsdiffer"]
+	textconv = sops -d
