@@ -14,33 +14,12 @@ source ~/code/zsh-autosuggestions/zsh-autosuggestions.zsh
 ######################################################################
 ### install some antigen bundles
 
-antigen use oh-my-zsh
-
 antigen bundles <<EOBUNDLES
-  # Guess what to install when running an unknown command.
-  command-not-found
-
-  # Helper for extracting different types of archives.
-  extract
-
-  # Tracks your most used directories, based on 'frecency'.
-  robbyrussell/oh-my-zsh plugins/z
-
   # nicoulaj's moar completion files for zsh -- not sure why disabled.
   zsh-users/zsh-completions src
 
   # Syntax highlighting on the readline
   zsh-users/zsh-syntax-highlighting
-
-  # history search
-  zsh-users/zsh-history-substring-search ./zsh-history-substring-search.zsh
-
-  # colors for all files!
-  trapd00r/zsh-syntax-highlighting-filetypes
-
-  # dont set a theme, because pure does it all
-  mafredri/zsh-async
-  sindresorhus/pure
 EOBUNDLES
 
 # Tell antigen that you're done.
@@ -90,5 +69,3 @@ for file in ~/.{extra,exports,aliases,functions}; do
     [ -r "$file" ] && source "$file"
 done
 unset file
-export GOPATH=$HOME/go
-PATH=$GOPATH/bin:$PATH
