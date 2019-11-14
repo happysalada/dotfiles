@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# This is my_post_cargo_install_hook
+
+# when cargo was called with install as first argument, reshim
+if [ "install" == "$1" ] ; then
+   asdf reshim rust
+fi
