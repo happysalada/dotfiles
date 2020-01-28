@@ -173,6 +173,7 @@ cargo install cargo-edit
 cargo install ruplacer
 cargo install dua-cli
 cargo install click
+cargo install tealdeer
 asdf reshim rust
 
 # prevent advertising requests
