@@ -172,8 +172,10 @@ cargo install diesel_cli --no-default --features "postgres sqlite" --force
 cargo install cargo-edit
 cargo install ruplacer
 cargo install dua-cli
-cargo install click
+# tldr
 cargo install tealdeer
+# wrangler - cloudflare workers
+cargo install wrangler
 asdf reshim rust
 
 # prevent advertising requests
