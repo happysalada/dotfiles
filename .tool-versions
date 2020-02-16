@@ -1,9 +1,9 @@
-nodejs 13.6.0
-elixir 1.9.4-otp-22
-erlang 22.2.1
+nodejs 13.8.0
+elixir 1.10.1-otp-22
+erlang 22.2.6
 rust 1.40.0
-yarn 1.21.1
-postgres 12.1
+yarn 1.22.0
+postgres 12.2
 k9s v0.13.6
 
 # not used
