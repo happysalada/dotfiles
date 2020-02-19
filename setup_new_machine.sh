@@ -176,6 +176,8 @@ cargo install dua-cli
 cargo install tealdeer
 # wrangler - cloudflare workers
 cargo install wrangler
+# shell
+cargo install nu
 asdf reshim rust
 
 # prevent advertising requests
