@@ -4,31 +4,6 @@
 # history
 SAVEHIST=100000
 
-source ~/code/z/z.sh
-
-# antigen time!
-source ~/code/antigen/antigen.zsh
-
-source ~/code/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-######################################################################
-### install some antigen bundles
-
-antigen bundles <<EOBUNDLES
-  # nicoulaj's moar completion files for zsh -- not sure why disabled.
-  zsh-users/zsh-completions src
-
-  # Syntax highlighting on the readline
-  zsh-users/zsh-syntax-highlighting
-EOBUNDLES
-
-# Tell antigen that you're done.
-antigen apply
-
-###
-#################################################################################################
-export PURE_GIT_UNTRACKED_DIRTY=0
-
 # Automatically list directory contents on `cd`.
 auto-ls () {
   emulate -L zsh;

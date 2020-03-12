@@ -294,10 +294,10 @@ live_config_reload: true
 # Entries in `shell.args` are passed unmodified as arguments to the shell.
 #
 shell:
-#  program: /usr/local/bin/fish
- program: /Users/raphael/.asdf/shims/nu
+ program: /usr/local/bin/zsh
  args:
    - --login
+#  program: /Users/raphael/.asdf/shims/nu
 
 # Key bindings
 #

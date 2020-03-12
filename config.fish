@@ -13,3 +13,4 @@ source ~/.dotfiles/.aliases
 fzf_key_bindings
 
 starship init fish | source
+zoxide init fish | source
