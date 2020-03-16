@@ -27,19 +27,19 @@ cd ~/.asdf
 git checkout "$(git describe --abbrev=0 --tags)"
 
 asdf plugin-add elixir
-asdf install elixir 1.9.1
+asdf install elixir 1.10.2
 
 asdf plugin-add erlang
-asdf install erlang 22.0.7
+asdf install erlang 22.2.6
 
 asdf plugin-add nodejs
 bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-asdf install nodejs 12.8.0
+asdf install nodejs 13.8.0
 
 asdf plugin-add rust
 asdf install rust 1.42.0
 cargo install cargo-watch
-cargo install diesel_cli --no-default --features "postgres sqlite" --force
+cargo install diesel_cli --no-default-features --features "postgres sqlite" --force
 cargo install cargo-edit
 cargo install ruplacer
 cargo install dua-cli
@@ -50,10 +50,10 @@ cargo install cargo-generate
 asdf reshim rust
 
 asdf plugin-add yarn 
-asdf install yarn 1.17.3
+asdf install yarn 1.22.0
 
 asdf plugin-add postgres 
-asdf install postgres 11.5
+asdf install postgres 12.2
 
 # symlinks
 ./symlink-setup.sh
