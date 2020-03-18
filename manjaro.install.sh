@@ -38,16 +38,8 @@ asdf install nodejs 13.8.0
 
 asdf plugin-add rust
 asdf install rust 1.42.0
-cargo install cargo-watch
-cargo install diesel_cli --no-default-features --features "postgres sqlite" --force
-cargo install cargo-edit
-cargo install ruplacer
-cargo install dua-cli
-cargo install click
-# jump into directories
-cargo install zoxide -f
-cargo install cargo-generate
-asdf reshim rust
+
+./cargo_installs.sh
 
 asdf plugin-add yarn 
 asdf install yarn 1.22.0

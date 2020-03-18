@@ -21,8 +21,6 @@ eval "$(gdircolors -b ~/.dircolors)"
 # Erlang and Elixir shell history:
 export ERL_AFLAGS="-kernel shell_history enabled"
 
-export GOPATH=$HOME/code/go
-
 PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/opt/openssl/lib/pkgconfig
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/opt/openssl/lib/pkgconfig
 
