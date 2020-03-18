@@ -5,7 +5,7 @@ set -x
 yarn cache clean
 
 brew cleanup -s
-rm -rf (brew --cache)
+rm -rf "$(brew --cache)"
 
 # XCODE is enormous
 #   kill cache
