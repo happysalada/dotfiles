@@ -16,8 +16,4 @@ set ERL_AFLAGS "-kernel shell_history enabled"
 
 set PKG_CONFIG_PATH $PKG_CONFIG_PATH /usr/local/opt/openssl/lib/pkgconfig
 
-set PATH $PATH /usr/sbin
-set PATH $PATH /usr/local/bin
-set PATH $PATH /bin
-set PATH $PATH /usr/local/sbin
 set PATH $PATH ~/.dotfiles/bin
