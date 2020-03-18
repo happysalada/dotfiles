@@ -9,7 +9,6 @@ auto-ls () {
   emulate -L zsh;
   # explicit sexy ls'ing as aliases arent honored in here.
   exa --reverse --sort=size --all --header --long
-  # hash gls >/dev/null 2>&1 && CLICOLOR_FORCE=1 gls -aFh --color --group-directories-first || ls
 }
 chpwd_functions=( auto-ls $chpwd_functions )
 
@@ -31,11 +30,9 @@ fzf-history-widget-accept() {
   fzf-history-widget
   zle accept-line
 }
+
 zle     -N     fzf-history-widget-accept
 bindkey '^X^R' fzf-history-widget-accept
-
-. $HOME/.asdf/asdf.sh
-. $HOME/.asdf/completions/asdf.bash
 
 # Load our dotfiles like ~/.bash_prompt, etc…
 #   ~/.extra can be used for settings you don’t want to commit,

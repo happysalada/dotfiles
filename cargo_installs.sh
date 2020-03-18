@@ -8,5 +8,9 @@ cargo install click
 # jump into directories
 cargo install zoxide
 cargo install cargo-generate
+# better find
+cargo install fd-find
+# better ls
+cargo install exa
 # shell prompt
 cargo install starship

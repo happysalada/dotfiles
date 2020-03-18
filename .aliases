@@ -14,8 +14,6 @@ alias cp='cp -v'
 
 alias chmox='chmod -x'
 
-alias cask='brew cask' # i <3 u cask
-
 alias hosts='sudo $EDITOR /etc/hosts'   # yes I occasionally 127.0.0.1 twitter.com ;)
 
 alias ag='ag -f --hidden'
@@ -23,20 +21,6 @@ alias ag='ag -f --hidden'
 ###
 # time to upgrade `ls`
 alias ls="exa --reverse --sort=size --all --header --long"
-
-## use coreutils `ls` if possible…
-# hash gls >/dev/null 2>&1 || alias gls="ls"
-
-## always use color, even when piping (to awk,grep,etc)
-# if gls --color > /dev/null 2>&1; then colorflag="--color"; else colorflag="-G"; fi;
-# export CLICOLOR_FORCE=1
-
-## ls options: A = include hidden (but not . or ..), F = put `/` after folders, h = byte unit suffixes
-# alias ls='gls -AFh ${colorflag} --group-directories-first'
-# alias lsd='ls -l | grep "^d"' # only directories
-#    `la` defined in .functions
-###
-
 
 # `cat` with beautiful colors. requires: sudo easy_install -U Pygments
 alias catc='pygmentize -O style=monokai -f console256 -g'
