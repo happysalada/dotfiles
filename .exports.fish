@@ -1,18 +1,18 @@
 # vscode as default
-set EDITOR 'code'
+set -x EDITOR 'code'
 
 # your project folder that we can `c [tab]` to
-set PROJECTS ~/Documents/Projects
+set -x PROJECTS ~/Documents/Projects
 
 # Don’t clear the screen after quitting a manual page
-set MANPAGER "less -X"
+set -x MANPAGER "less -X"
 
 # Prefer US English and use UTF-8
-set LC_ALL "en_US.UTF-8"
-set LANG en_US.UTF-8
+set -x LC_ALL "en_US.UTF-8"
+set -x LANG en_US.UTF-8
 
 # Erlang and Elixir shell history:
-set ERL_AFLAGS "-kernel shell_history enabled"
+set -x ERL_AFLAGS "-kernel shell_history enabled"
 
-set PKG_CONFIG_PATH $PKG_CONFIG_PATH:/usr/local/opt/openssl/lib/pkgconfig
-set PKG_CONFIG_PATH $PKG_CONFIG_PATH:/usr/local/opt/openssl/lib/pkgconfig
+set -x PKG_CONFIG_PATH $PKG_CONFIG_PATH:/usr/local/opt/openssl/lib/pkgconfig
+set -x PKG_CONFIG_PATH $PKG_CONFIG_PATH:/usr/local/opt/openssl/lib/pkgconfig
