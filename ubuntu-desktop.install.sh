@@ -90,13 +90,10 @@ bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
 asdf install nodejs 12.8.0
 
 asdf plugin-add rust 
-asdf install rust 1.36.0
-cargo install cargo-watch
-cargo install diesel_cli --no-default --features "postgres sqlite" --force
-cargo install cargo-edit
-cargo install ruplacer
-cargo install dua-cli
-cargo install click
+asdf install rust 1.42.0
+
+./cargo_installs.sh
+
 asdf reshim rust
 
 asdf plugin-add yarn 

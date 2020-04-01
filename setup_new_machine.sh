@@ -166,18 +166,10 @@ asdf plugin-add nodejs
 asdf install nodejs 10.12.0
 
 asdf plugin-add rust 
-asdf install rust 1.29.2
-cargo install cargo-watch
-cargo install diesel_cli --no-default --features "postgres sqlite" --force
-cargo install cargo-edit
-cargo install ruplacer
-cargo install dua-cli
-# tldr
-cargo install tealdeer
-# wrangler - cloudflare workers
-cargo install wrangler
-# shell
-cargo install nu
+asdf install rust 1.42.0
+
+./cargo_installs.sh
+
 asdf reshim rust
 
 # prevent advertising requests

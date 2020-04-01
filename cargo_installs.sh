@@ -14,3 +14,5 @@ cargo install fd-find
 cargo install exa
 # shell prompt
 cargo install starship
+# process info
+cargo install -f --git https://github.com/cjbassi/ytop ytop
