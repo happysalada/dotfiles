@@ -19,4 +19,5 @@ set -x PKG_CONFIG_PATH $PKG_CONFIG_PATH /usr/local/opt/openssl/lib/pkgconfig
 set PATH $PATH ~/.dotfiles/bin
 set PATH $PATH /usr/local/bin
 set PATH $PATH /usr/local/sbin
+set PATH $PATH (yarn global bin)
 
