@@ -553,6 +553,19 @@
               {
                 "type": "basic",
                 "from": {
+                  "key_code": "semicolon",
+                  "modifiers": { "mandatory": ["fn"] }
+                },
+                "to": [
+                  {
+                    "key_code": "up_arrow",
+                    "modifiers": ["command"]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
                   "key_code": "j",
                   "modifiers": { "mandatory": ["left_option"] }
                 },
