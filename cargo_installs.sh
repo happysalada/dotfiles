@@ -14,5 +14,7 @@ cargo install fd-find
 cargo install exa
 # shell prompt
 cargo install starship
+# deploy static sites
+cargo install wrangle
 # process info
 cargo install -f --git https://github.com/cjbassi/ytop ytop
