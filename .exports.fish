@@ -21,3 +21,5 @@ set PATH $PATH /usr/local/bin
 set PATH $PATH /usr/local/sbin
 set PATH $PATH (yarn global bin)
 
+# to be able to use clang
+set -g fish_user_paths "/usr/local/opt/llvm/bin" $fish_user_paths
