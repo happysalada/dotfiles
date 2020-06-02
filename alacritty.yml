@@ -425,10 +425,10 @@ key_bindings:
   - { key: D,     mods: Command,       chars: "\x06\x76" }
   - { key: D,     mods: Command|Shift, chars: "\x06\x73" }
   - { key: W,     mods: Command,       chars: "\x06\x78" }
-  - { key: J,     mods: Command,       chars: "\x06\x68" }
-  - { key: K,     mods: Command,       chars: "\x06\x6a" }
-  - { key: I,     mods: Command,       chars: "\x06\x6b" }
-  - { key: L,     mods: Command,       chars: "\x06\x6c" }
+  - { key: N,     mods: Command,       chars: "\x06\x68" }
+  - { key: E,     mods: Command,       chars: "\x06\x6a" }
+  - { key: U,     mods: Command,       chars: "\x06\x6b" }
+  - { key: I,     mods: Command,       chars: "\x06\x6c" }
   - { key: T,     mods: Command,       chars: "\x06\x63" }
   - { key: Key1,  mods: Command,       chars: "\x06\x31" }
   - { key: Key2,  mods: Command,       chars: "\x06\x32" }
