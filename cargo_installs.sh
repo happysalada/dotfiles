@@ -15,8 +15,8 @@ cargo install exa
 # shell prompt
 cargo install starship
 # deploy static sites
-cargo install wrangle
+cargo install wrangler
 # fzf like (no key bindings yet but want to use in the future)
 cargo install skim
 # process info
-cargo install -f --git https://github.com/cjbassi/ytop ytop
+cargo install --git https://github.com/cjbassi/ytop ytop
