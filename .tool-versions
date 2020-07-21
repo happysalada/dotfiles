@@ -1,7 +1,7 @@
-nodejs 13.8.0
-elixir 1.10.2-otp-22
-erlang 22.3
-rust 1.42.0
+erlang 23.0.3
+elixir 1.10.4-otp-23
+nodejs 14.5.0
+rust 1.45.0
 yarn 1.22.4
 # install with
 # env POSTGRES_EXTRA_CONFIGURE_OPTIONS=--with-uuid=e2fs asdf install
