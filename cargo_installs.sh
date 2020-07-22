@@ -20,3 +20,5 @@ cargo install wrangler
 cargo install skim
 # process info
 cargo install --git https://github.com/cjbassi/ytop ytop
+# for web assembly
+rustup target add wasm32-unknown-unknown
