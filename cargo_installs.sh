@@ -1,6 +1,7 @@
 #!/bin/bash
 cargo install cargo-watch
 cargo install diesel_cli --no-default-features --features "postgres sqlite"
+# to use cargo add
 cargo install cargo-edit
 cargo install ruplacer
 cargo install dua-cli
