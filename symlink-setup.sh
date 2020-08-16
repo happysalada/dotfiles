@@ -191,4 +191,5 @@ ln -fs $(pwd)/.cargo/config.toml $HOME/.cargo/config.toml
 ln -fs $(pwd)/config.fish $HOME/.config/fish/config.fish
 ln -fs $(pwd)/functions/fish_user_key_bindings.fish $HOME/.config/fish/functions/fish_user_key_bindings.fish
 ln -fs $(pwd)/post_cargo_install_hook $HOME/post_cargo_install_hook
-ln -s $(pwd)/nvim $HOME/.config/
+ln -fs $(pwd)/nvim $HOME/.config/
+ln -fs $(pwd)/broot.conf.toml $HOME/.config/broot/conf.toml

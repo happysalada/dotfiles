@@ -41,3 +41,5 @@ for file in ~/.{extra,exports,aliases,functions}; do
     [ -r "$file" ] && source "$file"
 done
 unset file
+
+source /Users/raphael/.config/broot/launcher/bash/br
