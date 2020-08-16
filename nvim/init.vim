@@ -15,7 +15,7 @@ call plug#begin()
 " VIM enhancements
 Plug 'ciaranm/securemodelines'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'justinmk/vim-sneak'
+Plug 'easymotion/vim-easymotion'
 
 " GUI enhancements
 Plug 'itchyny/lightline.vim'
@@ -109,10 +109,16 @@ endif
 let javaScript_fold=0
 
 " Open hotkeys
-map <C-p> :Files<CR>
+nmap <leader>f :Files<CR>
+nmap <leader>b :Buffers<CR>
+nmap <leader>t :Ntree<CR>
 
 " Quick-save
 nmap <leader>w :w<CR>
+
+" easy motion
+" s{char}{char} to move to {char}{char}
+nmap s <Plug>(easymotion-overwin-f2)
 
 " Don't confirm .lvimrc
 let g:localvimrc_ask = 0
@@ -228,14 +234,12 @@ set listchars=nbsp:¬,extends:»,precedes:«,trail:•
 " # Keyboard shortcuts
 " =============================================================================
 " Ctrl+h to stop searching
-vnoremap <C-h> :nohlsearch<cr>
-nnoremap <C-h> :nohlsearch<cr>
+vnoremap <leader>h :nohlsearch<cr>
 
-" Neat X clipboard integration
-" ,p will paste clipboard into buffer
-" ,c will copy entire buffer into clipboard
-noremap <leader>p :read !xsel --clipboard --output<cr>
-noremap <leader>c :w !xsel -ib<cr><cr>
+" Clipboard integration
+vnoremap  <leader>c  "+y
+vnoremap  <leader>p  "+p
+
 
 " <leader>s for Rg search
 noremap <leader>s :Rg
