@@ -1,6 +1,6 @@
 " Fish doesn't play all that well with others
 set shell=/bin/bash
-let mapleader = "\<Space>"
+let mapleader = ","
 
 " =============================================================================
 " # PLUGINS
@@ -38,6 +38,7 @@ Plug 'rhysd/vim-clang-format'
 Plug 'dag/vim-fish'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
+Plug 'elixir-editors/vim-elixir'
 
 call plug#end()
 
@@ -56,9 +57,7 @@ if (match($TERM, "-256color") != -1) && (match($TERM, "screen-256color") == -1)
   set termguicolors
 endif
 set background=dark
-let base16colorspace=256
-" let g:base16_shell_path="~/dev/others/base16/templates/shell/scripts/"
-" colorscheme base16-gruvbox-dark-hard
+colorscheme PaperColor
 syntax on
 hi Normal ctermbg=NONE
 " Brighter comments
@@ -108,17 +107,8 @@ endif
 " Javascript
 let javaScript_fold=0
 
-" Java
-let java_ignore_javadoc=1
-
-" Latex
-let g:latex_indent_enabled = 1
-let g:latex_fold_envs = 0
-let g:latex_fold_sections = []
-
 " Open hotkeys
 map <C-p> :Files<CR>
-nmap <leader>; :Buffers<CR>
 
 " Quick-save
 nmap <leader>w :w<CR>
@@ -143,6 +133,7 @@ set scrolloff=2
 set noshowmode
 set hidden
 set nowrap
+set pyxversion=3
 set nojoinspaces
 let g:sneak#s_next = 1
 let g:vim_markdown_new_list_item_indent = 0
@@ -232,21 +223,9 @@ set listchars=nbsp:¬,extends:»,precedes:«,trail:•
 " =============================================================================
 " # Keyboard shortcuts
 " =============================================================================
-" ; as :
-nnoremap ; :
-
 " Ctrl+h to stop searching
 vnoremap <C-h> :nohlsearch<cr>
 nnoremap <C-h> :nohlsearch<cr>
-
-" Suspend with Ctrl+f
-inoremap <C-f> :sus<cr>
-vnoremap <C-f> :sus<cr>
-nnoremap <C-f> :sus<cr>
-
-" Jump to start and end of line using the home row keys
-map H ^
-map L $
 
 " Neat X clipboard integration
 " ,p will paste clipboard into buffer
