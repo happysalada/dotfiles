@@ -39,6 +39,7 @@ Plug 'dag/vim-fish'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'elixir-editors/vim-elixir'
+Plug 'mhinz/vim-mix-format'
 
 call plug#end()
 
@@ -117,10 +118,13 @@ nmap <leader>w :w<CR>
 let g:localvimrc_ask = 0
 
 " racer + rust
-" https://github.com/rust-lang/rust.vim/issues/192
 let g:rustfmt_autosave = 1
 let g:rustfmt_emit_files = 1
 let g:rustfmt_fail_silently = 0
+
+" Elixir
+let g:mix_format_on_save = 1
+let g:mix_format_silent_errors = 1
 
 " =============================================================================
 " # Editor settings
@@ -236,22 +240,11 @@ noremap <leader>c :w !xsel -ib<cr><cr>
 " <leader>s for Rg search
 noremap <leader>s :Rg
 let g:fzf_layout = { 'down': '~20%' }
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \   <bang>0)
 
 function! s:list_cmd()
   let base = fnamemodify(expand('%'), ':h:.:S')
   return base == '.' ? 'fd --type file --follow' : printf('fd --type file --follow | proximity-sort %s', shellescape(expand('%')))
 endfunction
-
-command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, {'source': s:list_cmd(),
-  \                               'options': '--tiebreak=index'}, <bang>0)
-
 
 " Open new file adjacent to current file
 nnoremap <leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
