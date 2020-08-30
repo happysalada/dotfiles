@@ -1,1 +1,0 @@
-post_rust_cargo = post_cargo_install_hook ${@}
