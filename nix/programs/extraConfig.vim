@@ -1,47 +1,9 @@
 " Fish doesn't play all that well with others
 set shell=/bin/bash
-let mapleader = ","
-
-" =============================================================================
-" # PLUGINS
-" =============================================================================
-" Load vundle
-set nocompatible
-filetype off
-set rtp+=~/dev/others/base16/templates/vim/
-call plug#begin()
-
-" Load plugins
-" VIM enhancements
-Plug 'ciaranm/securemodelines'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'easymotion/vim-easymotion'
-
-" GUI enhancements
-Plug 'itchyny/lightline.vim'
-Plug 'machakann/vim-highlightedyank'
-Plug 'andymass/vim-matchup'
-
-" Fuzzy finder
-Plug 'airblade/vim-rooter'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-
-" Semantic language support
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" Syntactic language support
-Plug 'cespare/vim-toml'
-Plug 'stephpy/vim-yaml'
-Plug 'rust-lang/rust.vim'
-Plug 'rhysd/vim-clang-format'
-Plug 'dag/vim-fish'
-Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
-Plug 'elixir-editors/vim-elixir'
-Plug 'mhinz/vim-mix-format'
-
-call plug#end()
+let g:mapleader = "\<Space>"
+let g:maplocalleader = ','
+nnoremap <silent> <leader>      :<c-u>WhichKey '<Space>'<CR>
+nnoremap <silent> <localleader> :<c-u>WhichKey  ','<CR>
 
 if has('nvim')
     set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor
@@ -132,12 +94,22 @@ let g:rustfmt_fail_silently = 0
 let g:mix_format_on_save = 1
 let g:mix_format_silent_errors = 1
 
+" Easymotion
+" type `l` and match `l`&`L`
+let g:EasyMotion_smartcase = 1
+
+" Git
+nmap <leader>hn <Plug>(GitGutterNextHunk)
+nmap <leader>hp <Plug>(GitGutterPrevHunk)
+nmap <leader>hs <Plug>(GitGutterStageHunk)
+nmap <leader>hu <Plug>(GitGutterUndoHunk)
+
 " =============================================================================
 " # Editor settings
 " =============================================================================
 filetype plugin indent on
 set autoindent
-set timeoutlen=300 " http://stackoverflow.com/questions/2158516/delay-before-o-opens-a-new-line
+set timeoutlen=500 " http://stackoverflow.com/questions/2158516/delay-before-o-opens-a-new-line
 set encoding=utf-8
 set scrolloff=2
 set noshowmode

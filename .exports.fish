@@ -1,9 +1,6 @@
 # vscode as default
 set -x EDITOR 'code'
 
-# your project folder that we can `c [tab]` to
-set -x PROJECTS ~/Documents/Projects
-
 # Don’t clear the screen after quitting a manual page
 set -x MANPAGER "less -X"
 

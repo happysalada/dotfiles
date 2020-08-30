@@ -193,3 +193,5 @@ ln -fs $(pwd)/functions/fish_user_key_bindings.fish $HOME/.config/fish/functions
 ln -fs $(pwd)/post_cargo_install_hook $HOME/post_cargo_install_hook
 ln -fs $(pwd)/nvim $HOME/.config/
 ln -fs $(pwd)/broot.conf.toml $HOME/.config/broot/conf.toml
+ln -fs $(pwd)/configuration.nix $HOME/.config/nixpkgs/darwin/configuration.nix
+ln -fs $(pwd)/nix/home.nix $HOME/.config/nixpkgs/home.nix
