@@ -20,6 +20,7 @@
   # $ nix-env -qaP | grep wget
   home.packages = with pkgs; [ 
     fzf
+    exa
     # elixir related
     beam.packages.erlangR23.elixir_1_10
     nodejs-14_x
@@ -87,7 +88,7 @@
     };
     controlMaster = "auto";
     controlPath = "~/.ssh/control/%r@%h:%p";
-    controlPersist = "10m";
+    controlPersist = "5m";
     compression = true;
     matchBlocks."*" = {
       extraOptions = {
