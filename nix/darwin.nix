@@ -33,8 +33,6 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.darwinConfig = "/Users/raphael/.dotfiles/nix/darwin.nix";
-
   system.defaults.NSGlobalDomain.AppleKeyboardUIMode = 3;
   system.defaults.NSGlobalDomain.ApplePressAndHoldEnabled = false;
   system.defaults.NSGlobalDomain.InitialKeyRepeat = 1;
@@ -62,8 +60,8 @@
   system.keyboard.enableKeyMapping = true;
   system.keyboard.remapCapsLockToControl = false;
 
-  services.nix-daemon.enable = true;
-  nix.useDaemon = true;
+  services.nix-daemon.enable = false;
+  nix.useDaemon = false;
   programs.zsh.enable = true;
   system.stateVersion = 4;
   nix.maxJobs = 4;
