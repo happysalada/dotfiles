@@ -19,15 +19,7 @@
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   home.packages = with pkgs; [ 
-    # utilities TODO figure out why it doesn't work with darwin.nix
-    fzf
-    exa
-    ytop
-    which
-    git
-    ripgrep
-    tealdeer
-    direnv
+    fzf # needs to be accessible for fish
     # elixir related
     beam.packages.erlangR23.elixir_1_10
     nodejs-14_x
@@ -71,7 +63,7 @@
     enable = true;
     enableFishIntegration = true;
   };
-  home.file."starship.toml".source = ../starship.toml;
+  home.file.".config/starship.toml".source = ../starship.toml;
 
   programs.zoxide = {
     enable = true;
@@ -79,7 +71,6 @@
   };
 
   home.file.".cargo/config.toml".source = ../config.cargo.toml;
-  # programs.broot.enable = true;
   # programs.broot = {
   #   enable = true;
   #   enableFishIntegration = true;

@@ -1,6 +1,7 @@
 # git credential file
 .gitconfig.local
 
+result
 
 # no thx
 node_modules

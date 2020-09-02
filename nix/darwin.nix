@@ -13,6 +13,14 @@
     coreutils
     openssl
     gnupg
+    fzf
+    exa
+    ytop
+    which
+    git
+    ripgrep
+    tealdeer
+    direnv
   ];
 
   environment.shells = [ pkgs.fish ];
@@ -25,7 +33,7 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.darwinConfig = "Users/raphael/.dotfiles/nix/darwin.nix";
+  environment.darwinConfig = "/Users/raphael/.dotfiles/nix/darwin.nix";
 
   system.defaults.NSGlobalDomain.AppleKeyboardUIMode = 3;
   system.defaults.NSGlobalDomain.ApplePressAndHoldEnabled = false;
