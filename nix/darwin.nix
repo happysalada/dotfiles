@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  users.users.burke = {
+  users.users.raphael = {
     home = "/Users/raphael";
     description = "Raphael megzari";
     shell = pkgs.fish;
@@ -9,22 +9,10 @@
 
   environment.systemPackages = with pkgs; [
     home-manager
-    ytop
-    git
-    fzf
-    bat
-    ripgrep
-    fd
     wget
-    exa
-    tealdeer
     coreutils
     openssl
     gnupg
-    which
-    ffmpeg
-    zoxide # z command
-    wrangler # deploy static sites with cloudflare
   ];
 
   environment.shells = [ pkgs.fish ];
@@ -36,6 +24,8 @@
   ];
 
   nixpkgs.config.allowUnfree = true;
+
+  environment.darwinConfig = "Users/raphael/.dotfiles/nix/darwin.nix";
 
   system.defaults.NSGlobalDomain.AppleKeyboardUIMode = 3;
   system.defaults.NSGlobalDomain.ApplePressAndHoldEnabled = false;
@@ -64,10 +54,8 @@
   system.keyboard.enableKeyMapping = true;
   system.keyboard.remapCapsLockToControl = false;
 
-  environment.darwinConfig = "/b/etc/nix/darwin.nix";
-
-  services.nix-daemon.enable = false;
-  nix.useDaemon = false;
+  services.nix-daemon.enable = true;
+  nix.useDaemon = true;
   programs.zsh.enable = true;
   system.stateVersion = 4;
   nix.maxJobs = 4;
