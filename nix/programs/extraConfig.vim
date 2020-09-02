@@ -20,7 +20,7 @@ if (match($TERM, "-256color") != -1) && (match($TERM, "screen-256color") == -1)
   set termguicolors
 endif
 set background=dark
-colorscheme PaperColor
+" colorscheme PaperColor
 syntax on
 hi Normal ctermbg=NONE
 " Brighter comments

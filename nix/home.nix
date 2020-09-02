@@ -19,35 +19,19 @@
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   home.packages = with pkgs; [ 
-    ytop
-    git
     fzf
-    bat
-    ripgrep
-    fd
-    wget
-    exa
-    tldr
-    coreutils
-    yarn
-    openssl
-    rustup
-    gnupg
-    which
-    exercism
-    niv
-    ffmpeg
-    cargo-edit
-    zoxide # z command
-    starship # shell prompt
-    wrangler # deploy static sites with cloudflare
-    fira-code # font
-
     # elixir related
     beam.packages.erlangR23.elixir_1_10
     nodejs-14_x
     yarn
     postgresql_12
+    # rust
+    rustup
+    sccache
+    cargo-edit
+    cargo-deps
+    wasm-pack
+    rust-analyzer
   ];
 
   nixpkgs.config = {
@@ -63,7 +47,6 @@
 
   programs.neovim = import ./programs/neovim.nix {pkgs=pkgs;};
 
-
   programs.alacritty = import ./programs/alacritty.nix;
   programs.git = import ./programs/git.nix;
 
@@ -75,15 +58,27 @@
 
   programs.fish = import ./programs/fish.nix {pkgs = pkgs;};
 
-  programs.broot = {
+  programs.starship = {
     enable = true;
     enableFishIntegration = true;
-    verbs = {
-      "p" = { execution = ":parent"; };
-      "edit" = { shortcut = "e"; execution = "$EDITOR {file}" ; };
-      "create {subpath}" = { execution = "$EDITOR {directory}/{subpath}"; };
-    };
   };
+  home.file."starship.toml".source = ../starship.toml;
+
+  programs.zoxide = {
+    enable = true;
+    enableFishIntegration = true;
+  };
+
+  home.file.".cargo/config.toml".source = ../config.cargo.toml;
+  # programs.broot = {
+  #   enable = true;
+  #   enableFishIntegration = true;
+  #   verbs = {
+  #     "p" = { execution = ":parent"; };
+  #     "edit" = { shortcut = "e"; execution = "$EDITOR {file}" ; };
+  #     "create {subpath}" = { execution = "$EDITOR {directory}/{subpath}"; };
+  #   };
+  # };
 
   # somehow firefox says not supported
   # programs.firefox = {

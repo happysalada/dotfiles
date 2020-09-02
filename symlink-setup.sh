@@ -184,14 +184,6 @@ main() {
 
 main
 
-ln -fs $(pwd)/karabiner.json $HOME/.config/karabiner/karabiner.json
-ln -fs $(pwd)/alacritty.yml $HOME/.config/alacritty/alacritty.yml
-ln -fs $(pwd)/starship.toml $HOME/.config/starship.toml
-ln -fs $(pwd)/.cargo/config.toml $HOME/.cargo/config.toml
-ln -fs $(pwd)/config.fish $HOME/.config/fish/config.fish
-ln -fs $(pwd)/functions/fish_user_key_bindings.fish $HOME/.config/fish/functions/fish_user_key_bindings.fish
-ln -fs $(pwd)/post_cargo_install_hook $HOME/post_cargo_install_hook
-ln -fs $(pwd)/nvim $HOME/.config/
 ln -fs $(pwd)/broot.conf.toml $HOME/.config/broot/conf.toml
-ln -fs $(pwd)/configuration.nix $HOME/.config/nixpkgs/darwin/configuration.nix
+ln -fs $(pwd)/nix/darwin.nix $HOME/.config/nixpkgs/darwin/configuration.nix
 ln -fs $(pwd)/nix/home.nix $HOME/.config/nixpkgs/home.nix
