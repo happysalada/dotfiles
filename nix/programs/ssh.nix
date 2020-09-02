@@ -7,6 +7,17 @@
     controlPath = "~/.ssh/control/%r@%h:%p";
     controlPersist = "5m";
     compression = true;
+    matchBlocks = {
+      "136.243.134.16" = {
+        hostname = "136.243.134.16";
+        identityFile = "~/.ssh/hetzner";
+        user = "root";
+      };
+      "github.com" = {
+        hostname = "github.com";
+        identityFile = "~/.ssh/github_rsa";
+      };
+    };
     matchBlocks."*" = {
       extraOptions = {
         UseRoaming = "no";
@@ -27,13 +38,4 @@
       };
     };
 
-    matchBlocks.union = {
-      hostname = "136.243.134.16";
-      identityFile = "~/.ssh/hetzner";
-      user = "root";
-    };
-    matchBlocks.github = {
-      hostname = "github.com";
-      identityFile = "~/.ssh/github";
-    };
 }
