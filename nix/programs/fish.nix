@@ -21,16 +21,16 @@
     broot="broot -ghi";
   };
 
-  loginShellInit = ''
-    if test -e $HOME/.nix-profile/etc/profile.d/nix.sh
-      fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
-    end
+  shellInit = ''
+    fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
+    fenv source $HOME/.nix-profile/etc/profile.d/nix-daemon.sh
 
-    if test -e $HOME/.nix-profile/etc/profile.d/nix-daemon.sh
-      fenv source $HOME/.nix-profile/etc/profile.d/nix-daemon.sh
+    if not contains $HOME/.nix-defexpr/channels $NIX_PATH
+     set -g NIX_PATH $HOME/.nix-defexpr/channels $NIX_PATH  
     end
-
-    set NIX_PATH darwin-config=$HOME/.nixpkgs/darwin-configuration.nix:$HOME/.nix-defexpr/channels:$NIX_PATH 
+    if not contains darwin-config=$HOME/.nixpkgs/darwin-configuration.nix $NIX_PATH
+     set -g NIX_PATH darwin-config=$HOME/.nixpkgs/darwin-configuration.nix $NIX_PATH  
+    end
 
     for p in /run/current-system/sw/bin
       if not contains $p $fish_user_paths
