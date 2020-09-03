@@ -21,6 +21,7 @@
     ripgrep
     tealdeer
     direnv
+    zoxide
   ];
 
   environment.shells = [ pkgs.fish ];
@@ -31,12 +32,27 @@
     pkgs.fira-code
   ];
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    packageOverrides = pkgs: {
+      nur = import (builtins.fetchTarball {
+        url = "https://github.com/nix-community/NUR/archive/master.tar.gz";
+        sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
+      }) {
+        inherit pkgs;
+      };
+    };
+  };
+
+  nix.nixPath = [
+    { darwin-config = "\$HOME/.nixpkgs/darwin-configuration.nix"; }
+    "\$HOME/.nix-defexpr/channels"
+  ];
 
   system.defaults.NSGlobalDomain.AppleKeyboardUIMode = 3;
   system.defaults.NSGlobalDomain.ApplePressAndHoldEnabled = false;
-  system.defaults.NSGlobalDomain.InitialKeyRepeat = 1;
-  system.defaults.NSGlobalDomain.KeyRepeat = 1;
+  system.defaults.NSGlobalDomain.InitialKeyRepeat = 10;
+  system.defaults.NSGlobalDomain.KeyRepeat = 3;
   system.defaults.NSGlobalDomain.NSAutomaticCapitalizationEnabled = false;
   system.defaults.NSGlobalDomain.NSAutomaticDashSubstitutionEnabled = false;
   system.defaults.NSGlobalDomain.NSAutomaticPeriodSubstitutionEnabled = false;
@@ -54,15 +70,14 @@
   system.defaults.finder.QuitMenuItem = true;
   system.defaults.finder.FXEnableExtensionChangeWarning = false;
 
-  system.defaults.trackpad.Clicking = false;
+  system.defaults.trackpad.Clicking = true;
   system.defaults.trackpad.TrackpadThreeFingerDrag = true;
 
   system.keyboard.enableKeyMapping = true;
   system.keyboard.remapCapsLockToControl = false;
 
-  services.nix-daemon.enable = false;
-  nix.useDaemon = false;
-  programs.zsh.enable = true;
+  services.nix-daemon.enable = true;
+  nix.useDaemon = true;
   system.stateVersion = 4;
   nix.maxJobs = 4;
   nix.buildCores = 4;

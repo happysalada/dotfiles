@@ -14,7 +14,7 @@
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
-  home.stateVersion = "20.09";
+  home.stateVersion = "20.03";
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
@@ -54,8 +54,10 @@
   programs.tmux.enable = true;
   home.file.".tmux.conf".source = ../.tmux.conf;
 
-  programs.direnv.enable = true;
-  programs.direnv.enableNixDirenvIntegration = true;
+  programs.direnv = {
+    enable = true;
+    enableFishIntegration = true;
+  };
 
   programs.fish = import ./programs/fish.nix {pkgs = pkgs;};
 
@@ -64,11 +66,6 @@
     enableFishIntegration = true;
   };
   home.file.".config/starship.toml".source = ../starship.toml;
-
-  programs.zoxide = {
-    enable = true;
-    enableFishIntegration = true;
-  };
 
   home.file.".cargo/config.toml".source = ../config.cargo.toml;
   # programs.broot = {

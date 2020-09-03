@@ -22,7 +22,21 @@
   };
 
   loginShellInit = ''
-    fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
+    if test -e $HOME/.nix-profile/etc/profile.d/nix.sh
+      fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
+    end
+
+    if test -e $HOME/.nix-profile/etc/profile.d/nix-daemon.sh
+      fenv source $HOME/.nix-profile/etc/profile.d/nix-daemon.sh
+    end
+
+    set NIX_PATH darwin-config=$HOME/.nixpkgs/darwin-configuration.nix:$HOME/.nix-defexpr/channels:$NIX_PATH 
+
+    for p in /run/current-system/sw/bin
+      if not contains $p $fish_user_paths
+        set -g fish_user_paths $p $fish_user_paths
+      end
+    end
     
     fzf_key_bindings
 
