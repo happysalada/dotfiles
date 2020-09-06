@@ -22,6 +22,8 @@
     tealdeer
     direnv
     zoxide
+    fd # rust find
+    procs # rust process monitor
   ];
 
   environment.shells = [ pkgs.fish ];
