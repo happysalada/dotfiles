@@ -7,49 +7,37 @@
     shell = pkgs.fish;
   };
 
-  environment.systemPackages = with pkgs; [
-    home-manager
-    wget
-    coreutils
-    openssl
-    gnupg
-    fzf
-    exa
-    ytop
-    which
-    git
-    ripgrep
-    tealdeer
-    direnv
-    zoxide
-    fd # rust find
-    procs # rust process monitor
-  ];
-
-  environment.shells = [ pkgs.fish ];
+  environment = {
+    systemPackages = with pkgs; [
+      home-manager
+      wget
+      coreutils
+      openssl
+      gnupg
+      fzf
+      exa
+      ytop
+      which
+      git
+      ripgrep
+      tealdeer
+      direnv
+      zoxide
+      fd # rust find
+      procs # rust process monitor
+    ];
+    shells = [ pkgs.fish ];
+    variables = { EDITOR = "code"; LANG = "en_US.UTF-8"; };
+  };
 
   programs.nix-index.enable = true;
 
-  fonts.fonts = [
-    pkgs.fira-code
-  ];
-
-  nixpkgs.config = {
-    allowUnfree = true;
-    packageOverrides = pkgs: {
-      nur = import (builtins.fetchTarball {
-        url = "https://github.com/nix-community/NUR/archive/master.tar.gz";
-        sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
-      }) {
-        inherit pkgs;
-      };
-    };
+  fonts = {
+    enableFontDir = true;
+    fonts = [
+      pkgs.fira-code
+    ];
   };
-
-  nix.nixPath = [
-    { darwin-config = "\$HOME/.nixpkgs/darwin-configuration.nix"; }
-    "\$HOME/.nix-defexpr/channels"
-  ];
 
   system.defaults.NSGlobalDomain.AppleKeyboardUIMode = 3;
   system.defaults.NSGlobalDomain.ApplePressAndHoldEnabled = false;
@@ -79,8 +67,27 @@
   system.keyboard.remapCapsLockToControl = false;
 
   services.nix-daemon.enable = true;
-  nix.useDaemon = true;
   system.stateVersion = 4;
-  nix.maxJobs = 4;
-  nix.buildCores = 4;
+  nix = {
+    useDaemon = true;
+    nixPath = [
+      { darwin-config = "\$HOME/.nixpkgs/darwin-configuration.nix"; }
+      "\$HOME/.nix-defexpr/channels"
+    ];
+    package = pkgs.nixUnstable;
+    maxJobs = 4;
+    buildCores = 4;
+  };
+
+  nixpkgs.config = {
+    allowUnfree = true;
+    packageOverrides = pkgs: {
+      nur = import (builtins.fetchTarball {
+        url = "https://github.com/nix-community/NUR/archive/master.tar.gz";
+        sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
+      }) {
+        inherit pkgs;
+      };
+    };
+  };
 }
