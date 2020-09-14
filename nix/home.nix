@@ -1,5 +1,11 @@
 { config, lib, pkgs, ... }:
-{
+let
+ doom-emacs = pkgs.callPackage (builtins.fetchTarball {
+   url = https://github.com/vlaci/nix-doom-emacs/archive/master.tar.gz;
+ }) {
+   doomPrivateDir = ./doom.d;  # Directory containing your config.el init.el
+ };
+in {
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -20,6 +26,8 @@
   # $ nix-env -qaP | grep wget
   home.packages = with pkgs; [ 
     fzf # needs to be accessible for fish
+    # Editors
+    doom-emacs
     # elixir related
     beam.packages.erlangR23.elixir_1_10
     nodejs-14_x
@@ -34,6 +42,11 @@
     rust-analyzer
     wrangler # deploy static sites with cloudflare
   ];
+
+  # doom config
+  home.file.".emacs.d/init.el".text = ''
+      (load "default.el")
+  '';
 
   nixpkgs.config = {
     allowUnfree = true;
