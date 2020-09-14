@@ -18,7 +18,6 @@
       exa
       ytop
       which
-      git
       ripgrep
       tealdeer
       direnv
