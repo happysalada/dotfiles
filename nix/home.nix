@@ -81,15 +81,15 @@ in {
   home.file.".config/starship.toml".source = ../starship.toml;
 
   home.file.".cargo/config.toml".source = ../config.cargo.toml;
-  # programs.broot = {
-  #   enable = true;
-  #   enableFishIntegration = true;
-  #   verbs = {
-  #     "p" = { execution = ":parent"; };
-  #     "edit" = { shortcut = "e"; execution = "$EDITOR {file}" ; };
-  #     "create {subpath}" = { execution = "$EDITOR {directory}/{subpath}"; };
-  #   };
-  # };
+  programs.broot = {
+    enable = true;
+    enableFishIntegration = true;
+    verbs = {
+      "p" = { execution = ":parent"; };
+      "edit" = { shortcut = "e"; execution = "$EDITOR {file}" ; };
+      "create {subpath}" = { execution = "$EDITOR {directory}/{subpath}"; };
+    };
+  };
 
   programs.ssh = import ./programs/ssh.nix ;
   # somehow firefox says not supported
