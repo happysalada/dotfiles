@@ -68,7 +68,7 @@
   services.nix-daemon.enable = true;
   system.stateVersion = 4;
   nix = {
-    useDaemon = true;
+    # useDaemon = true;
     nixPath = [
       { darwin-config = "\$HOME/.nixpkgs/darwin-configuration.nix"; }
       "\$HOME/.nix-defexpr/channels"
