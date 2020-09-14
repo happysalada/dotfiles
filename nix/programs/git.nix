@@ -14,9 +14,9 @@
       };
     };
 
-    pull = {
-      rebase = true;
-    };
+    push.default = "upstream";
+
+    pull.rebase = true;
 
     rebase = {
       autoSquash = true;
