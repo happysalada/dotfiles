@@ -26,8 +26,11 @@ in {
   # $ nix-env -qaP | grep wget
   home.packages = with pkgs; [ 
     fzf # needs to be accessible for fish
-    # Editors
-    doom-emacs
+    doom-emacs # editor
+
+    nextdns # faster dns, `sudo nextdns config set -config "e42bf1"`
+
+    # dev
     # elixir related
     beam.packages.erlangR23.elixir_1_10
     nodejs-14_x
@@ -92,6 +95,7 @@ in {
   };
 
   programs.ssh = import ./programs/ssh.nix ;
+
   # somehow firefox says not supported
   # programs.firefox = {
   #   enable = true;

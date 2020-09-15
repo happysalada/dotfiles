@@ -66,7 +66,21 @@
   system.keyboard.remapCapsLockToControl = false;
 
   services.nix-daemon.enable = true;
+
+  networking = {
+    dns = [ "45.90.28.43" "45.90.30.43" ]; # provided by nextdns
+    knownNetworkServices = [
+      "Wi-Fi"
+      "Bluetooth PAN"
+      "Thunderbolt Bridge"
+      "NextDNS"
+      "Tailscale Tunnel"
+    ];
+    hostName = "yt";
+  };
+
   system.stateVersion = 4;
+
   nix = {
     nixPath = [
       { darwin-config = "\$HOME/.nixpkgs/darwin-configuration.nix"; }
