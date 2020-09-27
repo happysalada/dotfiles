@@ -25,8 +25,8 @@
   };
 
   shellInit = ''
-    fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
-    fenv source $HOME/.nix-profile/etc/profile.d/nix-daemon.sh
+    fenv source /nix/var/nix/profiles/default/etc/profile.d/nix.sh  
+    fenv source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh  
 
     if not contains $HOME/.nix-defexpr/channels $NIX_PATH
      set -g NIX_PATH $HOME/.nix-defexpr/channels $NIX_PATH  
