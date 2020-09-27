@@ -4,7 +4,7 @@
     settings = {
       window.dimensions = {
         lines = 42;
-        columns = 130;
+        columns = 160;
       };
       colors.primary.background= "0x000000";
       font.normal.family = "Fira Code";
