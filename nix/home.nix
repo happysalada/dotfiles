@@ -1,10 +1,14 @@
 { config, lib, pkgs, ... }:
 let
- doom-emacs = pkgs.callPackage (builtins.fetchTarball {
-   url = https://github.com/vlaci/nix-doom-emacs/archive/master.tar.gz;
- }) {
-   doomPrivateDir = ./doom.d;  # Directory containing your config.el init.el
- };
+  doom-emacs = pkgs.callPackage (builtins.fetchTarball {
+    url = "https://github.com/vlaci/nix-doom-emacs/archive/master.tar.gz";
+  }) {
+    doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
+    emacsPackagesOverlay = self: super: {
+      magit-delta = super.magit-delta.overrideAttrs
+        (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
+    };
+  };
 in {
 
   # Let Home Manager install and manage itself.
@@ -24,9 +28,11 @@ in {
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-  home.packages = with pkgs; [ 
+  home.packages = with pkgs; [
     fzf # needs to be accessible for fish
     doom-emacs # editor
+    gitAndTools.delta # fancy diffs
+    # vlc # video player. does not compile on darwin
 
     nextdns # faster dns, `sudo nextdns config set -config "e42bf1"`
 
@@ -44,25 +50,25 @@ in {
     wasm-pack
     rust-analyzer
     wrangler # deploy static sites with cloudflare
+
+    nixfmt
   ];
 
   # doom config
   home.file.".emacs.d/init.el".text = ''
-      (load "default.el")
+    (load "default.el")
   '';
 
   nixpkgs.config = {
     allowUnfree = true;
     packageOverrides = pkgs: {
-      neovim = pkgs.neovim.override {
-        vimAlias = true;
-      };
+      neovim = pkgs.neovim.override { vimAlias = true; };
     };
-  }; 
+  };
 
   news.display = "silent";
 
-  programs.neovim = import ./programs/neovim.nix {pkgs=pkgs;};
+  programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
 
   programs.alacritty = import ./programs/alacritty.nix;
   programs.git = import ./programs/git.nix;
@@ -75,7 +81,7 @@ in {
     enableFishIntegration = true;
   };
 
-  programs.fish = import ./programs/fish.nix {pkgs = pkgs;};
+  programs.fish = import ./programs/fish.nix { pkgs = pkgs; };
 
   programs.starship = {
     enable = true;
@@ -89,12 +95,15 @@ in {
     enableFishIntegration = true;
     verbs = {
       "p" = { execution = ":parent"; };
-      "edit" = { shortcut = "e"; execution = "$EDITOR {file}" ; };
+      "edit" = {
+        shortcut = "e";
+        execution = "$EDITOR {file}";
+      };
       "create {subpath}" = { execution = "$EDITOR {directory}/{subpath}"; };
     };
   };
 
-  programs.ssh = import ./programs/ssh.nix ;
+  programs.ssh = import ./programs/ssh.nix;
 
   # somehow firefox says not supported
   # programs.firefox = {

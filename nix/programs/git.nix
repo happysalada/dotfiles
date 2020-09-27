@@ -6,6 +6,7 @@
   extraConfig = {
     core = {
       editor = "nvim";
+      pager = "delta";
     };
 
     url = {
@@ -21,6 +22,16 @@
     rebase = {
       autoSquash = true;
       autoStash = true;
+    };
+
+    delta = {
+      plus-color = "#012800";
+      minus-color = "#340001";
+      side-by-side = true;
+    };
+
+    interactive = {
+      diffFilter = "delta --color-only";
     };
   };
 }
