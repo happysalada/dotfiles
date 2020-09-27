@@ -185,5 +185,5 @@ main() {
 main
 
 ln -fs $(pwd)/broot.conf.toml $HOME/.config/broot/conf.toml
-ln -fs $(pwd)/nix/darwin.nix $HOME/.config/nixpkgs/darwin/configuration.nix
+ln -fs $(pwd)/nix/darwin.nix $HOME/.config/nixpkgs/darwin-configuration.nix
 ln -fs $(pwd)/nix/home.nix $HOME/.config/nixpkgs/home.nix
