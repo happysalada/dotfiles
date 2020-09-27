@@ -30,6 +30,7 @@
   };
 
   programs.nix-index.enable = true;
+  programs.fish.enable = true;
 
   fonts = {
     enableFontDir = true;
@@ -82,6 +83,7 @@
   system.stateVersion = 4;
 
   nix = {
+    useDaemon = true;
     nixPath = [
       { darwin-config = "\$HOME/.nixpkgs/darwin-configuration.nix"; }
       "\$HOME/.nix-defexpr/channels"
