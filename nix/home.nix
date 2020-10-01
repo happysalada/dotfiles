@@ -51,6 +51,8 @@ in {
     rust-analyzer
     wrangler # deploy static sites with cloudflare
 
+    mdbook # for documentation sites
+
     nixfmt
   ];
 
@@ -79,6 +81,7 @@ in {
   programs.direnv = {
     enable = true;
     enableFishIntegration = true;
+    enableNixDirenvIntegration = true;
   };
 
   programs.fish = import ./programs/fish.nix { pkgs = pkgs; };
