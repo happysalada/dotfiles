@@ -26,7 +26,10 @@
       procs # rust process monitor
     ];
     shells = [ pkgs.fish ];
-    variables = { EDITOR = "code"; LANG = "en_US.UTF-8"; };
+    variables = {
+      EDITOR = "code";
+      LANG = "en_US.UTF-8";
+    };
   };
 
   programs.nix-index.enable = true;
@@ -34,9 +37,7 @@
 
   fonts = {
     enableFontDir = true;
-    fonts = [
-      pkgs.fira-code
-    ];
+    fonts = [ pkgs.fira-code ];
   };
 
   system.defaults.NSGlobalDomain.AppleKeyboardUIMode = 3;
@@ -85,8 +86,8 @@
   nix = {
     useDaemon = true;
     nixPath = [
-      { darwin-config = "\$HOME/.nixpkgs/darwin-configuration.nix"; }
-      "\$HOME/.nix-defexpr/channels"
+      { darwin-config = "$HOME/.nixpkgs/darwin-configuration.nix"; }
+      "$HOME/.nix-defexpr/channels"
     ];
     package = pkgs.nixUnstable;
     maxJobs = 4;
@@ -99,9 +100,7 @@
       nur = import (builtins.fetchTarball {
         url = "https://github.com/nix-community/NUR/archive/master.tar.gz";
         sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
-      }) {
-        inherit pkgs;
-      };
+      }) { inherit pkgs; };
     };
   };
 }
