@@ -30,6 +30,7 @@
       EDITOR = "code";
       LANG = "en_US.UTF-8";
     };
+    systemPath = [ /run/current-system/sw/bin ];
   };
 
   programs.nix-index.enable = true;
