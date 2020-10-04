@@ -26,11 +26,11 @@
     fenv source /nix/var/nix/profiles/default/etc/profile.d/nix.sh  
     fenv source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh  
 
-    fzf_key_bindings
-
-    starship init fish | source
-    zoxide init fish | source
-
-    eval (direnv hook fish)
+    if not contains $HOME/.nix-defexpr/channels $NIX_PATH
+     set -g NIX_PATH $HOME/.nix-defexpr/channels $NIX_PATH  
+    end
+    if not contains darwin-config=$HOME/.nixpkgs/darwin-configuration.nix $NIX_PATH
+     set -g NIX_PATH darwin-config=$HOME/.nixpkgs/darwin-configuration.nix $NIX_PATH  
+    end
   '';
 }

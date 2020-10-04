@@ -108,6 +108,11 @@ in {
 
   programs.ssh = import ./programs/ssh.nix;
 
+  programs.zoxide = {
+    enable = true;
+    enableFishIntegration = true;
+  };
+
   # somehow firefox says not supported
   # programs.firefox = {
   #   enable = true;
