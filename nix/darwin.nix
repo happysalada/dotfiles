@@ -85,12 +85,6 @@
 
   system.stateVersion = 4;
 
-  users.users.raphael = {
-    home = /Users/raphael;
-    description = "Raphael megzari";
-    shell = pkgs.fish;
-  };
-
   nix = {
     useDaemon = true;
     package = pkgs.nixUnstable;
@@ -113,6 +107,12 @@
         sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
       }) { inherit pkgs; };
     };
+  };
+
+  users.users.raphael = {
+    home = /Users/raphael;
+    description = "Raphael megzari";
+    shell = pkgs.fish;
   };
 
   programs.gnupg.agent = {
