@@ -21,8 +21,14 @@
     systemPath = [ /run/current-system/sw/bin ];
   };
 
-  programs.nix-index.enable = true;
-  programs.fish.enable = true;
+  programs = {
+    nix-index.enable = true;
+    fish.enable = true;
+    gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
+    };
+  };
 
   fonts = {
     enableFontDir = true;
@@ -47,11 +53,11 @@
       QuitMenuItem = true;
       FXEnableExtensionChangeWarning = false;
     };
-  };
 
-  system.defaults.trackpad = {
-    Clicking = true;
-    TrackpadThreeFingerDrag = true;
+    trackpad = {
+      Clicking = true;
+      TrackpadThreeFingerDrag = true;
+    };
   };
 
   networking = {
@@ -94,11 +100,6 @@
     home = /Users/raphael;
     description = "Raphael megzari";
     shell = pkgs.fish;
-  };
-
-  programs.gnupg.agent = {
-    enable = true;
-    enableSSHSupport = true;
   };
 
   services.nix-daemon.enable = true;
