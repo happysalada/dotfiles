@@ -8,13 +8,11 @@
       coreutils
       openssl
       gnupg
-      fzf
       exa
       ytop
       which
       ripgrep
       tealdeer
-      direnv
       fd # rust find
       procs # rust process monitor
     ];
