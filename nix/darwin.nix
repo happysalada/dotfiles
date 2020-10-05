@@ -4,21 +4,18 @@
   environment = {
     systemPackages = with pkgs; [
       home-manager
-      wget
-      coreutils
       openssl
       gnupg
-      exa
-      ytop
-      which
-      ripgrep
-      tealdeer
+      exa # better ls
+      ytop # rust htop
+      ripgrep # better grep
+      tealdeer # terser man
       fd # rust find
       procs # rust process monitor
     ];
     shells = [ pkgs.fish ];
     variables = {
-      EDITOR = "code";
+      EDITOR = "emacs";
       LANG = "en_US.UTF-8";
     };
     systemPath = [ /run/current-system/sw/bin ];
