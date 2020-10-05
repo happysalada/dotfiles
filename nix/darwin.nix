@@ -39,8 +39,6 @@
 
     dock = {
       autohide = true;
-      orientation = "bottom";
-      showhidden = true;
       mru-spaces = false;
     };
 
@@ -56,9 +54,6 @@
     TrackpadThreeFingerDrag = true;
   };
 
-  system.keyboard.enableKeyMapping = true;
-  system.keyboard.remapCapsLockToControl = false;
-
   networking = {
     dns = [ "45.90.28.43" "45.90.30.43" ]; # provided by nextdns
     knownNetworkServices = [
@@ -70,8 +65,6 @@
     ];
     hostName = "yt";
   };
-
-  system.stateVersion = 4;
 
   nix = {
     useDaemon = true;
