@@ -61,16 +61,10 @@ in {
     (load "default.el")
   '';
 
-  nixpkgs.config = {
-    allowUnfree = true;
-    packageOverrides = pkgs: {
-      neovim = pkgs.neovim.override { vimAlias = true; };
-    };
-  };
-
   news.display = "silent";
 
-  programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
+  # wait until spacevim comes around
+  # programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
 
   programs.alacritty = import ./programs/alacritty.nix;
   programs.git = import ./programs/git.nix;
