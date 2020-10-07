@@ -10,8 +10,11 @@
       ytop # rust htop
       ripgrep # better grep
       tealdeer # terser man
-      fd # rust find
-      procs # rust process monitor
+      fd # improved find
+      procs # process monitor
+      nextdns # faster dns, `sudo nextdns config set -config "e42bf1"`
+      # tailscale # vpn management # not supported on macos
+      smartmontools # ssd health monitoring
     ];
     shells = [ pkgs.fish ];
     variables = {
@@ -94,6 +97,8 @@
         sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
       }) { inherit pkgs; };
     };
+    # allow until openssl is updated
+    permittedInsecurePackages = [ "openssl-1.0.2u" ];
   };
 
   users.users.raphael = {
@@ -102,5 +107,8 @@
     shell = pkgs.fish;
   };
 
-  services.nix-daemon.enable = true;
+  services = {
+    nix-daemon.enable = true;
+    # smartd = { enable = true; }; # unavailable on macos
+  };
 }
