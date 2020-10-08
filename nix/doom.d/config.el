@@ -93,6 +93,10 @@
        "C-<up>"         #'+evil/window-move-up
        "C-<right>"      #'+evil/window-move-right)
 
+(map! :nv
+      "C-d" #'evil-multiedit-match-symbol-and-next
+      "C-D" #'evil-multiedit-match-symbol-and-prev)
+
 (defun doom-modeline-conditional-buffer-encoding ()
   "We expect the encoding to be LF UTF-8, so only show the modeline when this is not the case"
   (setq-local doom-modeline-buffer-encoding
