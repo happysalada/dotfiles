@@ -5,15 +5,11 @@
   ignores = [ "*~" ".DS_Store" ];
   extraConfig = {
     core = {
-      editor = "nvim";
+      editor = "emacs";
       pager = "delta";
     };
 
-    url = {
-      "git@github.com:" = {
-        insteadOf = "https://github.com/";
-      };
-    };
+    url = { "git@github.com:" = { insteadOf = "https://github.com/"; }; };
 
     push.default = "upstream";
 
@@ -30,8 +26,6 @@
       side-by-side = true;
     };
 
-    interactive = {
-      diffFilter = "delta --color-only";
-    };
+    interactive = { diffFilter = "delta --color-only"; };
   };
 }
