@@ -1,22 +1,13 @@
-with import <nixpkgs> {};
+with import <nixpkgs-unstable> { };
+
 let
-
   # define packages to install with special handling for OSX
-  basePackages = [
-    openssl
-    erlangR23
-    elixir
-    nodejs-14_x
-    yarn
-    postgresql_12
-  ];
+  basePackages =
+    [ git beam.packages.erlangR23.elixir_1_10 nodejs-14_x yarn postgresql_12 ];
 
-  inputs = basePackages
-    ++ lib.optional stdenv.isLinux inotify-tools
-    ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-        CoreFoundation
-        CoreServices
-      ]);
+  inputs = basePackages ++ lib.optional stdenv.isLinux inotify-tools
+    ++ lib.optionals stdenv.isDarwin
+    (with darwin.apple_sdk.frameworks; [ CoreFoundation CoreServices ]);
 
   # define shell startup command
   hooks = ''

@@ -75,6 +75,7 @@
     useDaemon = true;
     package = pkgs.nixUnstable;
     version = "3.0pre20200829_f156513";
+    # extraOptions = "experimental-features = nix-command flakes"; # not working on macos
     maxJobs = 4;
     buildCores = 4;
     gc = {

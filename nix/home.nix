@@ -9,6 +9,7 @@ let
         (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
     };
   };
+  unstable = import <nixpkgs-unstable> { };
 in {
 
   # Let Home Manager install and manage itself.
@@ -29,7 +30,7 @@ in {
 
     # List packages installed in system profile. To search by name, run:
     # $ nix-env -qaP | grep wget
-    packages = with pkgs; [
+    packages = with unstable; [
       fzf # needs to be accessible for fish
       doom-emacs # editor
       gitAndTools.delta # fancy diffs
@@ -40,7 +41,7 @@ in {
       beam.packages.erlangR23.elixir_1_10
       nodejs-14_x
       yarn
-      postgresql_12
+      postgresql_13
       # rust
       rustup
       sccache
