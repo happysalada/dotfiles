@@ -14,45 +14,47 @@ in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  home.username = "raphael";
-  home.homeDirectory = "/Users/raphael";
-  # This value determines the Home Manager release that your
-  # configuration is compatible with. This helps avoid breakage
-  # when a new Home Manager release introduces backwards
-  # incompatible changes.
-  #
-  # You can update Home Manager without changing this value. See
-  # the Home Manager release notes for a list of state version
-  # changes in each release.
-  home.stateVersion = "20.09";
+  home = {
+    username = "raphael";
+    homeDirectory = "/Users/raphael";
+    # This value determines the Home Manager release that your
+    # configuration is compatible with. This helps avoid breakage
+    # when a new Home Manager release introduces backwards
+    # incompatible changes.
+    #
+    # You can update Home Manager without changing this value. See
+    # the Home Manager release notes for a list of state version
+    # changes in each release.
+    stateVersion = "20.09";
 
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
-  home.packages = with pkgs; [
-    fzf # needs to be accessible for fish
-    doom-emacs # editor
-    gitAndTools.delta # fancy diffs
-    # vlc # video player. does not compile on darwin
+    # List packages installed in system profile. To search by name, run:
+    # $ nix-env -qaP | grep wget
+    packages = with pkgs; [
+      fzf # needs to be accessible for fish
+      doom-emacs # editor
+      gitAndTools.delta # fancy diffs
+      # vlc # video player. does not compile on darwin
 
-    # dev
-    # elixir related
-    beam.packages.erlangR23.elixir_1_10
-    nodejs-14_x
-    yarn
-    postgresql_12
-    # rust
-    rustup
-    sccache
-    cargo-edit
-    cargo-deps
-    wasm-pack
-    rust-analyzer
-    wrangler # deploy static sites with cloudflare
+      # dev
+      # elixir related
+      beam.packages.erlangR23.elixir_1_10
+      nodejs-14_x
+      yarn
+      postgresql_12
+      # rust
+      rustup
+      sccache
+      cargo-edit
+      cargo-deps
+      wasm-pack
+      rust-analyzer
+      wrangler # deploy static sites with cloudflare
 
-    mdbook # for documentation sites
+      mdbook # for documentation sites
 
-    nixfmt
-  ];
+      nixfmt
+    ];
+  };
 
   # doom config
   home.file.".emacs.d/init.el".text = ''

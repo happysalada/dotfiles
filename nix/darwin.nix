@@ -3,7 +3,6 @@
 {
   environment = {
     systemPackages = with pkgs; [
-      home-manager
       openssl
       gnupg
       exa # better ls
@@ -16,17 +15,14 @@
       # tailscale # vpn management # not supported on macos
       smartmontools # ssd health monitoring
     ];
-    shells = [ pkgs.fish ];
     variables = {
       EDITOR = "emacs";
       LANG = "en_US.UTF-8";
     };
-    systemPath = [ /run/current-system/sw/bin ];
   };
 
   programs = {
     nix-index.enable = true;
-    fish.enable = true;
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
@@ -78,6 +74,7 @@
   nix = {
     useDaemon = true;
     package = pkgs.nixUnstable;
+    version = "3.0pre20200829_f156513";
     maxJobs = 4;
     buildCores = 4;
     gc = {
@@ -104,7 +101,6 @@
   users.users.raphael = {
     home = /Users/raphael;
     description = "Raphael megzari";
-    shell = pkgs.fish;
   };
 
   services = {
