@@ -5,7 +5,10 @@
     nixgc = "nix-collect-garbage -d";
     gcb = "git checkout -b";
     gco = "git checkout";
+    gbd = "git branch -d";
     gp = "git push";
+    gpf = "git push --force";
+    gu = "git reset --soft HEAD~1";
     nixupgrade =
       "sudo -i sh -c 'nix-channel --update && nix-env -iA nixpkgs.nix && launchctl remove org.nixos.nix-daemon && launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist'";
     ls = "exa --reverse --sort=size --all --header --long";
