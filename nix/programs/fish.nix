@@ -20,7 +20,7 @@
       end
     end
 
-    for p in "$HOME/.nix-defexpr/channels" "darwin-config=$HOME/.dotfiles/nix/darwin.nix" "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixpkgs" "/nix/var/nix/profiles/per-user/root/channels" "nixpkgs-unstable=/nix/var/nix/profiles/per-user/root/channels/nixpkgs-unstable"
+    for p in "$HOME/.nix-defexpr/channels" "darwin-config=$HOME/.dotfiles/nix/darwin.nix" "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixpkgs" "/nix/var/nix/profiles/per-user/root/channels"
       if not contains $p $NIX_PATH
         set -g NIX_PATH $p $NIX_PATH
       end
