@@ -14,6 +14,7 @@
       nextdns # faster dns, `sudo nextdns config set -config "e42bf1"`
       # tailscale # vpn management # not supported on macos
       smartmontools # ssd health monitoring
+      s3cmd # used for backups
     ];
     variables = {
       EDITOR = "emacs";

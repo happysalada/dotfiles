@@ -1,11 +1,11 @@
 { pkgs, ... }: {
   enable = true;
 
-  shellAliases = {
+  functions = {
     nixgc = "nix-collect-garbage -d";
-    gcb = "git checkout -b";
-    gco = "git checkout";
-    gbd = "git branch -d";
+    gcb = "git checkout -b $argv";
+    gco = "git checkout $argv";
+    gbd = "git branch -d $argv";
     gp = "git push";
     gpf = "git push --force";
     gu = "git reset --soft HEAD~1";
@@ -14,6 +14,10 @@
     ls = "exa --reverse --sort=size --all --header --long";
     gl = "git pull --prune";
     broot = "broot -ghi";
+    rsync_backup =
+      "rsync -avrzP --exclude-from=$HOME/.dotfiles/backup/exclude.txt --delete $argv";
+    s3_backup =
+      "s3cmd sync --preserve --delete-removed --progress --exclude-from=$HOME/.dotfiles/backup/exclude.txt $argv";
   };
 
   shellInit = ''
