@@ -108,6 +108,15 @@ in {
     enableFishIntegration = true;
   };
 
+  programs.password-store = {
+    enable = true;
+    settings = {
+      PASSWORD_STORE_DIR = "$HOME/.password-store";
+      PASSWORD_STORE_KEY = "raphael@megzari.com";
+      PASSWORD_STORE_CLIP_TIME = "60";
+    };
+
+  };
   # somehow firefox says not supported
   # programs.firefox = {
   #   enable = true;
