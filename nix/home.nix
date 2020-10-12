@@ -9,6 +9,7 @@ let
         (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
     };
   };
+
   unstable = import <nixpkgs-unstable> { };
 in {
 
@@ -31,7 +32,6 @@ in {
     # List packages installed in system profile. To search by name, run:
     # $ nix-env -qaP | grep wget
     packages = with unstable; [
-      fzf # needs to be accessible for fish
       doom-emacs # editor
       gitAndTools.delta # fancy diffs
       # vlc # video player. does not compile on darwin
@@ -45,7 +45,7 @@ in {
       # rust
       rustup
       sccache
-      cargo-edit
+      # cargo-edit # build fails on macos for now
       cargo-deps
       wasm-pack
       rust-analyzer
@@ -117,6 +117,12 @@ in {
     };
 
   };
+
+  programs.skim = {
+    enable = true;
+    enableFishIntegration = true;
+  };
+
   # somehow firefox says not supported
   # programs.firefox = {
   #   enable = true;
