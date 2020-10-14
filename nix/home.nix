@@ -84,8 +84,12 @@ in {
   programs.starship = {
     enable = true;
     enableFishIntegration = true;
+    settings = {
+      add_newline = false;
+      character.symbol = "|>";
+      package.disabled = true;
+    };
   };
-  home.file.".config/starship.toml".source = ../starship.toml;
 
   home.file.".cargo/config.toml".source = ../config.cargo.toml;
   programs.broot = {
