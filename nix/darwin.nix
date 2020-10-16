@@ -6,7 +6,6 @@
       openssl
       gnupg
       exa # better ls
-      ytop # rust htop
       ripgrep # better grep
       tealdeer # terser man
       fd # improved find
