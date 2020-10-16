@@ -37,6 +37,7 @@ in {
       # vlc # video player. does not compile on darwin
 
       # dev
+      bottom # rust htop
       # elixir related
       beam.packages.erlangR23.elixir_1_10
       nodejs-14_x
