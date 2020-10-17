@@ -56,15 +56,7 @@ in {
     ];
   };
 
-  # doom config
-  home.file.".emacs.d/init.el".text = ''
-    (load "default.el")
-  '';
-
   news.display = "silent";
-
-  # wait until spacevim comes around
-  # programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
 
   programs = {
     # Let Home Manager install and manage itself.
@@ -131,6 +123,14 @@ in {
 
   home.file.".tmux.conf".source = ../.tmux.conf;
   home.file.".cargo/config.toml".source = ../config.cargo.toml;
+
+  # doom config
+  home.file.".emacs.d/init.el".text = ''
+    (load "default.el")
+  '';
+
+  # wait until spacevim comes around
+  # programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
 
   # programs.neomutt = { enable = true; }; try out sometime
   # https://github.com/neomutt/neomutt
