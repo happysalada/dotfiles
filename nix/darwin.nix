@@ -10,7 +10,7 @@
       tealdeer # terser man
       fd # improved find
       procs # process monitor
-      nextdns # faster dns, `sudo nextdns config set -config "e42bf1"`
+      nextdns # faster dns
       # tailscale # vpn management # not supported on macos
       smartmontools # ssd health monitoring
       s3cmd # used for backups
