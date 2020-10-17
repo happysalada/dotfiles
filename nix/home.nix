@@ -130,6 +130,7 @@ in {
   };
 
   # programs.neomutt = { enable = true; }; try out sometime
+  # https://github.com/neomutt/neomutt
 
   # somehow firefox says not supported
   # programs.firefox = {
