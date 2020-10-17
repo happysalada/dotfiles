@@ -55,6 +55,7 @@ in {
       mdbook # for documentation sites
 
       nixfmt
+      niv
     ];
   };
 
@@ -127,6 +128,8 @@ in {
     enable = true;
     enableFishIntegration = true;
   };
+
+  # programs.neomutt = { enable = true; }; try out sometime
 
   # somehow firefox says not supported
   # programs.firefox = {
