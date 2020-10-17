@@ -19,6 +19,7 @@
       EDITOR = "emacs";
       LANG = "en_US.UTF-8";
     };
+    darwinConfig = "$HOME/.dotfiles/nix/darwin.nix";
   };
 
   programs = {
