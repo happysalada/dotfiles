@@ -54,6 +54,14 @@ in {
       nixfmt
       niv
     ];
+
+    file.".tmux.conf".source = ../.tmux.conf;
+    file.".cargo/config.toml".source = ../config.cargo.toml;
+
+    # doom config
+    file.".emacs.d/init.el".text = ''
+      (load "default.el")
+    '';
   };
 
   news.display = "silent";
@@ -120,14 +128,6 @@ in {
       enableFishIntegration = true;
     };
   };
-
-  home.file.".tmux.conf".source = ../.tmux.conf;
-  home.file.".cargo/config.toml".source = ../config.cargo.toml;
-
-  # doom config
-  home.file.".emacs.d/init.el".text = ''
-    (load "default.el")
-  '';
 
   # wait until spacevim comes around
   # programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
