@@ -84,7 +84,7 @@ in {
     enableNixDirenvIntegration = true;
   };
 
-  programs.fish = import ./programs/fish.nix { pkgs = pkgs; };
+  programs.fish = import ./programs/fish.nix;
 
   programs.starship = {
     enable = true;
