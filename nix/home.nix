@@ -13,12 +13,6 @@ let
   unstable = import <nixpkgs-unstable> { };
 in {
 
-  # Let Home Manager install and manage itself.
-  programs.home-manager = {
-    enable = true;
-    path = "$HOME/.dotfiles/nix/home.nix";
-  };
-
   home = {
     username = "raphael";
     homeDirectory = "/Users/raphael";
@@ -72,65 +66,71 @@ in {
   # wait until spacevim comes around
   # programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
 
-  programs.alacritty = import ./programs/alacritty.nix;
-  programs.git = import ./programs/git.nix;
-
-  programs.tmux.enable = true;
-  home.file.".tmux.conf".source = ../.tmux.conf;
-
-  programs.direnv = {
-    enable = true;
-    enableFishIntegration = true;
-    enableNixDirenvIntegration = true;
-  };
-
-  programs.fish = import ./programs/fish.nix;
-
-  programs.starship = {
-    enable = true;
-    enableFishIntegration = true;
-    settings = {
-      add_newline = false;
-      character.symbol = "|>";
-      package.disabled = true;
+  programs = {
+    # Let Home Manager install and manage itself.
+    home-manager = {
+      enable = true;
+      path = "$HOME/.dotfiles/nix/home.nix";
     };
-  };
 
-  home.file.".cargo/config.toml".source = ../config.cargo.toml;
-  programs.broot = {
-    enable = true;
-    enableFishIntegration = true;
-    verbs = {
-      "p" = { execution = ":parent"; };
-      "edit" = {
-        shortcut = "e";
-        execution = "$EDITOR {file}";
+    alacritty = import ./programs/alacritty.nix;
+    git = import ./programs/git.nix;
+    tmux.enable = true;
+    fish = import ./programs/fish.nix;
+    ssh = import ./programs/ssh.nix;
+
+    direnv = {
+      enable = true;
+      enableFishIntegration = true;
+      enableNixDirenvIntegration = true;
+    };
+
+    starship = {
+      enable = true;
+      enableFishIntegration = true;
+      settings = {
+        add_newline = false;
+        character.symbol = "|>";
+        package.disabled = true;
       };
-      "create {subpath}" = { execution = "$EDITOR {directory}/{subpath}"; };
+    };
+
+    broot = {
+      enable = true;
+      enableFishIntegration = true;
+      verbs = {
+        "p" = { execution = ":parent"; };
+        "edit" = {
+          shortcut = "e";
+          execution = "$EDITOR {file}";
+        };
+        "create {subpath}" = { execution = "$EDITOR {directory}/{subpath}"; };
+      };
+    };
+
+    zoxide = {
+      enable = true;
+      enableFishIntegration = true;
+    };
+
+    password-store = {
+      enable = true;
+      settings = {
+        PASSWORD_STORE_DIR = "$HOME/.password-store";
+        PASSWORD_STORE_KEY = "raphael@megzari.com";
+        PASSWORD_STORE_CLIP_TIME = "60";
+      };
+
+    };
+
+    skim = {
+      enable = true;
+      enableFishIntegration = true;
     };
   };
 
-  programs.ssh = import ./programs/ssh.nix;
-
-  programs.zoxide = {
-    enable = true;
-    enableFishIntegration = true;
-  };
-
-  programs.password-store = {
-    enable = true;
-    settings = {
-      PASSWORD_STORE_DIR = "$HOME/.password-store";
-      PASSWORD_STORE_KEY = "raphael@megzari.com";
-      PASSWORD_STORE_CLIP_TIME = "60";
-    };
-
-  };
-
-  programs.skim = {
-    enable = true;
-    enableFishIntegration = true;
-  };
+  home.file.".tmux.conf".source = ../.tmux.conf;
+  home.file.".cargo/config.toml".source = ../config.cargo.toml;
 
   # programs.neomutt = { enable = true; }; try out sometime
   # https://github.com/neomutt/neomutt
