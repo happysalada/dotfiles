@@ -11,6 +11,8 @@ let
   };
 
   unstable = import <nixpkgs-unstable> { };
+
+  programSettings = import ./programs { };
 in {
 
   home = {
@@ -73,11 +75,9 @@ in {
       path = "$HOME/.dotfiles/nix/home.nix";
     };
 
-    alacritty = import ./programs/alacritty.nix;
-    git = import ./programs/git.nix;
+    inherit (programSettings) alacritty git fish ssh;
+
     tmux.enable = true;
-    fish = import ./programs/fish.nix;
-    ssh = import ./programs/ssh.nix;
 
     direnv = {
       enable = true;
