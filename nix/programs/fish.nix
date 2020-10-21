@@ -24,13 +24,13 @@
   shellInit = ''
     for p in "$HOME/.nix-profile/bin" "/nix/var/nix/profiles/default/bin" "/run/current-system/sw/bin"
       if not contains $p $PATH
-        set -g PATH $p $PATH
+        set PATH $p $PATH
       end
     end
 
-    for p in "$HOME/.nix-defexpr/channels" "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixpkgs" "/nix/var/nix/profiles/per-user/root/channels"
+    for p in "$HOME/.nix-defexpr/channels" "darwin-config=$HOME/.dotfiles/nix/darwin.nix" "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixpkgs" "/nix/var/nix/profiles/per-user/root/channels"
       if not contains $p $NIX_PATH
-        set -g NIX_PATH $p $NIX_PATH
+        set -xg NIX_PATH $p $NIX_PATH
       end
     end
   '';
