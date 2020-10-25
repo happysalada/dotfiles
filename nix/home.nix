@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 let
   doom-emacs = pkgs.callPackage (builtins.fetchTarball {
     url = "https://github.com/vlaci/nix-doom-emacs/archive/master.tar.gz";
