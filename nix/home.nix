@@ -120,10 +120,14 @@ in {
         PASSWORD_STORE_KEY = "raphael@megzari.com";
         PASSWORD_STORE_CLIP_TIME = "60";
       };
-
     };
 
     skim = {
+      enable = true;
+      enableFishIntegration = true;
+    };
+
+    mcfly = {
       enable = true;
       enableFishIntegration = true;
     };
