@@ -19,6 +19,9 @@
       "rsync -avrzP --exclude-from=$HOME/.dotfiles/backup/exclude.txt --delete $argv";
     s3_backup =
       "s3cmd sync --preserve --delete-removed --progress --exclude-from=$HOME/.dotfiles/backup/exclude.txt $argv";
+    "..." = "../..";
+    "...." = "../../..";
+    "....." = "../../../..";
   };
 
   shellInit = ''
