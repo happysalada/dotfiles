@@ -23,7 +23,6 @@
   };
 
   programs = {
-    nix-index.enable = true;
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
