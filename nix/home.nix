@@ -13,12 +13,14 @@ let
   unstable = import <nixpkgs-unstable> { };
 
   programSettings = import ./programs { };
+
+  homeDirectory = "/Users/raphael";
 in {
 
   home = {
     username = "raphael";
-    homeDirectory = "/Users/raphael";
-    sessionPath = [ "$HOME/.nix-profile/bin" "/run/current-system/sw/bin" ];
+    inherit homeDirectory;
+    sessionPath = [ "${homeDirectory}/.nix-profile/bin" "/run/current-system/sw/bin" ];
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
     # when a new Home Manager release introduces backwards
@@ -54,6 +56,7 @@ in {
 
       mdbook # for documentation sites
 
+      # nix
       nixfmt
       niv
     ];
