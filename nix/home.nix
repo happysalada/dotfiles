@@ -38,14 +38,14 @@ in {
       # dev
       bottom # rust htop
       # elixir related
-      beam.packages.erlangR23.elixir_1_10
-      nodejs-14_x
+      beam.packages.erlangR23.elixir_1_11
+      nodejs-15_x
       yarn
       postgresql_13
       # rust
       rustup
       sccache
-      # cargo-edit # build fails on macos for now
+      cargo-edit # build fails on macos for now
       cargo-deps
       wasm-pack
       rust-analyzer
