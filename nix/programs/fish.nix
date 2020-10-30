@@ -25,12 +25,6 @@
   };
 
   shellInit = ''
-    for p in "$HOME/.nix-profile/bin" "/run/current-system/sw/bin"
-      if not contains $p $PATH
-        set PATH $p $PATH
-      end
-    end
-
     for p in "$HOME/.nix-defexpr/channels" "darwin-config=$HOME/.dotfiles/nix/darwin.nix"
       if not contains $p $NIX_PATH
         set -xg NIX_PATH $p $NIX_PATH
