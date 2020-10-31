@@ -109,3 +109,5 @@
   (magit-delta-mode +1))
 
 (setq-hook! 'html-mode-hook +format-with-lsp nil) ;; disable html format on save
+
+(setq confirm-kill-emacs nil) ;; no prompt on quit
