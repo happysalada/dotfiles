@@ -23,12 +23,4 @@
     "...." = "../../..";
     "....." = "../../../..";
   };
-
-  shellInit = ''
-    for p in "$HOME/.nix-defexpr/channels" "darwin-config=$HOME/.dotfiles/nix/darwin.nix"
-      if not contains $p $NIX_PATH
-        set -xg NIX_PATH $p $NIX_PATH
-      end
-    end
-  '';
 }

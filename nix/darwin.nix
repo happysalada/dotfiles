@@ -27,6 +27,7 @@
       enable = true;
       enableSSHSupport = true;
     };
+    fish.enable = true;
   };
 
   fonts = {

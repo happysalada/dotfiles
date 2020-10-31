@@ -14,13 +14,11 @@ let
 
   programSettings = import ./programs { };
 
-  homeDirectory = "/Users/raphael";
 in {
 
   home = {
     username = "raphael";
-    inherit homeDirectory;
-    sessionPath = [ "${homeDirectory}/.nix-profile/bin" "/run/current-system/sw/bin" ];
+    homeDirectory = "/Users/raphael";
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
     # when a new Home Manager release introduces backwards
