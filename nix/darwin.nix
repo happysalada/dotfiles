@@ -74,13 +74,13 @@
 
   nix = {
     useDaemon = true;
-    package = pkgs.nixUnstable;
-    version = "3.0pre20200829_f156513";
-    # extraOptions = "experimental-features = nix-command flakes"; # not working on macos
+    package = pkgs.nixFlakes;
+    extraOptions = "experimental-features = nix-command flakes"; # not working on macos
     maxJobs = 4;
     buildCores = 4;
     gc = {
       automatic = true;
+      options = "--delete-older-than 7d";
       interval = {
         Hour = 24;
         Minute = 0;
