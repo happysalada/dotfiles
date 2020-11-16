@@ -100,14 +100,21 @@ in {
     broot = {
       enable = true;
       enableFishIntegration = true;
-      verbs = {
-        "p" = { execution = ":parent"; };
-        "edit" = {
+      verbs = [
+        {
+          invocation = "p";
+          execution = ":parent";
+        }
+        {
+          invocation = "edit";
           shortcut = "e";
           execution = "$EDITOR {file}";
-        };
-        "create {subpath}" = { execution = "$EDITOR {directory}/{subpath}"; };
-      };
+        }
+        {
+          invocation = "create {subpath}";
+          execution = "$EDITOR {directory}/{subpath}";
+        }
+      ];
     };
 
     zoxide = {
