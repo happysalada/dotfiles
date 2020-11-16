@@ -1,6 +1,15 @@
 { pkgs, ... }:
 
-{
+  doom-emacs = pkgs.callPackage (builtins.fetchTarball {
+    url = "https://github.com/vlaci/nix-doom-emacs/archive/master.tar.gz";
+  }) {
+    doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
+    emacsPackagesOverlay = self: super: {
+      magit-delta = super.magit-delta.overrideAttrs
+        (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
+    };
+  };
+in {
   environment = {
     systemPackages = with pkgs; [
       openssl
@@ -14,9 +23,11 @@
       # tailscale # vpn management # not supported on macos
       smartmontools # ssd health monitoring
       s3cmd # used for backups
+      doom-emacs
+      gitAndTools.delta # better git diff
     ];
     variables = {
-      EDITOR = "emacs";
+      EDITOR = "emacsclient -c";
       LANG = "en_US.UTF-8";
     };
     darwinConfig = "$HOME/.dotfiles/nix/darwin.nix";
@@ -75,7 +86,8 @@
   nix = {
     useDaemon = true;
     package = pkgs.nixFlakes;
-    extraOptions = "experimental-features = nix-command flakes"; # not working on macos
+    extraOptions =
+      "experimental-features = nix-command flakes"; # not working on macos
     maxJobs = 4;
     buildCores = 4;
     gc = {
