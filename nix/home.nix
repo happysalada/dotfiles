@@ -1,14 +1,5 @@
 { pkgs, ... }:
 let
-  doom-emacs = pkgs.callPackage (builtins.fetchTarball {
-    url = "https://github.com/vlaci/nix-doom-emacs/archive/master.tar.gz";
-  }) {
-    doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
-    emacsPackagesOverlay = self: super: {
-      magit-delta = super.magit-delta.overrideAttrs
-        (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
-    };
-  };
 
   unstable = import <nixpkgs-unstable> { };
 
@@ -32,8 +23,6 @@ in {
     # List packages installed in system profile. To search by name, run:
     # $ nix-env -qaP | grep wget
     packages = with unstable; [
-      doom-emacs # editor
-      gitAndTools.delta # fancy diffs
       # vlc # video player. does not compile on darwin
 
       # dev
