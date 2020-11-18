@@ -45,7 +45,7 @@ in {
 
       # nix
       nixfmt
-      niv
+      nixops
     ];
 
     file.".tmux.conf".source = ../.tmux.conf;
