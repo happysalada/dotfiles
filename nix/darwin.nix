@@ -1,15 +1,6 @@
 { pkgs, ... }:
 
-  doom-emacs = pkgs.callPackage (builtins.fetchTarball {
-    url = "https://github.com/vlaci/nix-doom-emacs/archive/master.tar.gz";
-  }) {
-    doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
-    emacsPackagesOverlay = self: super: {
-      magit-delta = super.magit-delta.overrideAttrs
-        (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
-    };
-  };
-in {
+{
   environment = {
     systemPackages = with pkgs; [
       openssl
@@ -23,8 +14,6 @@ in {
       # tailscale # vpn management # not supported on macos
       smartmontools # ssd health monitoring
       s3cmd # used for backups
-      doom-emacs
-      gitAndTools.delta # better git diff
     ];
     variables = {
       EDITOR = "emacsclient -c";
@@ -120,5 +109,11 @@ in {
   services = {
     nix-daemon.enable = true;
     # smartd = { enable = true; }; # unavailable on macos
+    # avahi.enable = true; # unavailable on macos
+
+    nextdns = {
+      enable = true;
+      arguments = [ "-config" "e42bf1" ];
+    };
   };
 }
