@@ -61,6 +61,17 @@
     home-assistant = {
       enable = true;
       openFirewall = true;
+      config = {
+        homeassistant = {
+          name = "homy";
+          # latitude = "!secret latitude";
+          # longitude = "!secret longitude";
+          elevation = "0";
+          unit_system = "metric";
+          time_zone = "UTC";
+        };
+        default_config = { };
+      };
     };
   };
 
