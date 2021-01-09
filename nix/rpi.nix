@@ -67,9 +67,8 @@
   # packages to install
   environment.systemPackages = with pkgs; [
     vim # doesn't hurt to have an editor on remote.
-    git
-    rsync
     curl
+    raspberrypi-tools
   ];
 
   # Niceties
@@ -90,6 +89,11 @@
     interfaces.eth0.useDHCP = true;
     interfaces.wlan0.useDHCP = true;
     hostName = "nixos";
+    # Filter incoming traffic
+    firewall.enable = true;
+    firewall.allowPing = true;
+    firewall.allowedTCPPorts = [ 22 8123 ];
+    firewall.allowedUDPPorts = [ ];
   };
 
   # This value determines the NixOS release from which the default
