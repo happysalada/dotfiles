@@ -5,7 +5,6 @@
 { config, pkgs, ... }:
 
 {
-
   # Make it boot on the RP, taken from here: https://nixos.wiki/wiki/NixOS_on_ARM/Raspberry_Pi_4
   boot = {
     loader = {
@@ -26,7 +25,7 @@
   users.users = {
     yt = {
       isNormalUser = true;
-      extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+      extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
       home = "/home/yt";
       description = "Yours truly";
       openssh.authorizedKeys.keys = [
@@ -58,6 +57,11 @@
         workstation = true;
       };
     };
+
+    home-assistant = {
+      enable = true;
+      openFirewall = true;
+    };
   };
 
   # packages to install
@@ -74,6 +78,8 @@
   # NTP clock synchronization
   services.timesyncd.enable = true;
 
+  hardware.enableRedistributableFirmware = true;
+
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
@@ -83,6 +89,7 @@
     interfaces.wlan0.useDHCP = true;
     hostName = "nixos";
   };
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
