@@ -65,10 +65,12 @@
   };
 
   # packages to install
-  environment.systemPackages = with pkgs;
-    [
-      vim # doesn't hurt to have an editor on remote.
-    ];
+  environment.systemPackages = with pkgs; [
+    vim # doesn't hurt to have an editor on remote.
+    git
+    rsync
+    curl
+  ];
 
   # Niceties
   programs.bash.enableCompletion = true;
