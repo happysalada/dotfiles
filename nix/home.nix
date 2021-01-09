@@ -53,6 +53,7 @@ in {
       wasm-pack
       rust-analyzer
       wrangler # deploy static sites with cloudflare
+      mtr # network traffic
 
       mdbook # for documentation sites
 
