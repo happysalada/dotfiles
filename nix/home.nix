@@ -53,17 +53,26 @@ in {
       wasm-pack
       rust-analyzer
       wrangler # deploy static sites with cloudflare
+      # js
+      nodePackages.prettier
+
+      # network
       mtr # network traffic
+      # tcptrack # does not work on macos
 
       mdbook # for documentation sites
 
       # nix
       nixfmt
+      nodePackages.node2nix
 
       # keyboard dactyl stuff
       clojure
       # jdk # failed on last switch
       leiningen
+      # for qmk
+      pkgsCross.avr.buildPackages.gcc
+      pkgsCross.avr.buildPackages.binutils
 
       # embedded
       # etcher

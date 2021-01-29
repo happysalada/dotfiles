@@ -1,6 +1,8 @@
-{ pkgs, ... }:
+{ ... }:
 
-{
+let pkgs = import <nixpkgs-unstable> { };
+
+in {
   environment = {
     systemPackages = with pkgs; [
       openssl
@@ -12,7 +14,7 @@
       procs # process monitor
       nextdns # faster dns
       # tailscale # vpn management # not supported on macos
-      smartmontools # ssd health monitoring
+      # smartmontools # ssd health monitoring
       s3cmd # used for backups
     ];
     variables = {
@@ -27,7 +29,11 @@
       enable = true;
       enableSSHSupport = true;
     };
-    fish.enable = true;
+    fish = {
+      enable = true;
+      useBabelfish = true;
+      babelfishPackage = pkgs.babelfish;
+    };
   };
 
   fonts = {
