@@ -1,13 +1,15 @@
-{
+{ pkgs, ... }: {
   enable = true;
   userEmail = "raphael@megzari.com";
   userName = "happysalada";
   ignores = [ "*~" ".DS_Store" ];
+  package = pkgs.gitAndTools.gitFull;
   extraConfig = {
     core = {
       editor = "emacs";
       pager = "delta";
     };
+    init = { defaultBranch = "master"; };
 
     url = { "git@github.com:" = { insteadOf = "https://github.com/"; }; };
 

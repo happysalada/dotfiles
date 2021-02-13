@@ -15,6 +15,12 @@
       hostname = "github.com";
       identityFile = "~/.ssh/github_rsa";
     };
+    "your-storagebox.de" = {
+      hostname = "u255596.your-storagebox.de";
+      identityFile = "~/.ssh/yt_backup_rsa";
+      user = "u255596";
+      extraOptions = { PasswordAuthentication = "yes"; };
+    };
   };
   matchBlocks."*" = {
     extraOptions = {
