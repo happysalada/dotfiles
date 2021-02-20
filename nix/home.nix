@@ -1,25 +1,10 @@
+{ nix-doom-emacs, nixpkgs-update }:
 { pkgs, ... }:
-let
-
-  unstable = import <nixpkgs-unstable> { };
-
-  programSettings = import ./programs { };
-
-  doom-emacs = pkgs.callPackage (builtins.fetchTarball {
-    url = "https://github.com/vlaci/nix-doom-emacs/archive/master.tar.gz";
-  }) {
-    doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
-    emacsPackagesOverlay = self: super: {
-      magit-delta = super.magit-delta.overrideAttrs
-        (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
-    };
-  };
-
+let programSettings = import ./programs { };
 in {
-
   home = {
+    # imports = [nix-doom-emacs];
     username = "raphael";
-    homeDirectory = "/Users/raphael";
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
     # when a new Home Manager release introduces backwards
@@ -32,8 +17,7 @@ in {
 
     # List packages installed in system profile. To search by name, run:
     # $ nix-env -qaP | grep wget
-    packages = with unstable; [
-      doom-emacs # editor
+    packages = with pkgs; [
       gitAndTools.delta # better git diff
       # spacevim # to try to setup one day
       # vlc # video player. does not compile on darwin
@@ -90,13 +74,8 @@ in {
   news.display = "silent";
 
   programs = {
-    # Let Home Manager install and manage itself.
-    home-manager = {
-      enable = true;
-      path = "$HOME/.dotfiles/nix/home.nix";
-    };
-
-    inherit (programSettings) alacritty git fish ssh;
+    inherit (programSettings) alacritty fish ssh;
+    git = import ./programs/git.nix {inherit pkgs;};
 
     tmux.enable = true;
 
@@ -105,6 +84,16 @@ in {
       enableFishIntegration = true;
       enableNixDirenvIntegration = true;
     };
+
+    # doom-emacs = {
+    #   enable = true;
+    #   doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
+    #   emacsPackagesOverlay = self: super: {
+    #     magit-delta = super.magit-delta.overrideAttrs
+    #       (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
+    #   };
+    # };
+
 
     starship = {
       enable = true;

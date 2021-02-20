@@ -13,13 +13,16 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # Editor
-    nix-doom-emacs.url = "github:vlaci/nix-doom-emacs";
+    nix-doom-emacs.url = "github:vlaci/nix-doom-emacs/no-checks";
+
+    # nix
+    nixpkgs-update.url = "github:ryantm/nixpkgs-update";
 
     # Other sources
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
   };
 
-  outputs = { self, nixpkgs, darwin, home-manager, nix-doom-emacs, ... }@inputs: {
+  outputs = { self, nixpkgs, darwin, home-manager, nix-doom-emacs, flake-compat, nixpkgs-update, ... }@inputs: {
 
     # My `nix-darwin` configs
     darwinConfigurations.raphael = darwin.lib.darwinSystem {
@@ -29,9 +32,8 @@
         home-manager.darwinModules.home-manager
         {
           # `home-manager` config
-          # users.users.raphael.home = "/Users/raphael";
           home-manager.useGlobalPkgs = true;
-          home-manager.users.raphael = import ./home.nix {inherit nix-doom-emacs;};
+          home-manager.users.raphael = import ./home.nix {inherit nix-doom-emacs nixpkgs-update;};
         }
       ];
     };

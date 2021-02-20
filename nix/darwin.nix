@@ -1,8 +1,5 @@
-{ ... }:
-
-let pkgs = import <nixpkgs-unstable> { };
-
-in {
+{ pkgs, ... }:
+{
   environment = {
     systemPackages = with pkgs; [
       openssl
@@ -12,10 +9,17 @@ in {
       tealdeer # terser man
       fd # improved find
       procs # process monitor
-      nextdns # faster dns
       # tailscale # vpn management # not supported on macos
       # smartmontools # ssd health monitoring
       s3cmd # used for backups
+
+      borgbackup # backup
+
+      mdbook # for documentation sites
+
+      # nix
+      nodePackages.node2nix
+
     ];
     variables = {
       EDITOR = "emacsclient -c";
@@ -43,15 +47,21 @@ in {
 
   system.defaults = {
     NSGlobalDomain = {
+      AppleMeasurementUnits = "Centimeters";
+      AppleMetricUnits = 1;
+      AppleShowScrollBars = "Automatic";
+      AppleTemperatureUnit = "Celsius";
       AppleKeyboardUIMode = 3;
       ApplePressAndHoldEnabled = false;
       InitialKeyRepeat = 10;
       KeyRepeat = 3;
+      _HIHideMenuBar = true;
     };
 
     dock = {
       autohide = true;
       mru-spaces = false;
+      tilesize = 512;
     };
 
     finder = {
@@ -63,11 +73,24 @@ in {
     trackpad = {
       Clicking = true;
       TrackpadThreeFingerDrag = true;
+      TrackpadRightClick = true;
+    };
+
+    # Login and lock screen
+    loginwindow = {
+      GuestEnabled = false;
     };
   };
 
   networking = {
-    dns = [ "45.90.28.43" "45.90.30.43" ]; # provided by nextdns
+    dns = [
+      # provided by nextdns
+      "45.90.28.43"
+      "45.90.30.43"
+      # defaults
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
     knownNetworkServices = [
       "Wi-Fi"
       "Bluetooth PAN"
