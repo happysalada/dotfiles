@@ -19,7 +19,10 @@
 
       # nix
       nodePackages.node2nix
+      nixpkgs-fmt
+      nix-index
 
+      spacevim # to try to setup one day
     ];
     variables = {
       EDITOR = "emacsclient -c";
@@ -121,10 +124,12 @@
   nixpkgs.config = {
     allowUnfree = true;
     packageOverrides = pkgs: {
-      nur = import (builtins.fetchTarball {
-        url = "https://github.com/nix-community/NUR/archive/master.tar.gz";
-        sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
-      }) { inherit pkgs; };
+      nur = import
+        (builtins.fetchTarball {
+          url = "https://github.com/nix-community/NUR/archive/master.tar.gz";
+          sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
+        })
+        { inherit pkgs; };
     };
     # allow until openssl is updated
     permittedInsecurePackages = [ "openssl-1.0.2u" ];

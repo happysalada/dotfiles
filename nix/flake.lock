@@ -268,16 +268,15 @@
         "rotate-text": "rotate-text"
       },
       "locked": {
-        "lastModified": 1613481668,
-        "narHash": "sha256-C1VLQKmrGhQIMFH1ptjeHRibZrdoGPjmzJpfolaHeXE=",
+        "lastModified": 1613480393,
+        "narHash": "sha256-WQhKv2RQGEGyO80QNhTW9/1jM10rFKIpithXmHZUUPU=",
         "owner": "vlaci",
         "repo": "nix-doom-emacs",
-        "rev": "bfdec1d9aa1754b69e2a8ef066151f76f81a1edc",
+        "rev": "0abc3a6876485c3a1b27dfeaca2308435bbdd401",
         "type": "github"
       },
       "original": {
         "owner": "vlaci",
-        "ref": "no-checks",
         "repo": "nix-doom-emacs",
         "type": "github"
       }

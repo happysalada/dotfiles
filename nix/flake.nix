@@ -13,7 +13,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # Editor
-    nix-doom-emacs.url = "github:vlaci/nix-doom-emacs/no-checks";
+    nix-doom-emacs.url = "github:vlaci/nix-doom-emacs";
 
     # nix
     nixpkgs-update.url = "github:ryantm/nixpkgs-update";
@@ -33,7 +33,7 @@
         {
           # `home-manager` config
           home-manager.useGlobalPkgs = true;
-          home-manager.users.raphael = import ./home.nix {inherit nix-doom-emacs nixpkgs-update;};
+          home-manager.users.raphael = import ./home.nix { inherit nix-doom-emacs nixpkgs-update; };
         }
       ];
     };

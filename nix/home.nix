@@ -1,9 +1,10 @@
 { nix-doom-emacs, nixpkgs-update }:
 { pkgs, ... }:
 let programSettings = import ./programs { };
-in {
+in
+{
+  imports = [ nix-doom-emacs.hmModule ];
   home = {
-    # imports = [nix-doom-emacs];
     username = "raphael";
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
@@ -19,7 +20,6 @@ in {
     # $ nix-env -qaP | grep wget
     packages = with pkgs; [
       gitAndTools.delta # better git diff
-      # spacevim # to try to setup one day
       # vlc # video player. does not compile on darwin
 
       # dev
@@ -46,10 +46,6 @@ in {
 
       mdbook # for documentation sites
 
-      # nix
-      nixfmt
-      nodePackages.node2nix
-
       # keyboard dactyl stuff
       clojure
       # jdk # failed on last switch
@@ -57,25 +53,17 @@ in {
       # for qmk
       pkgsCross.avr.buildPackages.gcc
       pkgsCross.avr.buildPackages.binutils
-
-      # embedded
-      # etcher
     ];
 
     file.".tmux.conf".source = ../.tmux.conf;
     file.".cargo/config.toml".source = ../config.cargo.toml;
-
-    # doom config
-    file.".emacs.d/init.el".text = ''
-      (load "default.el")
-    '';
   };
 
   news.display = "silent";
 
   programs = {
     inherit (programSettings) alacritty fish ssh;
-    git = import ./programs/git.nix {inherit pkgs;};
+    git = import ./programs/git.nix { inherit pkgs; };
 
     tmux.enable = true;
 
@@ -85,14 +73,14 @@ in {
       enableNixDirenvIntegration = true;
     };
 
-    # doom-emacs = {
-    #   enable = true;
-    #   doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
-    #   emacsPackagesOverlay = self: super: {
-    #     magit-delta = super.magit-delta.overrideAttrs
-    #       (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
-    #   };
-    # };
+    doom-emacs = {
+      enable = true;
+      doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
+      emacsPackagesOverlay = self: super: {
+        magit-delta = super.magit-delta.overrideAttrs
+          (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
+      };
+    };
 
 
     starship = {
