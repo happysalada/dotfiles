@@ -17,11 +17,6 @@
 
       mdbook # for documentation sites
 
-      # nix
-      nodePackages.node2nix
-      nixpkgs-fmt
-      nix-index
-
       spacevim # to try to setup one day
     ];
     variables = {

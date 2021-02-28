@@ -44,7 +44,11 @@ in
       mtr # network traffic
       # tcptrack # does not work on macos
 
-      mdbook # for documentation sites
+      # nix
+      nodePackages.node2nix
+      nixpkgs-fmt
+      nix-index
+      nixpkgs-review
 
       # keyboard dactyl stuff
       clojure
