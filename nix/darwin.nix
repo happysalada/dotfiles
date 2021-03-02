@@ -130,9 +130,12 @@
     permittedInsecurePackages = [ "openssl-1.0.2u" ];
   };
 
-  users.users.raphael = {
-    home = /Users/raphael;
-    description = "Raphael megzari";
+  users = {
+    nix.configureBuildUsers = true;
+    users.raphael = {
+      home = /Users/raphael;
+      description = "Raphael megzari";
+    };
   };
 
   services = {
