@@ -11,7 +11,7 @@
       identityFile = "~/.ssh/hetzner";
       user = "root";
     };
-    "144.76.153.92" = {
+    "hetzner-AX41-UEFI-ZFS-NVME" = {
       hostname = "144.76.153.92";
       identityFile = "~/.ssh/hetzner";
       user = "root";
