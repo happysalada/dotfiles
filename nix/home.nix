@@ -1,4 +1,4 @@
-{ nix-doom-emacs, nixpkgs-update }:
+{ nix-doom-emacs, nixpkgs-update, agenix }:
 { pkgs, ... }:
 let programSettings = import ./programs { };
 in
@@ -49,6 +49,7 @@ in
       nixpkgs-fmt
       nix-index
       nixpkgs-review
+      agenix.defaultPackage.x86_64-darwin
 
       # keyboard dactyl stuff
       clojure

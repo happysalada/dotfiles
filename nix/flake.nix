@@ -17,25 +17,37 @@
 
     # nix
     nixpkgs-update.url = "github:ryantm/nixpkgs-update";
+    agenix.url = "github:ryantm/agenix";
 
     # Other sources
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
   };
 
-  outputs = { self, nixpkgs, darwin, home-manager, nix-doom-emacs, flake-compat, nixpkgs-update, ... }@inputs: {
+  outputs =
+    { self
+    , nixpkgs
+    , darwin
+    , home-manager
+    , nix-doom-emacs
+    , flake-compat
+    , nixpkgs-update
+    , agenix
+    , ...
+    }@inputs: {
 
-    # My `nix-darwin` configs
-    darwinConfigurations.raphael = darwin.lib.darwinSystem {
-      modules = [
-        ./darwin.nix
-        # `home-manager` module
-        home-manager.darwinModules.home-manager
-        {
-          # `home-manager` config
-          home-manager.useGlobalPkgs = true;
-          home-manager.users.raphael = import ./home.nix { inherit nix-doom-emacs nixpkgs-update; };
-        }
-      ];
+      # My `nix-darwin` configs
+      darwinConfigurations.raphael = darwin.lib.darwinSystem {
+        modules = [
+          ./darwin.nix
+          agenix.nixosModules.age
+          # `home-manager` module
+          home-manager.darwinModules.home-manager
+          {
+            # `home-manager` config
+            home-manager.useGlobalPkgs = true;
+            home-manager.users.raphael = import ./home.nix { inherit nix-doom-emacs nixpkgs-update agenix; };
+          }
+        ];
+      };
     };
-  };
 }
