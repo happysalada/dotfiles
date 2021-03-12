@@ -11,6 +11,11 @@
       identityFile = "~/.ssh/hetzner";
       user = "root";
     };
+    "144.76.153.92" = {
+      hostname = "144.76.153.92";
+      identityFile = "~/.ssh/hetzner";
+      user = "root";
+    };
     "github.com" = {
       hostname = "github.com";
       identityFile = "~/.ssh/github_rsa";
