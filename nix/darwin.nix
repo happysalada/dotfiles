@@ -125,6 +125,7 @@
           sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
         })
         { inherit pkgs; };
+      spacevim = pkgs.spacevim.override { spacevim_config = import ./programs/spacevim.nix; };
     };
     # allow until openssl is updated
     permittedInsecurePackages = [ "openssl-1.0.2u" ];
