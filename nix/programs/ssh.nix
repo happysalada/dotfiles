@@ -8,17 +8,11 @@
   matchBlocks = {
     "136.243.134.16" = {
       hostname = "136.243.134.16";
-      identityFile = "~/.ssh/hetzner";
       user = "root";
     };
     "hetzner-AX41-UEFI-ZFS-NVME" = {
       hostname = "144.76.153.92";
-      identityFile = "~/.ssh/hetzner";
       user = "root";
-    };
-    "github.com" = {
-      hostname = "github.com";
-      identityFile = "~/.ssh/github_rsa";
     };
     "your-storagebox.de" = {
       hostname = "u255596.your-storagebox.de";
@@ -43,7 +37,7 @@
       ChallengeResponseAuthentication = "no";
       # UseKeychain = "yes";
       AddKeysToAgent = "yes";
-      identityFile = "~/.ssh/id_rsa";
+      identityFile = "~/.ssh/id_ed25519";
     };
   };
 }
