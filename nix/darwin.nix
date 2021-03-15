@@ -20,7 +20,7 @@
       spacevim # to try to setup one day
     ];
     variables = {
-      EDITOR = "emacsclient -c";
+      EDITOR = "spacevim";
       LANG = "en_US.UTF-8";
     };
     darwinConfig = "$HOME/.dotfiles/nix/darwin.nix";

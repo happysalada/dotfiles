@@ -39,6 +39,7 @@ in
       wrangler # deploy static sites with cloudflare
       # js
       nodePackages.prettier
+      nodePackages.pnpm
 
       # network
       mtr # network traffic
