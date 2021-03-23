@@ -36,6 +36,8 @@ in
       cargo-deps
       wasm-pack
       rust-analyzer
+      # cargo-tarpaulin # code coverage # not supported on darwin
+
       wrangler # deploy static sites with cloudflare
       # js
       nodePackages.prettier
@@ -144,7 +146,6 @@ in
     };
   };
 
-  # wait until spacevim comes around
   # programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
 
   # programs.neomutt = { enable = true; }; try out sometime

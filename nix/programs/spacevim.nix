@@ -38,12 +38,16 @@
   ];
   options = {
     buffer_index_type = 4;
-    colorscheme = "gruvbox";
+    colorscheme = "onedark";
     colorscheme_bg = "dark";
     enable_guicolors = true;
-    enable_statusline_mode = true;
+    enable_statusline_more = true;
     enable_tabline_filetype_icon = true;
-    statusline_separator = "fire";
     timeoutlen = 500;
+    windows_leader="";
+    windows_smartclose="";
+    escape_key_binding="";
+    enable_vimfiler_gitstatus=true;
+    autocomplete_method = "deoplete";
   };
 }

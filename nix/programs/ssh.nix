@@ -14,9 +14,8 @@
       hostname = "144.76.153.92";
       user = "root";
     };
-    "your-storagebox.de" = {
+    "storagebox.de" = {
       hostname = "u255596.your-storagebox.de";
-      identityFile = "~/.ssh/yt_backup_rsa";
       user = "u255596";
       extraOptions = { PasswordAuthentication = "yes"; };
     };
