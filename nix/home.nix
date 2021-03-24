@@ -1,4 +1,4 @@
-{ nix-doom-emacs, nixpkgs-update, agenix }:
+{ nix-doom-emacs, nixpkgs-update, nixpkgs-review, agenix }:
 { pkgs, ... }:
 let programSettings = import ./programs { };
 in
@@ -81,14 +81,15 @@ in
       enableNixDirenvIntegration = true;
     };
 
-    doom-emacs = {
-      enable = true;
-      doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
-      emacsPackagesOverlay = self: super: {
-        magit-delta = super.magit-delta.overrideAttrs
-          (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
-      };
-    };
+    # try vscode for a while
+    # doom-emacs = {
+    #   enable = true;
+    #   doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
+    #   emacsPackagesOverlay = self: super: {
+    #     magit-delta = super.magit-delta.overrideAttrs
+    #       (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
+    #   };
+    # };
 
 
     starship = {
@@ -151,7 +152,7 @@ in
   # programs.neomutt = { enable = true; }; try out sometime
   # https://github.com/neomutt/neomutt
 
-  # somehow firefox says not supported
+  # not supported on darwin
   # programs.firefox = {
   #   enable = true;
   #   # install https://github.com/nix-community/NUR first

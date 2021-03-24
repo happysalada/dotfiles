@@ -14,10 +14,15 @@
 
     # Editor
     nix-doom-emacs.url = "github:vlaci/nix-doom-emacs";
+    nix-doom-emacs.inputs.nixpkgs.follows = "nixpkgs";
 
     # nix
     nixpkgs-update.url = "github:ryantm/nixpkgs-update";
+    nixpkgs-update.inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs-review.url = "github:Mic92/nixpkgs-review";
+    nixpkgs-review.inputs.nixpkgs.follows = "nixpkgs";
     agenix.url = "github:ryantm/agenix";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
 
     # Other sources
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
@@ -31,6 +36,7 @@
     , nix-doom-emacs
     , flake-compat
     , nixpkgs-update
+    , nixpkgs-review
     , agenix
     , ...
     }@inputs: {
@@ -45,7 +51,9 @@
           {
             # `home-manager` config
             home-manager.useGlobalPkgs = true;
-            home-manager.users.raphael = import ./home.nix { inherit nix-doom-emacs nixpkgs-update agenix; };
+            home-manager.users.raphael = import ./home.nix {
+              inherit nix-doom-emacs nixpkgs-update nixpkgs-review agenix;
+            };
           }
         ];
       };
