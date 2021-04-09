@@ -3,7 +3,7 @@
 let programSettings = import ./programs { };
 in
 {
-  imports = [ nix-doom-emacs.hmModule ];
+  # imports = [ nix-doom-emacs.hmModule ];
   home = {
     username = "raphael";
     # This value determines the Home Manager release that your
@@ -26,22 +26,26 @@ in
       bottom # rust htop
       # elixir related
       beam.packages.erlangR23.elixir_1_11
-      nodejs-15_x
-      yarn
+
+      #db
       postgresql_13
+      dbeaver
+
       # rust
       rustup
-      sccache
-      cargo-edit # build fails on macos for now
+      # sccache # broken on darwin for now
+      cargo-edit
       cargo-deps
       wasm-pack
       rust-analyzer
+      sqlx-cli # broken on darwin for no
       # cargo-tarpaulin # code coverage # not supported on darwin
 
       wrangler # deploy static sites with cloudflare
       # js
       nodePackages.prettier
       nodePackages.pnpm
+      nodejs-15_x
 
       # network
       mtr # network traffic
@@ -51,16 +55,19 @@ in
       nodePackages.node2nix
       nixpkgs-fmt
       nix-index
-      nixpkgs-review
+      nixpkgs-update.defaultPackage.x86_64-darwin
+      nixpkgs-review.defaultPackage.x86_64-darwin
       agenix.defaultPackage.x86_64-darwin
 
       # keyboard dactyl stuff
       clojure
-      # jdk # failed on last switch
+      # jdk # some dependency has zulu
       leiningen
       # for qmk
       pkgsCross.avr.buildPackages.gcc
       pkgsCross.avr.buildPackages.binutils
+
+      # zig
     ];
 
     file.".tmux.conf".source = ../.tmux.conf;

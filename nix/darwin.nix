@@ -10,15 +10,14 @@
       fd # improved find
       procs # process monitor
       # tailscale # vpn management # not supported on macos
-      # smartmontools # ssd health monitoring
-      s3cmd # used for backups
+      smartmontools # ssd health monitoring
 
       borgbackup # backup
 
       mdbook # for documentation sites
     ];
     variables = {
-      EDITOR = "emacs";
+      EDITOR = "code";
       LANG = "en_US.UTF-8";
     };
     darwinConfig = "$HOME/.dotfiles/nix/darwin.nix";
