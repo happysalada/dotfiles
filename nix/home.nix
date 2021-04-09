@@ -1,9 +1,8 @@
-{ nix-doom-emacs, nixpkgs-update, nixpkgs-review, agenix }:
+{ nixpkgs-update, nixpkgs-review, agenix }:
 { pkgs, ... }:
 let programSettings = import ./programs { };
 in
 {
-  # imports = [ nix-doom-emacs.hmModule ];
   home = {
     username = "raphael";
     # This value determines the Home Manager release that your
@@ -33,7 +32,7 @@ in
 
       # rust
       rustup
-      # sccache # broken on darwin for now
+      sccache
       cargo-edit
       cargo-deps
       wasm-pack
@@ -87,17 +86,6 @@ in
       enableFishIntegration = true;
       enableNixDirenvIntegration = true;
     };
-
-    # try vscode for a while
-    # doom-emacs = {
-    #   enable = true;
-    #   doomPrivateDir = ./doom.d; # Directory containing your config.el init.el
-    #   emacsPackagesOverlay = self: super: {
-    #     magit-delta = super.magit-delta.overrideAttrs
-    #       (esuper: { buildInputs = esuper.buildInputs ++ [ pkgs.git ]; });
-    #   };
-    # };
-
 
     starship = {
       enable = true;

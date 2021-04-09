@@ -12,10 +12,6 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Editor
-    nix-doom-emacs.url = "github:vlaci/nix-doom-emacs";
-    nix-doom-emacs.inputs.nixpkgs.follows = "nixpkgs";
-
     # nix
     nixpkgs-update.url = "github:ryantm/nixpkgs-update";
     nixpkgs-review.url = "github:Mic92/nixpkgs-review";
@@ -30,7 +26,6 @@
     , nixpkgs
     , darwin
     , home-manager
-    , nix-doom-emacs
     , flake-compat
     , nixpkgs-update
     , nixpkgs-review
@@ -49,7 +44,7 @@
             # `home-manager` config
             home-manager.useGlobalPkgs = true;
             home-manager.users.raphael = import ./home.nix {
-              inherit nix-doom-emacs nixpkgs-update nixpkgs-review agenix;
+              inherit nixpkgs-update nixpkgs-review agenix;
             };
           }
         ];
