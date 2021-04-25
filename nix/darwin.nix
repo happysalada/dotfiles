@@ -106,6 +106,7 @@
     '';
     maxJobs = 4;
     buildCores = 4;
+    useSandbox = true;
     gc = {
       automatic = true;
       options = "--delete-older-than 7d";

@@ -51,7 +51,6 @@ in
       # tcptrack # does not work on macos
 
       # nix
-      nodePackages.node2nix
       nixpkgs-fmt
       nix-index
       nixpkgs-update.defaultPackage.x86_64-darwin
