@@ -44,7 +44,7 @@ in
       # js
       nodePackages.prettier
       nodePackages.pnpm
-      nodejs-15_x
+      nodejs-16_x
 
       # network
       mtr # network traffic
