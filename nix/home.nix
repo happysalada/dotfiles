@@ -38,6 +38,7 @@ in
       wasm-pack
       rust-analyzer
       sqlx-cli # broken on darwin for no
+      dua
       # cargo-tarpaulin # code coverage # not supported on darwin
 
       wrangler # deploy static sites with cloudflare
@@ -61,9 +62,11 @@ in
       clojure
       # jdk # some dependency has zulu
       leiningen
-      # for qmk
-      pkgsCross.avr.buildPackages.gcc
-      pkgsCross.avr.buildPackages.binutils
+      # for qmk # enable when keyboard comes back
+      # pkgsCross.avr.buildPackages.gcc
+      # pkgsCross.avr.buildPackages.binutils
+
+      zellij
 
       # zig
     ];
@@ -91,7 +94,6 @@ in
       enableFishIntegration = true;
       settings = {
         add_newline = false;
-        character.symbol = "|>";
         package.disabled = true;
       };
     };
@@ -141,7 +143,7 @@ in
     };
   };
 
-  # programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
+  programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
 
   # programs.neomutt = { enable = true; }; try out sometime
   # https://github.com/neomutt/neomutt

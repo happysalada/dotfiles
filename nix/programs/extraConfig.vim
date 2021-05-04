@@ -115,7 +115,6 @@ set scrolloff=2
 set noshowmode
 set hidden
 set nowrap
-set pyxversion=3
 set nojoinspaces
 let g:sneak#s_next = 1
 let g:vim_markdown_new_list_item_indent = 0
@@ -348,8 +347,3 @@ autocmd Filetype html,xml,xsl,php source ~/.config/nvim/scripts/closetag.vim
 " =============================================================================
 " # Footer
 " =============================================================================
-
-" nvim
-if has('nvim')
-	runtime! plugin/python_setup.vim
-endif
