@@ -100,7 +100,7 @@
     useDaemon = true;
     package = pkgs.nixFlakes;
     extraOptions = ''
-      experimental-features = nix-command flakes
+      experimental-features = nix-command flakes ca-derivations ca-references
       keep-outputs = true
       keep-derivations = true
     '';
@@ -118,6 +118,7 @@
 
   nixpkgs.config = {
     allowUnfree = true;
+    # contentAddressedByDefault = true; # build fails for now
     packageOverrides = pkgs: {
       nur = import
         (builtins.fetchTarball {
@@ -127,8 +128,6 @@
         { inherit pkgs; };
       # spacevim = pkgs.spacevim.override { spacevim_config = import ./programs/spacevim.nix; };
     };
-    # allow until openssl is updated
-    permittedInsecurePackages = [ "openssl-1.0.2u" ];
   };
 
   users = {
