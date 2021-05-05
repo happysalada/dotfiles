@@ -145,7 +145,7 @@
     # smartd = { enable = true; }; # unavailable on macos
     # avahi.enable = true; # unavailable on macos
 
-    # fails and clutter the logs
+    # fails and clutters the logs
     # logs located at /var/log/system.log
     nextdns = {
       enable = false;
