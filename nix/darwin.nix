@@ -15,6 +15,8 @@
       borgbackup # backup
 
       mdbook # for documentation sites
+
+      oil # better shell language for scripts
     ];
     variables = {
       EDITOR = "nvim ";
