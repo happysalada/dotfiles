@@ -13,7 +13,7 @@
     "nixos_prod" = {
       # same as hetzner zfs, just through tailscale
       hostname = "100.86.131.112";
-      user = "root";
+      user = "yt";
     };
     "hetzner-AX41-UEFI-ZFS-NVME" = {
       hostname = "144.76.153.92";
