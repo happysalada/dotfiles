@@ -15,7 +15,9 @@
     # nix
     nixpkgs-update.url = "github:ryantm/nixpkgs-update";
     nixpkgs-review.url = "github:Mic92/nixpkgs-review";
+    nixpkgs-review.inputs.nixpkgs.follows = "nixpkgs";
     agenix.url = "github:ryantm/agenix";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
 
     # Other sources
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };

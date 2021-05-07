@@ -37,7 +37,7 @@ in
       cargo-deps
       wasm-pack
       rust-analyzer
-      sqlx-cli # broken on darwin for no
+      sqlx-cli
       dua
       # cargo-tarpaulin # code coverage # not supported on darwin
 
@@ -53,7 +53,7 @@ in
 
       # nix
       nixpkgs-fmt
-      nix-index
+      # nix-index
       nixpkgs-update.defaultPackage.x86_64-darwin
       nixpkgs-review.defaultPackage.x86_64-darwin
       agenix.defaultPackage.x86_64-darwin
