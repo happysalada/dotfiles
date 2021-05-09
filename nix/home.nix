@@ -39,6 +39,7 @@ in
       rust-analyzer
       sqlx-cli
       dua
+      cargo-binutils
       # cargo-tarpaulin # code coverage # not supported on darwin
 
       wrangler # deploy static sites with cloudflare
