@@ -15,7 +15,7 @@
     gf = "git pull --prune";
     nixupgrade =
       "sudo -i sh -c 'nix-channel --update && nix-env -iA nixpkgs.nix && launchctl remove org.nixos.nix-daemon && launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist'";
-    ls = "exa --reverse --sort=size --all --header --long ";
+    ls = "exa --reverse --sort=size --all --header --long $argv";
     b = "broot -ghi";
     rsync_backup =
       "rsync -avrzP --exclude-from=$HOME/.dotfiles/backup/exclude.txt --delete $argv";
