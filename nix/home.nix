@@ -54,8 +54,8 @@ in
 
       # nix
       nixpkgs-fmt
-      # nix-index
-      nixpkgs-update.defaultPackage.x86_64-darwin
+      nix-index
+      # nixpkgs-update.defaultPackage.x86_64-darwin
       nixpkgs-review.defaultPackage.x86_64-darwin
       agenix.defaultPackage.x86_64-darwin
 
@@ -63,9 +63,12 @@ in
       clojure
       # jdk # some dependency has zulu
       leiningen
+
+      # embedded
       # for qmk # enable when keyboard comes back
       # pkgsCross.avr.buildPackages.gcc
       # pkgsCross.avr.buildPackages.binutils
+      arduino-cli
 
       zellij
 

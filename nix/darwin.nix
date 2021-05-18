@@ -11,6 +11,7 @@
       procs # process monitor
       # tailscale # vpn management # not supported on macos
       smartmontools # ssd health monitoring
+      bottom # a better top
 
       borgbackup # backup
 
@@ -121,15 +122,6 @@
   nixpkgs.config = {
     allowUnfree = true;
     # contentAddressedByDefault = true; # build fails for now
-    packageOverrides = pkgs: {
-      nur = import
-        (builtins.fetchTarball {
-          url = "https://github.com/nix-community/NUR/archive/master.tar.gz";
-          sha256 = "1c3rh7x8bql2m9xcn3kvdqng75lzzf6kpxb3m6knffyir0jcrfrh";
-        })
-        { inherit pkgs; };
-      # spacevim = pkgs.spacevim.override { spacevim_config = import ./programs/spacevim.nix; };
-    };
   };
 
   users = {

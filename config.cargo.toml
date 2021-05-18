@@ -1,5 +1,2 @@
 [build]
 rustc-wrapper = "/Users/raphael/.nix-profile/bin/sccache"
-
-[profile.dev]
-split-debuginfo = "unpacked"
