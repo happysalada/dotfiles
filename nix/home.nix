@@ -22,7 +22,6 @@ in
       # vlc # video player. does not compile on darwin
 
       # dev
-      bottom # rust htop
       # elixir related
       beam.packages.erlangR23.elixir_1_11
 
@@ -38,8 +37,6 @@ in
       wasm-pack
       rust-analyzer
       sqlx-cli
-      dua
-      cargo-binutils
       # cargo-tarpaulin # code coverage # not supported on darwin
 
       wrangler # deploy static sites with cloudflare
@@ -58,6 +55,7 @@ in
       # nixpkgs-update.defaultPackage.x86_64-darwin
       nixpkgs-review.defaultPackage.x86_64-darwin
       agenix.defaultPackage.x86_64-darwin
+      # mix2nix
 
       # keyboard dactyl stuff
       clojure
@@ -69,6 +67,9 @@ in
       # pkgsCross.avr.buildPackages.gcc
       # pkgsCross.avr.buildPackages.binutils
       arduino-cli
+      cargo-flash
+      cargo-embed
+      cargo-binutils
 
       zellij
 

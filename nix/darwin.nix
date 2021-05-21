@@ -12,6 +12,7 @@
       # tailscale # vpn management # not supported on macos
       smartmontools # ssd health monitoring
       bottom # a better top
+      dua # a better du
 
       borgbackup # backup
 
