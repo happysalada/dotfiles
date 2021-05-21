@@ -43,6 +43,7 @@ in
       # js
       nodePackages.prettier
       nodePackages.pnpm
+      nodePackages.node2nix
       nodePackages.npm-check-updates
       nodejs-16_x
 
