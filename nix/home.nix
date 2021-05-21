@@ -43,6 +43,7 @@ in
       # js
       nodePackages.prettier
       nodePackages.pnpm
+      nodePackages.npm-check-updates
       nodejs-16_x
 
       # network
@@ -55,7 +56,7 @@ in
       # nixpkgs-update.defaultPackage.x86_64-darwin
       nixpkgs-review.defaultPackage.x86_64-darwin
       agenix.defaultPackage.x86_64-darwin
-      # mix2nix
+      mix2nix
 
       # keyboard dactyl stuff
       clojure
