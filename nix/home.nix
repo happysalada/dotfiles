@@ -1,6 +1,6 @@
 { nixpkgs-update, nixpkgs-review, agenix }:
 { pkgs, ... }:
-let programSettings = import ./programs { };
+let programs = import ./programs { };
 in
 {
   home = {
@@ -23,7 +23,8 @@ in
 
       # dev
       # elixir related
-      beam.packages.erlangR23.elixir_1_11
+      beam.packages.erlangR24.elixir_1_12
+      elixir_ls
 
       #db
       postgresql_13
@@ -73,8 +74,6 @@ in
       cargo-embed
       cargo-binutils
 
-      zellij
-
       # zig
     ];
 
@@ -85,8 +84,11 @@ in
   news.display = "silent";
 
   programs = {
-    inherit (programSettings) alacritty fish ssh;
+    inherit (programs) alacritty fish ssh;
     git = import ./programs/git.nix { inherit pkgs; };
+
+    neovim = import ./programs/neovim.nix { inherit pkgs; };
+    vscode = import ./programs/vscodium.nix { inherit pkgs; };
 
     tmux.enable = true;
 
@@ -149,8 +151,6 @@ in
       enableFishIntegration = true;
     };
   };
-
-  programs.neovim = import ./programs/neovim.nix { pkgs = pkgs; };
 
   # programs.neomutt = { enable = true; }; try out sometime
   # https://github.com/neomutt/neomutt
