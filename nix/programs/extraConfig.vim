@@ -20,7 +20,7 @@ if (match($TERM, "-256color") != -1) && (match($TERM, "screen-256color") == -1)
   set termguicolors
 endif
 set background=dark
-" colorscheme PaperColor
+colorscheme PaperColor
 syntax on
 hi Normal ctermbg=NONE
 " Brighter comments
@@ -99,10 +99,10 @@ let g:mix_format_silent_errors = 1
 let g:EasyMotion_smartcase = 1
 
 " Git
-nmap <leader>hn <Plug>(GitGutterNextHunk)
-nmap <leader>hp <Plug>(GitGutterPrevHunk)
-nmap <leader>hs <Plug>(GitGutterStageHunk)
-nmap <leader>hu <Plug>(GitGutterUndoHunk)
+nmap <leader>gn <Plug>(GitGutterNextHunk)
+nmap <leader>gp <Plug>(GitGutterPrevHunk)
+nmap <leader>gs <Plug>(GitGutterStageHunk)
+nmap <leader>gu <Plug>(GitGutterUndoHunk)
 
 " =============================================================================
 " # Editor settings

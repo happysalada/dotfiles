@@ -13,7 +13,9 @@
     nerdtree
     vim-fish
     vim-elixir
+    alchemist-vim
     vim-which-key
     vim-gitgutter
+    papercolor-theme
   ];
 }
