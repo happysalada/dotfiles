@@ -19,6 +19,7 @@ in
     # $ nix-env -qaP | grep wget
     packages = with pkgs; [
       gitAndTools.delta # better git diff
+      gitui # terminal git ui
       # vlc # video player. does not compile on darwin
 
       # dev
@@ -59,6 +60,7 @@ in
       nixpkgs-review.defaultPackage.x86_64-darwin
       agenix.defaultPackage.x86_64-darwin
       mix2nix
+      jq
 
       # keyboard dactyl stuff
       clojure

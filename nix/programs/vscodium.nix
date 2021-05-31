@@ -12,6 +12,9 @@
     editorconfig.editorconfig
     coenraads.bracket-pair-colorizer-2
     esbenp.prettier-vscode
+    # b4dm4n.vscode-nixpkgs-fmt
+    emmanuelbeziat.vscode-great-icons
+    davidanson.vscode-markdownlint
   ];
   userSettings = {
     "files.autoSave" = "onFocusChange";
@@ -45,6 +48,10 @@
     };
     "[css]" = {
       "editor.defaultFormatter" = "esbenp.prettier-vscode";
+    };
+    # svelte
+    "[svelte]" = {
+      "editor.defaultFormatter" = "svelte.svelte-vscode";
     };
     # color
     "workbench.colorTheme" = "Default High Contrast";
