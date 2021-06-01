@@ -6,7 +6,7 @@
   package = pkgs.gitAndTools.gitFull;
   extraConfig = {
     core = {
-      editor = "emacs";
+      editor = "nvim";
       pager = "delta";
     };
     init = { defaultBranch = "master"; };
