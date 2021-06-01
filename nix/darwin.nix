@@ -2,8 +2,6 @@
 {
   environment = {
     systemPackages = with pkgs; [
-      openssl
-      gnupg
       exa # better ls
       ripgrep # better grep
       tealdeer # terser man
@@ -13,12 +11,12 @@
       smartmontools # ssd health monitoring
       bottom # a better top
       dua # a better du
-
       borgbackup # backup
-
       mdbook # for documentation sites
-
       oil # better shell language for scripts
+      ion # rust shell
+      gitAndTools.delta # better git diff
+      gitui # terminal git ui
     ];
     variables = {
       EDITOR = "nvim ";

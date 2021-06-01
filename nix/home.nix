@@ -18,8 +18,6 @@ in
     # List packages installed in system profile. To search by name, run:
     # $ nix-env -qaP | grep wget
     packages = with pkgs; [
-      gitAndTools.delta # better git diff
-      gitui # terminal git ui
       # vlc # video player. does not compile on darwin
 
       # dev
