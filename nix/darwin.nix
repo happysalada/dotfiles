@@ -108,14 +108,9 @@
     '';
     maxJobs = 4;
     buildCores = 4;
-    gc = {
-      automatic = false;
-      options = "--delete-older-than 7d";
-      interval = {
-        Hour = 24;
-        Minute = 0;
-      };
-    };
+    # - makes some builds fail midway
+    # - takes more time to re-build something
+    gc.automatic = false;
   };
 
   nixpkgs.config = {
