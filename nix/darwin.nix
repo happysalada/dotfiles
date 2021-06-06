@@ -109,7 +109,7 @@
     maxJobs = 4;
     buildCores = 4;
     gc = {
-      automatic = true;
+      automatic = false;
       options = "--delete-older-than 7d";
       interval = {
         Hour = 24;
