@@ -14,7 +14,7 @@
     esbenp.prettier-vscode
     emmanuelbeziat.vscode-great-icons
     davidanson.vscode-markdownlint
-    B4dM4n.vscode-nixpkgs-fmt
+    b4dm4n.vscode-nixpkgs-fmt
     svelte.svelte-vscode
     alefragnani.project-manager
     bradlc.vscode-tailwindcss

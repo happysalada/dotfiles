@@ -53,7 +53,6 @@ in
       # tcptrack # does not work on macos
 
       # nix
-      nixpkgs-fmt
       nix-index
       # nixpkgs-update.defaultPackage.x86_64-darwin
       nixpkgs-review.defaultPackage.x86_64-darwin
