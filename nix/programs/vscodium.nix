@@ -147,7 +147,7 @@
     "files.autoSave" = "onFocusChange";
     "explorer.confirmDelete" = false;
     "editor.tabSize" = 2;
-    "editor.fontSize" = 18;
+    "editor.fontSize" = 20;
     "editor.lineNumbers" = "interval";
     "editor.cursorBlinking" = "solid";
     "editor.fontFamily" = "Fira Code";
