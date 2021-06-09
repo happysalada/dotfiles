@@ -24,7 +24,6 @@ in
       # dev
       # elixir related
       beam.packages.erlangR24.elixir_1_12
-      elixir_ls
 
       #db
       postgresql_13
