@@ -25,11 +25,12 @@
     tiehuis.zig
     JakeBecker.elixir-ls
   ];
-  keybindings = [{
-    "key" = "space";
-    "command" = "vspacecode.space";
-    "when" = "activeEditorGroupEmpty && focusedView == '' && !whichkeyActive && !inputFocus";
-  }
+  keybindings = [
+    {
+      "key" = "space";
+      "command" = "vspacecode.space";
+      "when" = "activeEditorGroupEmpty && focusedView == '' && !whichkeyActive && !inputFocus";
+    }
     {
       "key" = "space";
       "command" = "vspacecode.space";
@@ -142,7 +143,8 @@
       "key" = "ctrl+l";
       "command" = "file-browser.stepIn";
       "when" = "inFileBrowser";
-    }];
+    }
+  ];
   userSettings = {
     "files.autoSave" = "onFocusChange";
     "explorer.confirmDelete" = false;
