@@ -166,6 +166,38 @@
     "vim.sneak" = true;
     "vim.leader" = ",";
     "vim.useSystemClipboard" = true;
+    "vim.normalModeKeyBindingsNonRecursive" = [
+      {
+        "before" = [ "<space>" ];
+        "commands" = [ "vspacecode.space" ];
+      }
+      {
+        "before" = [ "," ];
+        "commands" = [
+          "vspacecode.space"
+          {
+            "command" = "whichkey.triggerKey";
+            "args" = "m";
+          }
+        ];
+      }
+    ];
+    "vim.visualModeKeyBindingsNonRecursive" = [
+      {
+        "before" = [ "<space>" ];
+        "commands" = [ "vspacecode.space" ];
+      }
+      {
+        "before" = [ "," ];
+        "commands" = [
+          "vspacecode.space"
+          {
+            "command" = "whichkey.triggerKey";
+            "args" = "m";
+          }
+        ];
+      }
+    ];
     # rust
     "rust-analyzer.checkOnSave.command" = "clippy";
     "[rust]" = {
