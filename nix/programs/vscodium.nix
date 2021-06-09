@@ -156,6 +156,9 @@
     "editor.formatOnSave" = true;
     "editor.formatOnPaste" = true;
     "breadcrumbs.enabled" = true;
+    # git
+    "git.confirmSync" = false;
+    "git.autofetch" = false;
     # vim
     "vim.easymotion" = false;
     "vim.sneak" = true;
