@@ -17,6 +17,7 @@
       ion # rust shell
       gitAndTools.delta # better git diff
       gitui # terminal git ui
+      sd # better sed
     ];
     variables = {
       EDITOR = "codium ";

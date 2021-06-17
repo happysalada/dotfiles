@@ -23,6 +23,7 @@
     vspacecode.whichkey
     tiehuis.zig
     jakebecker.elixir-ls
+    # timonwong.shellcheck
   ];
   keybindings = [
     {
@@ -212,6 +213,9 @@
       "editor.defaultFormatter" = "esbenp.prettier-vscode";
     };
     "[css]" = {
+      "editor.defaultFormatter" = "esbenp.prettier-vscode";
+    };
+    "[javascript]" = {
       "editor.defaultFormatter" = "esbenp.prettier-vscode";
     };
     # svelte
