@@ -18,6 +18,9 @@
       gitAndTools.delta # better git diff
       gitui # terminal git ui
       sd # better sed
+      choose # better cut & awk
+      hyperfine # benchmarking tool
+      xh # http client
     ];
     variables = {
       EDITOR = "codium ";
