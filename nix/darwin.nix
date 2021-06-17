@@ -19,7 +19,7 @@
       gitui # terminal git ui
     ];
     variables = {
-      EDITOR = "nvim ";
+      EDITOR = "codium ";
       LANG = "en_US.UTF-8";
     };
     darwinConfig = "$HOME/.dotfiles/nix/darwin.nix";
@@ -102,7 +102,7 @@
     useDaemon = true;
     package = pkgs.nixFlakes;
     extraOptions = ''
-      experimental-features = nix-command flakes ca-derivations ca-references
+      experimental-features = nix-command flakes
       keep-outputs = true
       keep-derivations = true
     '';

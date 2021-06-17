@@ -85,16 +85,20 @@ in
   programs = {
     inherit (programs) alacritty fish ssh;
     git = import ./programs/git.nix { inherit pkgs; };
-
-    neovim = import ./programs/neovim.nix { inherit pkgs; };
     vscode = import ./programs/vscodium.nix { inherit pkgs; };
+
+    # try again on 0.5
+    # neovim = import ./programs/neovim.nix { inherit pkgs; };
 
     tmux.enable = true;
 
     direnv = {
       enable = true;
       enableFishIntegration = true;
-      enableNixDirenvIntegration = true;
+      nix-direnv = {
+        enable = true;
+        enableFlakes = true;
+      };
     };
 
     starship = {
@@ -104,6 +108,11 @@ in
         add_newline = false;
         package.disabled = true;
       };
+    };
+
+    nix-index = {
+      enable = true;
+      enableFishIntegration = true;
     };
 
     broot = {

@@ -16,14 +16,13 @@
     davidanson.vscode-markdownlint
     b4dm4n.vscode-nixpkgs-fmt
     svelte.svelte-vscode
-    alefragnani.project-manager
     bradlc.vscode-tailwindcss
     kahole.magit
     bodil.file-browser
-    VSpaceCode.vspacecode
-    VSpaceCode.whichkey
+    vspacecode.vspacecode
+    vspacecode.whichkey
     tiehuis.zig
-    JakeBecker.elixir-ls
+    jakebecker.elixir-ls
   ];
   keybindings = [
     {
@@ -147,6 +146,7 @@
   ];
   userSettings = {
     "files.autoSave" = "onFocusChange";
+    "update.mode" = "none"; # updates are done by nix
     "explorer.confirmDelete" = false;
     "editor.tabSize" = 2;
     "editor.fontSize" = 20;
@@ -161,6 +161,7 @@
     # git
     "git.confirmSync" = false;
     "git.autofetch" = false;
+    "magit.code-path" = "codium";
     # vim
     "vim.easymotion" = false;
     "vim.sneak" = true;
