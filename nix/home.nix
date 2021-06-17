@@ -153,11 +153,6 @@ in
       enable = true;
       enableFishIntegration = true;
     };
-
-    mcfly = {
-      enable = true;
-      enableFishIntegration = true;
-    };
   };
 
   # programs.neomutt = { enable = true; }; try out sometime

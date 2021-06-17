@@ -5,7 +5,7 @@
       lines = 42;
       columns = 160;
     };
-    scrolling.history = 1000000;
+    scrolling.history = 100000;
     colors.primary.background = "0x000000";
     font.normal.family = "Fira Code";
     font.bold.family = "Fira Code";
