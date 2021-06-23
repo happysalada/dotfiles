@@ -23,7 +23,7 @@
     vspacecode.whichkey
     tiehuis.zig
     jakebecker.elixir-ls
-    # timonwong.shellcheck
+    timonwong.shellcheck
   ];
   keybindings = [
     {

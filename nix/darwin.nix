@@ -21,9 +21,10 @@
       choose # better cut & awk
       hyperfine # benchmarking tool
       xh # http client
+      mosh # better ssh
     ];
     variables = {
-      EDITOR = "codium ";
+      EDITOR = "nvim ";
       LANG = "en_US.UTF-8";
     };
     darwinConfig = "$HOME/.dotfiles/nix/darwin.nix";

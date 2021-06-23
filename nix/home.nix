@@ -18,7 +18,6 @@ in
     # List packages installed in system profile. To search by name, run:
     # $ nix-env -qaP | grep wget
     packages = with pkgs; [
-      wasmer
       # vlc # video player. does not compile on darwin
 
       # dev
@@ -87,8 +86,8 @@ in
     git = import ./programs/git.nix { inherit pkgs; };
     vscode = import ./programs/vscodium.nix { inherit pkgs; };
 
-    # try again on 0.5
-    # neovim = import ./programs/neovim.nix { inherit pkgs; };
+    # used for secret editing
+    neovim = import ./programs/neovim.nix { inherit pkgs; };
 
     tmux.enable = true;
 
