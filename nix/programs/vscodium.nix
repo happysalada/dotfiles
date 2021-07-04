@@ -202,6 +202,7 @@
     ];
     # rust
     "rust-analyzer.checkOnSave.command" = "clippy";
+    "rust-analyzer.runnables.overrideCargo" = "$(which cargo)";
     "[rust]" = {
       "editor.defaultFormatter" = "matklad.rust-analyzer";
     };
@@ -218,6 +219,10 @@
     "[javascript]" = {
       "editor.defaultFormatter" = "esbenp.prettier-vscode";
     };
+    "[typescript]" = {
+      "editor.defaultFormatter" = "esbenp.prettier-vscode";
+    };
+    "typescript.updateImportsOnFileMove.enabled" = "always";
     # svelte
     "[svelte]" = {
       "editor.defaultFormatter" = "svelte.svelte-vscode";

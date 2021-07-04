@@ -68,8 +68,8 @@ in
       # pkgsCross.avr.buildPackages.gcc
       # pkgsCross.avr.buildPackages.binutils
       arduino-cli
-      cargo-flash
-      cargo-embed
+      # cargo-flash
+      # cargo-embed
       cargo-binutils
 
       # zig

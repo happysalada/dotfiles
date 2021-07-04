@@ -27,4 +27,11 @@
     "...." = "../../..";
     "....." = "../../../..";
   };
+  interactiveShellInit = ''
+    for path in /Users/raphael/.nix-profile/bin /run/current-system/sw/bin
+        if not contains $path $PATH
+            set PATH $PATH $path
+        end
+    end
+  '';
 }
