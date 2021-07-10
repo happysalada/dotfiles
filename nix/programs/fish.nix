@@ -17,6 +17,8 @@
     gpp = "git pull --prune";
     gsi = "git stash --include-untracked";
     gsp = "git stash pop";
+    gsa = "git stage --all";
+    gcm = "git commit -m $argv";
     nixupgrade =
       "sudo -i sh -c 'nix-channel --update && nix-env -iA nixpkgs.nix && launchctl remove org.nixos.nix-daemon && launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist'";
     ls = "exa --reverse --sort=size --all --header --long $argv";
