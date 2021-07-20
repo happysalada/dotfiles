@@ -77,9 +77,9 @@ in
     ];
 
     file.".tmux.conf".source = ./.tmux.conf;
-    file.".cargo/config.toml".source = ./config.cargo.toml;
-    file.".config/helix/config.toml".source = ./config.helix.toml;
-    file.".config/helix/themes/happysalada.toml".source = ./theme.helix.toml;
+    file.".cargo/config.toml".source = ./config/cargo.toml;
+    file.".config/helix/config.toml".source = ./config/helix.toml;
+    file.".config/helix/themes/happysalada.toml".source = ./config/theme.helix.toml;
   };
 
   news.display = "silent";
