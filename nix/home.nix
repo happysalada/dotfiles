@@ -21,6 +21,7 @@ in
       # vlc # video player. does not compile on darwin
 
       # dev
+      helix
       # elixir related
       beam.packages.erlangR24.elixir_1_12
 
@@ -75,8 +76,10 @@ in
       # zig
     ];
 
-    file.".tmux.conf".source = ../.tmux.conf;
-    file.".cargo/config.toml".source = ../config.cargo.toml;
+    file.".tmux.conf".source = ./.tmux.conf;
+    file.".cargo/config.toml".source = ./config.cargo.toml;
+    file.".config/helix/config.toml".source = ./config.helix.toml;
+    file.".config/helix/themes/happysalada.toml".source = ./theme.helix.toml;
   };
 
   news.display = "silent";

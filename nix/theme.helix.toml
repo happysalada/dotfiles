@@ -1,0 +1,80 @@
+attribute = "lilac" 
+keyword = "almond" 
+"keyword.directive" = "lilac" # -- preprocessor comments (#if in C)
+namespace = "lilac" 
+punctuation = "lavender" 
+"punctuation.delimiter" = "lavender" 
+operator = "lilac" 
+special = "honey" 
+property = "white" 
+variable = "lavender" 
+# variable = "almond" # TODO: metavariables only
+"variable.parameter" = "lavender" 
+"variable.builtin" = "mint" 
+type = "white" 
+"type.builtin" = "white" # TODO: distinguish?
+constructor = "lilac" 
+function = "white" 
+"function.macro" = "lilac" 
+"function.builtin" = "white" 
+comment = "sirocco" 
+constant = "white" 
+"constant.builtin" = "white" 
+string = "silver" 
+number = "chamois" 
+escape = "honey" 
+# used for lifetimes
+label = "honey"
+
+# TODO: diferentiate doc comment
+# concat (ERROR) @syntax-error and "MISSING ;" selectors for errors
+
+module = "#ff0000"
+
+"ui.background" = { bg = "#000000" }
+"ui.linenr" = { fg = "comet" }
+"ui.linenr.selected" = { fg = "lilac" }
+"ui.statusline" = { fg = "lilac", bg = "revolver" }
+"ui.statusline.inactive" = { fg = "lavender", bg = "revolver" }
+"ui.popup" = { bg = "revolver" }
+"ui.window" = { fg = "bossanova" }
+"ui.help" = { bg = "#7958DC", fg = "#171452" }
+
+"ui.text" = { fg = "lavender" }
+"ui.text.focus" = { fg = "lilac" }
+
+"ui.selection" = { bg = "#540099" }
+"ui.selection.primary" = { bg = "#540099" }
+# TODO: namespace ui.cursor as ui.selection.cursor?
+"ui.cursor.select" = { bg = "delta" }
+"ui.cursor.insert" = { bg = "white" }
+"ui.cursor.match" = { fg = "#212121", bg = "#6C6999" }
+"ui.cursor" = { modifiers = ["reversed"] }
+
+"ui.menu.selected" = { fg = "revolver", bg = "white" }
+
+diagnostic = { modifiers = ["underlined"] }
+
+warning = "lightning"
+error = "apricot"
+info = "delta"
+hint = "silver"
+
+[palette]
+white = "#ffffff"
+lilac = "#dbbfef"
+lavender = "#a4a0e8"
+comet = "#5a5977"
+bossanova = "#452859"
+revolver = "#281733"
+
+silver = "#cccccc"
+sirocco = "#697C81"
+mint = "#9ff28f"
+almond = "#eccdba"
+chamois = "#E8DCA0"
+honey = "#efba5d"
+
+apricot = "#f47868"
+lightning = "#ffcd1c"
+delta = "#6F44F0"
