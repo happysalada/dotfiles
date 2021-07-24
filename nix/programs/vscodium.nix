@@ -24,6 +24,7 @@
     tiehuis.zig
     jakebecker.elixir-ls
     timonwong.shellcheck
+    eugleo.magic-racket
   ];
   keybindings = [
     {

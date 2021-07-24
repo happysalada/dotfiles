@@ -21,6 +21,7 @@ in
       # vlc # video player. does not compile on darwin
 
       # dev
+      racket-minimal
       # elixir related
       beam.packages.erlangR24.elixir_1_12
 
