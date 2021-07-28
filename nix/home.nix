@@ -53,7 +53,7 @@ in
 
       # nix
       nix-index
-      # nixpkgs-update.defaultPackage.x86_64-darwin
+      nixpkgs-update.defaultPackage.x86_64-darwin
       nixpkgs-review.defaultPackage.x86_64-darwin
       agenix.defaultPackage.x86_64-darwin
       mix2nix
