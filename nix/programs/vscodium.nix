@@ -6,7 +6,7 @@
     vscodevim.vim
     serayuzgur.crates
     tamasfe.even-better-toml
-    bbenoist.Nix
+    bbenoist.nix
     matklad.rust-analyzer
     jock.svg
     editorconfig.editorconfig
