@@ -58,6 +58,7 @@ in
       agenix.defaultPackage.x86_64-darwin
       mix2nix
       jq
+      editorconfig-checker
 
       # keyboard dactyl stuff
       clojure

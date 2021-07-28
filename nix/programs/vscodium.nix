@@ -25,6 +25,7 @@
     jakebecker.elixir-ls
     timonwong.shellcheck
     eugleo.magic-racket
+    betterthantomorrow.calva
   ];
   keybindings = [
     {
