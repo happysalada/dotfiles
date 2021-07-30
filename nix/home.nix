@@ -38,6 +38,8 @@ in
       rust-analyzer
       sqlx-cli
       # cargo-tarpaulin # code coverage # not supported on darwin
+      cargo-audit
+      cargo-outdated
 
       wrangler # deploy static sites with cloudflare
       # js
