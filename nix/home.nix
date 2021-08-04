@@ -37,7 +37,6 @@ in
       wasm-pack
       rust-analyzer
       sqlx-cli
-      # cargo-tarpaulin # code coverage # not supported on darwin
       cargo-audit
       cargo-outdated
 
@@ -47,7 +46,7 @@ in
       nodePackages.pnpm
       nodePackages.node2nix
       nodePackages.npm-check-updates
-      nodejs-16_x
+      nodejs-14_x
 
       # network
       mtr # network traffic

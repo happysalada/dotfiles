@@ -2,8 +2,10 @@
   enable = true;
 
   functions = {
-    nixgc = "nix-collect-garbage -d";
-    snixgc = "sudo nix-collect-garbage -d";
+    # nix
+    nixgc = "nix store gc -v";
+    snixgc = "sudo nix store gc -v";
+    # git 
     gcb = "git checkout -b $argv";
     gc = "git checkout $argv";
     gbd = "git branch --delete --force $argv";
@@ -19,8 +21,7 @@
     gsp = "git stash pop";
     gsa = "git stage --all";
     gcm = "git commit -m $argv";
-    nixupgrade =
-      "sudo -i sh -c 'nix-channel --update && nix-env -iA nixpkgs.nix && launchctl remove org.nixos.nix-daemon && launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist'";
+    # misc
     ls = "exa --reverse --sort=size --all --header --long $argv";
     b = "broot -ghi";
     rsync_backup =
