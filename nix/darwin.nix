@@ -110,6 +110,7 @@
       experimental-features = nix-command flakes
       keep-outputs = true
       keep-derivations = true
+      builders-use-substitutes = true
     '';
     maxJobs = 4;
     buildCores = 4;
