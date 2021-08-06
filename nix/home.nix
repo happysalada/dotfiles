@@ -19,6 +19,7 @@ in
     # $ nix-env -qaP | grep wget
     packages = with pkgs; [
       # vlc # video player. does not compile on darwin
+      element-desktop
 
       # dev
       racket-minimal
@@ -47,6 +48,8 @@ in
       nodePackages.node2nix
       nodePackages.npm-check-updates
       nodejs-14_x
+      nodePackages.yarn
+      yarn2nix
 
       # network
       mtr # network traffic

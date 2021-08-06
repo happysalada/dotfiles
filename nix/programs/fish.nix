@@ -4,7 +4,7 @@
   functions = {
     # nix
     nixgc = "nix store gc -v";
-    snixgc = "sudo nix collect-garbage -d";
+    snixgc = "sudo nix-collect-garbage -d";
     # git 
     gcb = "git checkout -b $argv";
     gc = "git checkout $argv";
@@ -21,6 +21,10 @@
     gsp = "git stash pop";
     gsa = "git stage --all";
     gcm = "git commit -m $argv";
+    ggc = ''
+      git reflog expire --all --expire=now
+      git gc --prune=now --aggressive
+    '';
     # misc
     ls = "exa --reverse --sort=size --all --header --long $argv";
     b = "broot -ghi";
@@ -31,3 +35,4 @@
     "....." = "../../../..";
   };
 }
+

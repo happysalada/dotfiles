@@ -116,6 +116,14 @@
     # - makes some builds fail midway
     # - takes more time to re-build something
     gc.automatic = false;
+    # Waaaaaaaaay too slow in 2021
+    # distributedBuilds = true;
+    # buildMachines = [{
+    #   hostName = "100.86.131.112";
+    #   user = "yt";
+    #   system = "x86_64-linux";
+    #   sshKey = "/Users/raphael/.ssh/id_ed25519";
+    # }];
   };
 
   nixpkgs.config = {
