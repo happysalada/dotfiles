@@ -36,7 +36,6 @@ in
       cargo-edit
       cargo-deps
       wasm-pack
-      rust-analyzer
       sqlx-cli
       cargo-audit
       cargo-outdated

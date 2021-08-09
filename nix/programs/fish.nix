@@ -25,6 +25,8 @@
       git reflog expire --all --expire=now
       git gc --prune=now --aggressive
     '';
+    gfu = "git fetch upstream";
+    gmu = "git merge upstream/master master";
     # misc
     ls = "exa --reverse --sort=size --all --header --long $argv";
     b = "broot -ghi";
