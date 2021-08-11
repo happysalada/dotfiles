@@ -12,7 +12,6 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # nix
-    nixpkgs-update.url = "github:ryantm/nixpkgs-update";
     nixpkgs-review.url = "github:Mic92/nixpkgs-review";
     nixpkgs-review.inputs.nixpkgs.follows = "nixpkgs";
     agenix.url = "github:ryantm/agenix";
@@ -28,7 +27,6 @@
     , darwin
     , home-manager
     , flake-compat
-    , nixpkgs-update
     , nixpkgs-review
     , agenix
     , ...
@@ -45,7 +43,7 @@
             # `home-manager` config
             home-manager.useGlobalPkgs = true;
             home-manager.users.raphael = import ./home.nix {
-              inherit nixpkgs-update nixpkgs-review agenix;
+              inherit nixpkgs-review agenix;
             };
           }
         ];

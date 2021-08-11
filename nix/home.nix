@@ -1,4 +1,4 @@
-{ nixpkgs-update, nixpkgs-review, agenix }:
+{ nixpkgs-review, agenix }:
 { pkgs, ... }:
 let programs = import ./programs { };
 in
@@ -46,7 +46,7 @@ in
       nodePackages.pnpm
       nodePackages.node2nix
       nodePackages.npm-check-updates
-      nodejs-14_x
+      nodejs-16_x
       nodePackages.yarn
       yarn2nix
 
@@ -56,12 +56,12 @@ in
 
       # nix
       nix-index
-      nixpkgs-update.defaultPackage.x86_64-darwin
       nixpkgs-review.defaultPackage.x86_64-darwin
       agenix.defaultPackage.x86_64-darwin
       mix2nix
       jq
       editorconfig-checker
+      nix-update
 
       # keyboard dactyl stuff
       clojure
