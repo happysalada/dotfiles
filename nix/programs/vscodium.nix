@@ -22,7 +22,7 @@
     vspacecode.vspacecode
     vspacecode.whichkey
     tiehuis.zig
-    jakebecker.elixir-ls
+    elixir-lsp.vscode-elixir-ls
     timonwong.shellcheck
     eugleo.magic-racket
     betterthantomorrow.calva
