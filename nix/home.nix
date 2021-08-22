@@ -1,4 +1,4 @@
-{ nixpkgs-review, agenix }:
+{ nixpkgs-review, agenix, nix-update }:
 { pkgs, ... }:
 let programs = import ./programs { };
 in
@@ -61,7 +61,7 @@ in
       mix2nix
       jq
       editorconfig-checker
-      nix-update
+      nix-update.defaultPackage.x86_64-darwin
 
       # keyboard dactyl stuff
       clojure

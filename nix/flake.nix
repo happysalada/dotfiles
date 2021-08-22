@@ -16,6 +16,8 @@
     nixpkgs-review.inputs.nixpkgs.follows = "nixpkgs";
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
+    nix-update.url = "github:Mic92/nix-update";
+    nix-update.inputs.nixpkgs.follows = "nixpkgs";
 
     # Other sources
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
@@ -29,6 +31,7 @@
     , flake-compat
     , nixpkgs-review
     , agenix
+    , nix-update
     , ...
     }@inputs: {
 
@@ -43,7 +46,7 @@
             # `home-manager` config
             home-manager.useGlobalPkgs = true;
             home-manager.users.raphael = import ./home.nix {
-              inherit nixpkgs-review agenix;
+              inherit nixpkgs-review agenix nix-update;
             };
           }
         ];
