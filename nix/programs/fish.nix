@@ -36,5 +36,12 @@
     "...." = "../../..";
     "....." = "../../../..";
   };
+
+  # put installed binaries before local binaries
+  interactiveShellInit = ''
+    for path in /Users/raphael/.nix-profile/bin /run/current-system/sw/bin
+      set -x PATH $path $PATH
+    end
+  '';
 }
 
