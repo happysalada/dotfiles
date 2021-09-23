@@ -1,6 +1,7 @@
-{ nixpkgs-review, agenix, nix-update }:
+{ nixpkgs-review, agenix, nix-update, helix, ... }:
 { pkgs, ... }:
-let programs = import ./programs { };
+let
+  programs = import ./programs { };
 in
 {
   home = {
@@ -21,10 +22,9 @@ in
       # vlc # video player. does not compile on darwin
       element-desktop
 
-      # dev
-      racket-minimal
       # elixir related
       beam.packages.erlangR24.elixir_1_12
+      elixir_ls
 
       #db
       postgresql_13
@@ -39,6 +39,7 @@ in
       sqlx-cli
       cargo-audit
       cargo-outdated
+      rust-analyzer
 
       wrangler # deploy static sites with cloudflare
       # js
@@ -46,14 +47,15 @@ in
       nodePackages.pnpm
       nodePackages.node2nix
       nodePackages.npm-check-updates
+      nodePackages.svelte-language-server
       nodejs-16_x
       nodePackages.yarn
       yarn2nix
 
       # network
       mtr # network traffic
-      # tcptrack # does not work on macos
 
+      # tcptrack # does not work on macos
       # nix
       nix-index
       nixpkgs-review.defaultPackage.x86_64-darwin
@@ -62,26 +64,40 @@ in
       jq
       editorconfig-checker
       nix-update.defaultPackage.x86_64-darwin
+      nixpkgs-fmt
+      rnix-lsp
+      carnix
 
-      # keyboard dactyl stuff
-      clojure
-      # jdk # some dependency has zulu
-      leiningen
+      # shell stuff
+      nodePackages.bash-language-server
 
-      # embedded
-      # for qmk # enable when keyboard comes back
-      # pkgsCross.avr.buildPackages.gcc
-      # pkgsCross.avr.buildPackages.binutils
-      arduino-cli
-      # cargo-flash
-      # cargo-embed
-      cargo-binutils
+      # keyboard dactyl 
+      # clojure
+      # leiningen
+
+      # for qmk # enable when keyboard comes back                       
+      # pkgsCross.avr.buildPackages.gcc                                 
+      # pkgsCross.avr.buildPackages.binutils                            
+      # arduino-cli                                                     
+      # cargo-flash                                                    
+      # cargo-embed                                                     
+      # cargo-binutils                                                  
+
+      helix.defaultPackage.x86_64-darwin
+      # helix
+
+      # testing out
+      zellij
 
       # zig
+      zstd
+      blender
+      remarshal
     ];
 
     file.".tmux.conf".source = ./config/.tmux.conf;
     file.".cargo/config.toml".source = ./config/cargo.toml;
+    file.".config/zellij/config.yaml".source = ./config/zellij.yaml;
     file.".config/helix/config.toml".source = ./config/helix.toml;
     file.".config/helix/themes/happysalada.toml".source = ./config/theme.helix.toml;
   };

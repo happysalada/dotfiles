@@ -1,0 +1,6 @@
+---
+simplified_ui: true
+no_pane_frames: true
+keybinds:
+  normal:
+    - unbind: [ Ctrl: 'r']

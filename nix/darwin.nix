@@ -22,6 +22,8 @@
       hyperfine # benchmarking tool
       xh # http client
       mosh # better ssh
+      file # get informations about files
+      moreutils # sponge
     ];
     variables = {
       EDITOR = "nvim ";
@@ -44,7 +46,7 @@
 
   fonts = {
     enableFontDir = true;
-    fonts = [ pkgs.fira-code ];
+    fonts = with pkgs; [ fira-code ];
   };
 
   system.defaults = {

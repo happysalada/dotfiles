@@ -17,5 +17,6 @@
     vim-which-key
     vim-gitgutter
     papercolor-theme
+    vim-nix
   ];
 }
