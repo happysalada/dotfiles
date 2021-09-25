@@ -1,37 +1,37 @@
-attribute = "lilac" 
-keyword = "almond" 
-"keyword.directive" = "lilac" # -- preprocessor comments (#if in C)
-namespace = "lilac" 
-punctuation = "lavender" 
-"punctuation.delimiter" = "lavender" 
-operator = "lilac" 
-special = "honey" 
-property = "white" 
-variable = "lavender" 
+attribute = "pastel_pink"
+keyword = "sirocco"
+"keyword.directive" = "red" # -- preprocessor comments (#if in C)
+namespace = "silver"
+punctuation = "silver"
+"punctuation.delimiter" = "silver"
+operator = "silver"
+special = "honey"
+property = "white"
+variable = "pastel_pink"
 # variable = "almond" # TODO: metavariables only
-"variable.parameter" = "lavender" 
-"variable.builtin" = "mint" 
-type = "white" 
+# "variable.parameter" = { fg = "lavender", modifiers = ["underlined"] }
+"variable.parameter" = { fg = "pastel_pink" }
+"variable.builtin" = "mint"
+type = "indigo"
 "type.builtin" = "white" # TODO: distinguish?
-constructor = "lilac" 
-function = "white" 
-"function.macro" = "lilac" 
-"function.builtin" = "white" 
-comment = "sirocco" 
-constant = "white" 
-"constant.builtin" = "white" 
-string = "silver" 
-number = "chamois" 
-escape = "honey" 
+constructor = "emerald"
+function = "light_blue"
+"function.macro" = "test_pink"
+"function.builtin" = "white"
+tag = "orange"
+comment = "sirocco"
+constant = "white"
+"constant.builtin" = "white"
+string = "sirocco"
+number = "chamois"
+escape = "honey"
 # used for lifetimes
-label = "honey"
+label = "test_pink"
 
 # TODO: diferentiate doc comment
-# concat (ERROR) @syntax-error and "MISSING ;" selectors for errors
+# concat (ERROR) @error.syntax and "MISSING ;" selectors for errors
 
-module = "#ff0000"
-
-"ui.background" = { bg = "#000000" }
+"ui.background" = { bg = "#000" }
 "ui.linenr" = { fg = "comet" }
 "ui.linenr.selected" = { fg = "lilac" }
 "ui.statusline" = { fg = "lilac", bg = "revolver" }
@@ -41,15 +41,16 @@ module = "#ff0000"
 "ui.help" = { bg = "#7958DC", fg = "#171452" }
 
 "ui.text" = { fg = "lavender" }
-"ui.text.focus" = { fg = "lilac" }
+"ui.text.focus" = { fg = "white" }
 
-"ui.selection" = { bg = "#540099" }
-"ui.selection.primary" = { bg = "#540099" }
+"ui.selection" = { bg = "purple" }
+"ui.selection.primary" = { bg = "purple" }
 # TODO: namespace ui.cursor as ui.selection.cursor?
 "ui.cursor.select" = { bg = "delta" }
 "ui.cursor.insert" = { bg = "white" }
 "ui.cursor.match" = { fg = "#212121", bg = "#6C6999" }
 "ui.cursor" = { modifiers = ["reversed"] }
+"ui.highlight" = { bg = "bossanova" }
 
 "ui.menu.selected" = { fg = "revolver", bg = "white" }
 
@@ -79,3 +80,16 @@ honey = "#efba5d"
 apricot = "#f47868"
 lightning = "#ffcd1c"
 delta = "#6F44F0"
+
+indigo = "#5269FF"
+orange = "#fdba74"
+light_blue = "#9DB7FE"
+pastel_pink = "#f0abfc"
+light_green = "#A6E22E"
+candy_pink = "#F23969"
+pastel_orange = "#FDBA74"
+emerald = "#59dcd8"
+dark_blue = "#4352B9"
+red = "#E06C75"
+purple = "#540099"
+test_pink = "#E673FF"

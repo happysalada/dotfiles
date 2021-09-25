@@ -88,11 +88,11 @@ in
 
       # testing out
       zellij
-
-      # zig
       zstd
       blender
       remarshal
+      comby
+      # zig
     ];
 
     file.".tmux.conf".source = ./config/.tmux.conf;

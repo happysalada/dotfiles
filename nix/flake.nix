@@ -21,6 +21,8 @@
 
     # tools
     helix = { url = "/Users/raphael/Projects/helix"; };
+    # correct but very long!
+    # helix = { url = "https://github.com/helix-editor/helix.git"; type = "git"; submodules = true; };
 
     # Other sources
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
