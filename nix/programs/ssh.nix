@@ -24,6 +24,14 @@
       user = "u255596";
       extraOptions = { PasswordAuthentication = "yes"; };
     };
+    "jonringer" = {
+      hostname = "73.157.50.82";
+      port = 2222;
+      user = "happysalada";
+      extraOptions = {
+        IdentitiesOnly = "yes";
+      };
+    };
   };
   matchBlocks."*" = {
     extraOptions = {
@@ -42,6 +50,7 @@
       # UseKeychain = "yes";
       AddKeysToAgent = "yes";
       identityFile = "~/.ssh/id_ed25519";
+      ForwardAgent = "yes"; # enables use of local ssh agent (e.g. for github)
     };
   };
 }

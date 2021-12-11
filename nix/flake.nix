@@ -3,7 +3,7 @@
 
   inputs = {
     # Package sets
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
@@ -19,11 +19,6 @@
     nix-update.url = "github:Mic92/nix-update";
     nix-update.inputs.nixpkgs.follows = "nixpkgs";
 
-    # tools
-    helix = { url = "/Users/raphael/Projects/helix"; };
-    # correct but very long!
-    # helix = { url = "https://github.com/helix-editor/helix.git"; type = "git"; submodules = true; };
-
     # Other sources
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
   };
@@ -37,7 +32,6 @@
     , nixpkgs-review
     , agenix
     , nix-update
-    , helix
     , ...
     }@inputs: {
 
@@ -52,9 +46,7 @@
           {
             # `home-manager` config
             home-manager.useGlobalPkgs = true;
-            home-manager.users.raphael = import ./home.nix {
-              inherit nixpkgs-review agenix nix-update helix;
-            };
+            home-manager.users.raphael = import ./home.nix { inherit nixpkgs-review agenix nix-update; };
           }
         ];
       };

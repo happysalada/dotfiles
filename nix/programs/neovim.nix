@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  enable = true;
+  enable = false;
   viAlias = true;
   vimAlias = true;
   extraConfig = builtins.readFile ./extraConfig.vim;

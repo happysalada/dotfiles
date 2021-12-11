@@ -1,4 +1,4 @@
-{ nixpkgs-review, agenix, nix-update, helix, ... }:
+{ nixpkgs-review, agenix, nix-update, ... }:
 { pkgs, ... }:
 let
   programs = import ./programs { };
@@ -15,6 +15,7 @@ in
     # the Home Manager release notes for a list of state version
     # changes in each release.
     stateVersion = "20.09";
+    homeDirectory = /Users/raphael;
 
     # List packages installed in system profile. To search by name, run:
     # $ nix-env -qaP | grep wget
@@ -35,10 +36,12 @@ in
       sccache
       cargo-edit
       cargo-deps
-      wasm-pack
+      # wasm-pack # libressl test failure
       sqlx-cli
       cargo-audit
       cargo-outdated
+      cargo-bloat
+      cargo-cross
       rust-analyzer
 
       wrangler # deploy static sites with cloudflare
@@ -63,13 +66,15 @@ in
       mix2nix
       jq
       editorconfig-checker
-      nix-update.defaultPackage.x86_64-darwin
+      # nix-update.defaultPackage.x86_64-darwin
       nixpkgs-fmt
       rnix-lsp
       carnix
+      nix-tree
 
       # shell stuff
       nodePackages.bash-language-server
+      shellcheck
 
       # keyboard dactyl 
       # clojure
@@ -83,15 +88,16 @@ in
       # cargo-embed                                                     
       # cargo-binutils                                                  
 
-      helix.defaultPackage.x86_64-darwin
-      # helix
+      helix
 
       # testing out
       zellij
       zstd
-      blender
+      # blender # dep jemalloc failing
       remarshal
       comby
+      tmate
+      czkawka
       # zig
     ];
 
@@ -117,10 +123,7 @@ in
     direnv = {
       enable = true;
       enableFishIntegration = true;
-      nix-direnv = {
-        enable = true;
-        enableFlakes = true;
-      };
+      nix-direnv.enable = true;
     };
 
     starship = {

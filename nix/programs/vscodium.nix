@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  enable = true;
+  enable = false;
   package = pkgs.vscodium;
   extensions = with pkgs.vscode-extensions; [
     vscodevim.vim
@@ -24,8 +24,8 @@
     tiehuis.zig
     elixir-lsp.vscode-elixir-ls
     timonwong.shellcheck
-    eugleo.magic-racket
-    betterthantomorrow.calva
+    # eugleo.magic-racket
+    # betterthantomorrow.calva
   ];
   keybindings = [
     {

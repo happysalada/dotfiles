@@ -24,9 +24,10 @@
       mosh # better ssh
       file # get informations about files
       moreutils # sponge
+      nextdns # better dns
     ];
     variables = {
-      EDITOR = "nvim ";
+      EDITOR = "hx ";
       LANG = "en_US.UTF-8";
     };
     darwinConfig = "$HOME/.dotfiles/nix/darwin.nix";
