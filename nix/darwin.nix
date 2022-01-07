@@ -139,7 +139,6 @@
     nix.configureBuildUsers = true;
     users.raphael = {
       home = /Users/raphael;
-      description = "Raphael megzari";
     };
   };
 

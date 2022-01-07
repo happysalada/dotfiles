@@ -1,11 +1,11 @@
-{ nixpkgs-review, agenix, nix-update, ... }:
+{ nixpkgs-review, agenix, nix-update, username, ... }:
 { pkgs, ... }:
 let
   programs = import ./programs { };
 in
 {
   home = {
-    username = "raphael";
+    inherit username;
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
     # when a new Home Manager release introduces backwards
@@ -14,7 +14,7 @@ in
     # You can update Home Manager without changing this value. See
     # the Home Manager release notes for a list of state version
     # changes in each release.
-    stateVersion = "20.09";
+    stateVersion = "22.05";
     homeDirectory = /Users/raphael;
 
     # List packages installed in system profile. To search by name, run:
@@ -29,14 +29,13 @@ in
 
       #db
       postgresql_13
-      dbeaver
+      # dbeaver
 
       # rust
-      rustup
       sccache
       cargo-edit
       cargo-deps
-      # wasm-pack # libressl test failure
+      wasm-pack
       sqlx-cli
       cargo-audit
       cargo-outdated
@@ -44,7 +43,6 @@ in
       cargo-cross
       rust-analyzer
 
-      wrangler # deploy static sites with cloudflare
       # js
       nodePackages.prettier
       nodePackages.pnpm
@@ -57,8 +55,8 @@ in
 
       # network
       mtr # network traffic
-
       # tcptrack # does not work on macos
+
       # nix
       nix-index
       nixpkgs-review.defaultPackage.x86_64-darwin
@@ -66,10 +64,9 @@ in
       mix2nix
       jq
       editorconfig-checker
-      # nix-update.defaultPackage.x86_64-darwin
+      nix-update.defaultPackage.x86_64-darwin
       nixpkgs-fmt
       rnix-lsp
-      carnix
       nix-tree
 
       # shell stuff
@@ -99,6 +96,7 @@ in
       tmate
       czkawka
       # zig
+      audiowaveform
     ];
 
     file.".tmux.conf".source = ./config/.tmux.conf;
@@ -113,10 +111,6 @@ in
   programs = {
     inherit (programs) alacritty fish ssh;
     git = import ./programs/git.nix { inherit pkgs; };
-    vscode = import ./programs/vscodium.nix { inherit pkgs; };
-
-    # used for secret editing
-    neovim = import ./programs/neovim.nix { inherit pkgs; };
 
     tmux.enable = true;
 
@@ -144,10 +138,6 @@ in
       enable = true;
       enableFishIntegration = true;
       verbs = [
-        {
-          invocation = "p";
-          execution = ":parent";
-        }
         {
           invocation = "edit";
           shortcut = "e";

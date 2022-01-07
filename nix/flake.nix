@@ -3,7 +3,7 @@
 
   inputs = {
     # Package sets
-    nixpkgs.url = "github:nixos/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/staging-next";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
@@ -18,6 +18,7 @@
     agenix.inputs.nixpkgs.follows = "nixpkgs";
     nix-update.url = "github:Mic92/nix-update";
     nix-update.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-hardware.url = "github:happysalada/nixos-hardware/add_p14s_intel";
 
     # Other sources
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
@@ -32,11 +33,11 @@
     , nixpkgs-review
     , agenix
     , nix-update
+    , nixos-hardware
     , ...
     }@inputs: {
 
-      # My `nix-darwin` configs
-      darwinConfigurations.raphael = darwin.lib.darwinSystem {
+      darwinConfigurations.mbp = darwin.lib.darwinSystem {
         system = "x86_64-darwin";
         modules = [
           ./darwin.nix
@@ -46,8 +47,24 @@
           {
             # `home-manager` config
             home-manager.useGlobalPkgs = true;
-            home-manager.users.raphael = import ./home.nix { inherit nixpkgs-review agenix nix-update; };
+            home-manager.users.raphael = import ./home.nix { inherit nixpkgs-review agenix nix-update; username = "raphael"; };
           }
+        ];
+      };
+      
+      nixosConfigurations.thinkp = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./nixos.nix
+          agenix.nixosModules.age
+          # `home-manager` module
+          home-manager.nixosModules.home-manager
+          {
+            # `home-manager` config
+            home-manager.useGlobalPkgs = true;
+            home-manager.users.yt = import ./home.nix { inherit nixpkgs-review agenix nix-update; username = "yt"; };
+          }
+          nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen2
         ];
       };
     };
