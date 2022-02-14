@@ -2,7 +2,7 @@
   enable = true;
   settings = {
     theme = "happysalada";
-    lsp.display_messages = true;
+    lsp.display-messages = true;
     keys.normal = {
       space.space = "file_picker";
       space.w = ":w";
