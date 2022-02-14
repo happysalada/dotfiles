@@ -1,8 +1,5 @@
 { nixpkgs-review, agenix, nix-update, username, ... }:
 { pkgs, ... }:
-let
-  programs = import ./programs { };
-in
 {
   home = {
     inherit username;
@@ -42,6 +39,7 @@ in
       cargo-bloat
       cargo-cross
       rust-analyzer
+      rust-bin.stable.latest.default
 
       # js
       nodePackages.prettier
@@ -85,8 +83,6 @@ in
       # cargo-embed                                                     
       # cargo-binutils                                                  
 
-      helix
-
       # testing out
       zellij
       zstd
@@ -96,27 +92,27 @@ in
       tmate
       czkawka
       # zig
-      audiowaveform
+      worker-build
     ];
 
     file.".tmux.conf".source = ./config/.tmux.conf;
     file.".cargo/config.toml".source = ./config/cargo.toml;
     file.".config/zellij/config.yaml".source = ./config/zellij.yaml;
-    file.".config/helix/config.toml".source = ./config/helix.toml;
-    file.".config/helix/themes/happysalada.toml".source = ./config/theme.helix.toml;
   };
 
   news.display = "silent";
 
   programs = {
-    inherit (programs) alacritty fish ssh;
+    alacritty = import ./programs/alacritty.nix;
     git = import ./programs/git.nix { inherit pkgs; };
+    fish = import ./programs/fish.nix;
+    ssh = import ./programs/ssh.nix;
+    helix = import ./programs/helix.nix;
 
     tmux.enable = true;
 
     direnv = {
       enable = true;
-      enableFishIntegration = true;
       nix-direnv.enable = true;
     };
 
@@ -168,6 +164,7 @@ in
       enable = true;
       enableFishIntegration = true;
     };
+
   };
 
   # programs.neomutt = { enable = true; }; try out sometime

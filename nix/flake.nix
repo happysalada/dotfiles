@@ -3,7 +3,8 @@
 
   inputs = {
     # Package sets
-    nixpkgs.url = "github:nixos/nixpkgs/staging-next";
+    # nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
@@ -19,9 +20,7 @@
     nix-update.url = "github:Mic92/nix-update";
     nix-update.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:happysalada/nixos-hardware/add_p14s_intel";
-
-    # Other sources
-    flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
+    rust-overlay.url = "github:oxalica/rust-overlay";
   };
 
   outputs =
@@ -29,11 +28,11 @@
     , nixpkgs
     , darwin
     , home-manager
-    , flake-compat
     , nixpkgs-review
     , agenix
     , nix-update
     , nixos-hardware
+    , rust-overlay
     , ...
     }@inputs: {
 
@@ -42,6 +41,9 @@
         modules = [
           ./darwin.nix
           agenix.nixosModules.age
+          ({ ... }: {
+            nixpkgs.overlays = [ rust-overlay.overlay ];
+          })
           # `home-manager` module
           home-manager.darwinModules.home-manager
           {
@@ -49,6 +51,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.users.raphael = import ./home.nix { inherit nixpkgs-review agenix nix-update; username = "raphael"; };
           }
+
         ];
       };
       
@@ -62,7 +65,7 @@
           {
             # `home-manager` config
             home-manager.useGlobalPkgs = true;
-            home-manager.users.yt = import ./home.nix { inherit nixpkgs-review agenix nix-update; username = "yt"; };
+            home-manager.users.yt = import ./home.nix { inherit nixpkgs-review agenix nix-update ; username = "yt"; };
           }
           nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen2
         ];
