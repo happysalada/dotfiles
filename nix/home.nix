@@ -84,7 +84,6 @@
       # cargo-binutils                                                  
 
       # testing out
-      zellij
       zstd
       # blender # dep jemalloc failing
       remarshal
@@ -97,7 +96,6 @@
 
     file.".tmux.conf".source = ./config/.tmux.conf;
     file.".cargo/config.toml".source = ./config/cargo.toml;
-    file.".config/zellij/config.yaml".source = ./config/zellij.yaml;
   };
 
   news.display = "silent";
@@ -114,6 +112,13 @@
     direnv = {
       enable = true;
       nix-direnv.enable = true;
+    };
+
+    zellij = {
+      enable = true;
+      settings = {
+        pane_frames = false;
+      };
     };
 
     starship = {

@@ -1,5 +1,0 @@
----
-pane_frames: false
-keybinds:
-  normal:
-    - unbind: [ Ctrl: 'r']
