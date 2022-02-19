@@ -3,8 +3,8 @@
 
   inputs = {
     # Package sets
-    # nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # nixpkgs.url = "github:nixos/nixpkgs";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
@@ -19,8 +19,9 @@
     agenix.inputs.nixpkgs.follows = "nixpkgs";
     nix-update.url = "github:Mic92/nix-update";
     nix-update.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-hardware.url = "github:happysalada/nixos-hardware/add_p14s_intel";
     rust-overlay.url = "github:oxalica/rust-overlay";
+    nixinate.url = "github:matthewcroughan/nixinate";
+    nixinate.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -31,44 +32,18 @@
     , nixpkgs-review
     , agenix
     , nix-update
-    , nixos-hardware
     , rust-overlay
     , ...
     }@inputs: {
 
       darwinConfigurations.mbp = darwin.lib.darwinSystem {
         system = "x86_64-darwin";
-        modules = [
-          ./darwin.nix
-          agenix.nixosModules.age
-          ({ ... }: {
-            nixpkgs.overlays = [ rust-overlay.overlay ];
-          })
-          # `home-manager` module
-          home-manager.darwinModules.home-manager
-          {
-            # `home-manager` config
-            home-manager.useGlobalPkgs = true;
-            home-manager.users.raphael = import ./home.nix { inherit nixpkgs-review agenix nix-update; username = "raphael"; };
-          }
-
-        ];
+        modules = import ./machines/mbp.nix { inherit home-manager nixpkgs-review agenix nix-update rust-overlay;};
       };
-      
-      nixosConfigurations.thinkp = nixpkgs.lib.nixosSystem {
+
+      nixosConfigurations.server = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = [
-          ./nixos.nix
-          agenix.nixosModules.age
-          # `home-manager` module
-          home-manager.nixosModules.home-manager
-          {
-            # `home-manager` config
-            home-manager.useGlobalPkgs = true;
-            home-manager.users.yt = import ./home.nix { inherit nixpkgs-review agenix nix-update ; username = "yt"; };
-          }
-          nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen2
-        ];
+        modules = import ./machines/server_template.nix { inherit agenix; };
       };
     };
 }
