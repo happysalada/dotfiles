@@ -8,6 +8,7 @@
           mdbook # for documentation sites
           nextdns # better dns
           ion # rust shell
+          sequoia # openpgp in rust
         ];
         variables = {
           EDITOR = "hx ";
@@ -29,7 +30,7 @@
 
       fonts = {
         enableFontDir = true;
-        fonts = with pkgs; [ fira-code ];
+        fonts = import ../packages/fonts.nix { inherit pkgs; };
       };
 
       system.defaults = {
@@ -102,14 +103,6 @@
         # - makes some builds fail midway
         # - takes more time to re-build something
         gc.automatic = false;
-        # Waaaaaaaaay too slow in 2021
-        # distributedBuilds = true;
-        # buildMachines = [{
-        #   hostName = "100.86.131.112";
-        #   user = "yt";
-        #   system = "x86_64-linux";
-        #   sshKey = "/Users/raphael/.ssh/id_ed25519";
-        # }];
       };
 
       nixpkgs.config = {
@@ -200,6 +193,9 @@
           comby
           tmate
           # zig
+          rustscan
+          android-file-transfer
+          openscad
 
           # machine specific
           nixpkgs-review.defaultPackage.x86_64-darwin
@@ -214,7 +210,7 @@
         file.".cargo/config.toml".source = ../config/cargo.toml;
       };
       news.display = "silent";
-      programs = import ../homes/common.nix { inherit pkgs;};
+      programs = import ../homes/common.nix { inherit pkgs; };
     });
   }
 ]

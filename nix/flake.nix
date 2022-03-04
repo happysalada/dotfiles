@@ -41,9 +41,11 @@
         modules = import ./machines/mbp.nix { inherit home-manager nixpkgs-review agenix nix-update rust-overlay;};
       };
 
-      nixosConfigurations.server = nixpkgs.lib.nixosSystem {
+      homeConfigurations.thinkpad = home-manager.lib.homeManagerConfiguration {
         system = "x86_64-linux";
-        modules = import ./machines/server_template.nix { inherit agenix; };
+        homeDirectory = "/home/user";
+        username = "user";
+        configuration.imports = [ ./machines/thinkpad.nix ];
       };
     };
 }

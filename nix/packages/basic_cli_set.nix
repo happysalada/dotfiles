@@ -12,7 +12,6 @@ with pkgs; [
   borgbackup # backup
   oil # better shell language for scripts
   gitAndTools.delta # better git diff
-  gitui # terminal git ui
   sd # better sed
   choose # better cut & awk
   hyperfine # benchmarking tool

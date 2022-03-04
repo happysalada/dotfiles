@@ -29,5 +29,6 @@
     };
 
     interactive = { diffFilter = "delta --color-only"; };
+    credential.helper = "store";
   };
 }

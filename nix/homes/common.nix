@@ -15,6 +15,9 @@
     enable = true;
     settings = {
       pane_frames = false;
+      keybinds = {
+        unbind = [{"Ctrl" = "b";}];
+      };
     };
   };
 
@@ -56,5 +59,9 @@
   skim = {
     enable = true;
     enableFishIntegration = true;
+  };
+
+  gitui = {
+    enable = true;
   };
 }
