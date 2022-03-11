@@ -9,6 +9,7 @@ with pkgs; [
   cargo-outdated
   cargo-bloat
   cargo-cross
+  cargo-sort
   rust-analyzer
   rust-bin.stable.latest.default
   worker-build
