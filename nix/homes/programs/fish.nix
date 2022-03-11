@@ -3,6 +3,7 @@
 
   functions = {
     # git 
+    gp = "git push";
     gcb = "git checkout -b $argv";
     gcm = "git commit -m $argv";
     ggc = ''
@@ -21,7 +22,6 @@
     nixgc = "nix store gc -v";
     snixgc = "sudo nix-collect-garbage -d";
     # git
-    gp = "git push";
     gps = "git push --set-upstream origin HEAD";
     gl = "git log --pretty=oneline --abbrev-commit";
     gbd = "git branch --delete --force";
