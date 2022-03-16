@@ -18,5 +18,7 @@
   fonts.fontconfig.enable = true;
   targets.genericLinux.enable = true;
   news.display = "silent";
-  programs = import ../homes/common.nix { inherit pkgs; } // import ../homes/linux.nix { inherit pkgs; } // import ./overrides;
+  programs = import ../homes/common.nix { inherit pkgs; } //
+    import ../homes/linux.nix { inherit pkgs; } //
+    import ./overrides;
 }

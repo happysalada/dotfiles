@@ -5,4 +5,6 @@ with pkgs; [
   nixpkgs-fmt
   rnix-lsp
   nix-tree
+  nix-du
+  graphviz # needed to visualize nix-du
 ]

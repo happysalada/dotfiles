@@ -39,6 +39,7 @@
     # misc
     ls = "exa --reverse --sort=size --all --header --long $argv";
     b = "broot -ghi";
+    nixdu = "nix-du -s=300MB | tred | dot -Tsvg > store.svg";
   };
 
   # put installed binaries before local binaries

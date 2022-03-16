@@ -22,4 +22,6 @@ with pkgs; [
   zstd # fast compression
   jq # working with json
   czkawka # finding and cleaning files
+  btop # top with cpufreq
+  sequoia # openpgp in rust
 ]

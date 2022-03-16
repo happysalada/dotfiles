@@ -38,7 +38,12 @@
 
       darwinConfigurations.mbp = darwin.lib.darwinSystem {
         system = "x86_64-darwin";
-        modules = import ./machines/mbp.nix { inherit home-manager nixpkgs-review agenix nix-update rust-overlay;};
+        modules = import ./machines/mbp.nix { inherit home-manager nixpkgs-review agenix nix-update rust-overlay; };
+      };
+
+      darwinConfigurations.mbp = darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        modules = import ./machines/m1.nix { inherit home-manager agenix rust-overlay; };
       };
 
       homeConfigurations.thinkpad = home-manager.lib.homeManagerConfiguration {

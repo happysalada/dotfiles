@@ -1,12 +1,10 @@
-{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, }:
+{ home-manager, agenix, rust-overlay, }:
 [
   ({ pkgs, ... }:
     {
       environment = {
         systemPackages = with pkgs; [
-
           mdbook # for documentation sites
-          nextdns # better dns
           ion # rust shell
         ];
         variables = {
@@ -71,9 +69,6 @@
 
       networking = {
         dns = [
-          # provided by nextdns
-          "45.90.28.43"
-          "45.90.30.43"
           # defaults
           "1.1.1.1"
           "8.8.8.8"
@@ -82,8 +77,6 @@
           "Wi-Fi"
           "Bluetooth PAN"
           "Thunderbolt Bridge"
-          "NextDNS"
-          "Tailscale Tunnel"
         ];
         hostName = "yt";
       };
@@ -97,8 +90,8 @@
           keep-derivations = true
           builders-use-substitutes = true
         '';
-        maxJobs = 4;
-        buildCores = 4;
+        maxJobs = 40;
+        buildCores = 40;
         # - makes some builds fail midway
         # - takes more time to re-build something
         gc.automatic = false;
@@ -111,22 +104,13 @@
 
       users = {
         nix.configureBuildUsers = true;
-        users.raphael = {
-          home = /Users/raphael;
+        users."override" = {
+          home = /Users/override;
         };
       };
 
       services = {
         nix-daemon.enable = true;
-        # smartd = { enable = true; }; # unavailable on macos
-        # avahi.enable = true; # unavailable on macos
-
-        # fails and clutters the logs
-        # logs located at /var/log/system.log
-        nextdns = {
-          enable = false;
-          arguments = [ "-config" "e42bf1" ];
-        };
       };
     })
   agenix.nixosModules.age
@@ -140,7 +124,7 @@
     home-manager.useGlobalPkgs = true;
     home-manager.users.raphael = ({ pkgs, ... }: {
       home = {
-        username = "raphael";
+        username = "override";
         # This value determines the Home Manager release that your
         # configuration is compatible with. This helps avoid breakage
         # when a new Home Manager release introduces backwards
@@ -150,13 +134,12 @@
         # the Home Manager release notes for a list of state version
         # changes in each release.
         stateVersion = "22.05";
-        homeDirectory = /Users/raphael;
+        homeDirectory = /Users/override;
 
         # List packages installed in system profile. To search by name, run:
         # $ nix-env -qaP | grep wget
         packages = with pkgs; [
           # vlc # video player. does not compile on darwin
-          element-desktop
 
           #db
           postgresql_13
@@ -170,31 +153,12 @@
           nodePackages.bash-language-server
           shellcheck
 
-          # keyboard dactyl 
-          # clojure
-          # leiningen
-
-          # for qmk # enable when keyboard comes back                       
-          # pkgsCross.avr.buildPackages.gcc                                 
-          # pkgsCross.avr.buildPackages.binutils                            
-          # arduino-cli                                                     
-          # cargo-flash                                                    
-          # cargo-embed                                                     
-          # cargo-binutils                                                  
 
           # testing out
-          # blender # dep jemalloc failing
           remarshal
           comby
-          tmate
           # zig
-          android-file-transfer
-          openscad
 
-          # machine specific
-          nixpkgs-review.defaultPackage.x86_64-darwin
-          agenix.defaultPackage.x86_64-darwin
-          nix-update.defaultPackage.x86_64-darwin
         ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../packages/dev/rust.nix { inherit pkgs; }) ++
@@ -205,7 +169,8 @@
         file.".cargo/config.toml".source = ../config/cargo.toml;
       };
       news.display = "silent";
-      programs = import ../homes/common.nix { inherit pkgs; };
+      programs = import ../homes/common.nix { inherit pkgs; } //
+        import ./overrides;
     });
   }
 ]

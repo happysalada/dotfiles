@@ -11,6 +11,9 @@
     };
     init = { defaultBranch = "master"; };
 
+    # breaks cargo update function for some reason
+    # find out how to do something about it someday
+    # https://github.com/rust-lang/cargo/issues/3381
     url = { "git@github.com:" = { insteadOf = "https://github.com/"; }; };
 
     push.default = "upstream";
