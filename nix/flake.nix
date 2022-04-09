@@ -33,8 +33,9 @@
     , agenix
     , nix-update
     , rust-overlay
-    , ...
+    , nixinate
     }@inputs: {
+      apps = nixinate.nixinate.x86_64-darwin self;
 
       darwinConfigurations.mbp = darwin.lib.darwinSystem {
         system = "x86_64-darwin";
@@ -51,6 +52,12 @@
         homeDirectory = "/home/user";
         username = "user";
         configuration.imports = [ ./machines/thinkpad.nix ];
+      };
+
+
+      nixosConfigurations.hetzi = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = import ./machines/hetzner_cloud/default.nix { inherit home-manager agenix; };
       };
     };
 }
