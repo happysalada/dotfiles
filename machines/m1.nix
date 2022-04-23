@@ -26,7 +26,7 @@
       };
 
       fonts = {
-        enableFontDir = true;
+        fontDir.enable = true;
         fonts = import ../packages/fonts.nix { inherit pkgs; };
       };
 

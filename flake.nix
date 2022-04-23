@@ -57,7 +57,7 @@
 
       nixosConfigurations.hetzi = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = import ./machines/hetzner_cloud/default.nix { inherit home-manager agenix; };
+        modules = import ./machines/hetzner_cloud/default.nix { inherit home-manager agenix rust-overlay; };
       };
     };
 }

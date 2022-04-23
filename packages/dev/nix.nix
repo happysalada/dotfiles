@@ -5,6 +5,6 @@ with pkgs; [
   nixpkgs-fmt
   rnix-lsp
   nix-tree
-  nix-du
+  # nix-du # compilation fails on darwin
   graphviz # needed to visualize nix-du
 ]

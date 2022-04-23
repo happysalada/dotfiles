@@ -14,6 +14,8 @@
     # breaks cargo update function for some reason
     # find out how to do something about it someday
     # https://github.com/rust-lang/cargo/issues/3381
+    # causing problems on servers as well
+    # causing problems without on my local to push
     url = { "git@github.com:" = { insteadOf = "https://github.com/"; }; };
 
     push.default = "upstream";

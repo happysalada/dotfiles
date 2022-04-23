@@ -24,4 +24,6 @@ with pkgs; [
   czkawka # finding and cleaning files
   btop # top with cpufreq
   sequoia # openpgp in rust
+  ruplacer # sed with visual feedback
+  ouch # painless (de)compression
 ]

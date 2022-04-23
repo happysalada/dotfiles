@@ -10,7 +10,7 @@ with pkgs; [
   cargo-bloat
   cargo-cross
   cargo-sort
-  rust-analyzer
+  rust-analyzer-unwrapped
   rust-bin.stable.latest.default
   worker-build
   wrangler

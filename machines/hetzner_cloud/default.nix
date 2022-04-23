@@ -1,11 +1,11 @@
-{ home-manager, agenix }:
+{ home-manager, agenix, rust-overlay }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
   {
     environment.systemPackages = [ agenix.defaultPackage.x86_64-linux ];
-    # nixpkgs.overlays = [ self.overlay ];
+    nixpkgs.overlays = [ rust-overlay.overlay ];
   }
   ({pkgs, ...}:{
     imports = [
@@ -118,7 +118,7 @@ in
         # the Home Manager release notes for a list of state version
         # changes in each release.
         stateVersion = "22.05";
-        homeDirectory = /home/yt;
+        # homeDirectory = /home/yt;
 
         # List packages installed in system profile. To search by name, run:
         # $ nix-env -qaP | grep wget
@@ -134,13 +134,13 @@ in
           remarshal
           comby
         ] ++
-        (import ./packages/basic_cli_set.nix { inherit pkgs; }) ++
-        (import ./packages/dev/rust.nix { inherit pkgs; }) ++
-        (import ./packages/dev/js.nix { inherit pkgs; }) ++
-        (import ./packages/dev/nix.nix { inherit pkgs; });
+        (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
+        (import ../../packages/dev/rust.nix { inherit pkgs; }) ++
+        (import ../../packages/dev/js.nix { inherit pkgs; }) ++
+        (import ../../packages/dev/nix.nix { inherit pkgs; });
       };
       news.display = "silent";
-      programs = import ./homes/common.nix { inherit pkgs; };
+      programs = import ../../homes/common.nix { inherit pkgs; };
     });
   }
   {

@@ -16,7 +16,7 @@
     settings = {
       pane_frames = false;
       keybinds = {
-        unbind = [{"Ctrl" = "b";}];
+        unbind = [{ "Ctrl" = "b"; }];
       };
     };
   };
@@ -63,5 +63,12 @@
 
   gitui = {
     enable = true;
+  };
+
+  nushell = {
+    enable = true;
+    settings = {
+      edit_mode = "vi";
+    };
   };
 }
