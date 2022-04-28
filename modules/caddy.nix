@@ -6,7 +6,7 @@
 
   services.caddy = {
     enable = true;
-    # ca = "https://acme-staging-v02.api.letsencrypt.org/directory"; # comment once tested
+    # acmeCA = "https://acme-staging-v02.api.letsencrypt.org/directory"; # comment once tested
     email = "raphael@megzari.com";
     extraConfig = ''
       (ban_bot) {
@@ -21,11 +21,6 @@
         @static_assets {
           path *.png /images/* /css/* /js/* /fonts/*
         }
-      }
-
-      larbimegzari.fr www.larbimegzari.fr {
-        root * /etc/larbimegzari
-        file_server
       }
     '';
   };

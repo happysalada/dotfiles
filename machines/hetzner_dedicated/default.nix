@@ -7,7 +7,7 @@ in
     environment.systemPackages = [ agenix.defaultPackage.x86_64-linux ];
     nixpkgs.overlays = [ rust-overlay.overlay ];
   }
-  ({pkgs, ...}:{
+  ({ pkgs, config, ... }: {
     imports = [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -16,7 +16,7 @@ in
       ../../modules/grafana.nix
       ../../modules/chrony.nix
       ../../modules/loki.nix
-      # ../modules/caddy.nix
+      ../../modules/caddy.nix
       ../../modules/prometheus.nix
       ../../modules/ssh.nix
       # ./gitea.nix
@@ -28,17 +28,20 @@ in
     boot.loader.systemd-boot.enable = false;
     boot.loader.grub = {
       enable = true;
-      version = 2;
-      devices = [ "/dev/sda" ];
-      # efiSupport = false;
-      # devices = [ "/dev/disk/by-id/nvme-SAMSUNG_MZVLB512HBJQ-00000_S4GENA0NA00424" "/dev/disk/by-id/nvme-SAMSUNG_MZVLB512HBJQ-00000_S4GENA0NA00427" ];
-      # copyKernels = true;
+      efiSupport = false;
+      devices = [
+        "/dev/disk/by-id/nvme-SAMSUNG_MZQLB3T8HALS-00007_S438NC0R804840"
+        "/dev/disk/by-id/nvme-SAMSUNG_MZQLB3T8HALS-00007_S438NC0R811800"
+      ];
+      copyKernels = true;
     };
-    # boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
+
+    boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 
     nix = {
       package = pkgs.nixFlakes;
       autoOptimiseStore = true;
+      buildCores = 32;
       extraOptions = ''
         experimental-features = nix-command flakes
       '';
@@ -52,15 +55,40 @@ in
     # Set your time zone.
     time.timeZone = "Etc/UTC";
 
-    environment.enableDebugInfo = true;
+    environment = {
+      enableDebugInfo = true;
+      systemPackages = with pkgs; [ vim ];
+    };
 
-    # networking.hostName = "hetzner-AX41-UEFI-ZFS-NVME";
-    # networking.hostId = "00000007";
+    networking.hostName = "htz";
+    networking.hostId = "00000001";
 
     networking.enableIPv6 = true;
     networking.useDHCP = false;
-    networking.interfaces.enp1s0.useDHCP = true;
-    networking.nameservers = [ "8.8.8.8" ];
+    networking.interfaces."enp7s0".ipv4.addresses = [
+      {
+        address = "65.108.111.190";
+        prefixLength = 24;
+      }
+    ];
+    networking.interfaces."enp7s0".ipv6.addresses = [
+      {
+        address = "2a01:4f9:6b:232c::1";
+        prefixLength = 64;
+      }
+    ];
+    networking.defaultGateway = "65.108.111.129";
+    networking.defaultGateway6 = { address = "fe80::1"; interface = "enp7s0"; };
+    networking.nameservers = [
+      # cloudflare
+      "1.1.1.1"
+      "2606:4700:4700::1111"
+      "2606:4700:4700::1001"
+      # google
+      "8.8.8.8"
+      "2001:4860:4860::8888"
+      "2001:4860:4860::8844"
+    ];
 
     users = {
       mutableUsers = false;
@@ -103,10 +131,11 @@ in
   })
   agenix.nixosModules.age
   # vf-sqlite-graphql.nixosModules.backend
-  home-manager.nixosModules.home-manager {
+  home-manager.nixosModules.home-manager
+  {
     # `home-manager` config
     home-manager.useGlobalPkgs = true;
-    home-manager.users.yt = ({pkgs, ...}: {
+    home-manager.users.yt = ({ pkgs, ... }: {
       home = {
         username = "yt";
         # This value determines the Home Manager release that your
@@ -132,7 +161,6 @@ in
           shellcheck
 
           remarshal
-          comby
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../../packages/dev/rust.nix { inherit pkgs; }) ++
@@ -145,7 +173,7 @@ in
   }
   {
     _module.args.nixinate = {
-      host = "135.181.253.119";
+      host = "2a01:4f9:6b:232c::1";
       sshUser = "root";
       buildOn = "remote"; # valid args are "local" or "remote"
     };

@@ -59,5 +59,10 @@
         system = "x86_64-linux";
         modules = import ./machines/hetzner_cloud/default.nix { inherit home-manager agenix rust-overlay; };
       };
+
+      nixosConfigurations.htz = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = import ./machines/hetzner_dedicated/default.nix { inherit home-manager agenix rust-overlay; };
+      };
     };
 }

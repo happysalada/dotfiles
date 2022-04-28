@@ -10,7 +10,7 @@
           ion # rust shell
         ];
         variables = {
-          EDITOR = "hx ";
+          EDITOR = "hx";
           LANG = "en_US.UTF-8";
         };
       };

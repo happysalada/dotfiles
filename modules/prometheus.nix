@@ -15,7 +15,7 @@
         job_name = "prometheus";
         static_configs = [{
           targets = [ "localhost:9090" ];
-          labels = { alias = "prometheus.forunion.com"; };
+          labels = { alias = "prometheus"; };
         }];
       }
 
@@ -23,7 +23,7 @@
       #   job_name = "postgres";
       #   static_configs = [{
       #     targets = [ "localhost:9187" ];
-      #     labels = { alias = "postgres.forunion.com"; };
+      #     labels = { alias = "postgres"; };
       #   }];
       # }
 
@@ -31,7 +31,7 @@
         job_name = "node";
         static_configs = [{
           targets = [ "localhost:9100" ];
-          labels = { alias = "forunion.com"; };
+          labels = { alias = "node"; };
         }];
       }
 
@@ -70,7 +70,6 @@
   # services.postgresql = {
   #   ensureUsers = [{
   #     name = "postgres-exporter";
-
   #     ensurePermissions = {
   #       "DATABASE ${config.services.union.dbName}" = "ALL PRIVILEGES";
   #     };
