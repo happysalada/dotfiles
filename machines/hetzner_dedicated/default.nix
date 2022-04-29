@@ -13,9 +13,10 @@ in
       ./hardware-configuration.nix
       ../../modules/vector.nix
       # ../modules/postgresql.nix
-      ../../modules/grafana.nix
+      ../../modules/grafana
       ../../modules/chrony.nix
       ../../modules/loki.nix
+      ../../modules/mimir.nix
       ../../modules/caddy.nix
       ../../modules/prometheus.nix
       ../../modules/ssh.nix
@@ -57,7 +58,7 @@ in
 
     environment = {
       enableDebugInfo = true;
-      systemPackages = with pkgs; [ vim ];
+      systemPackages = with pkgs; [ vim lsof ];
     };
 
     networking.hostName = "htz";

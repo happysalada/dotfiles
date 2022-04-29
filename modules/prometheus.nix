@@ -10,6 +10,10 @@
       evaluation_interval = "5s";
     };
 
+    remoteWrite = [ {
+      url = "http://localhost:9009/api/v1/push";
+    }];
+
     scrapeConfigs = [
       {
         job_name = "prometheus";

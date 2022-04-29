@@ -13,7 +13,7 @@ in
       ./hardware-configuration.nix
       ../../modules/vector.nix
       # ../modules/postgresql.nix
-      ../../modules/grafana.nix
+      ../../modules/grafana
       ../../modules/chrony.nix
       ../../modules/loki.nix
       # ../modules/caddy.nix
