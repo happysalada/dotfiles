@@ -11,7 +11,9 @@ with pkgs; [
   cargo-cross
   cargo-sort
   rust-analyzer-unwrapped
-  rust-bin.stable.latest.default
+  (rust-bin.stable.latest.default.override {
+    extensions = [ "rust-src" ]; 
+  })
   worker-build
   wrangler
 ]

@@ -1,7 +1,6 @@
 { pkgs }:
 {
   alacritty = import ./programs/alacritty.nix;
-  git = import ./programs/git.nix { inherit pkgs; };
   fish = import ./programs/fish.nix;
   ssh = import ./programs/ssh.nix;
   helix = import ./programs/helix.nix;

@@ -52,7 +52,7 @@
         special = honey;
         property = white;
         variable = indigo;
-        "variable.parameter" = { fg = "pastel_pink"; };
+        "variable.parameter" = { fg = pastel_pink; };
         "variable.builtin" = mint;
         type = emerald;
         "type.builtin" = emerald; # TODO: distinguish?
@@ -92,7 +92,7 @@
         "ui.cursor.insert" = { bg = white; };
         "ui.cursor.match" = { fg = "#212121"; bg = "#6C6999"; };
         "ui.cursor" = { modifiers = [ "reversed" ]; };
-        "ui.highlight" = { bg = "bossanova"; };
+        "ui.highlight" = { bg = bossanova; };
 
         "ui.menu.selected" = { fg = revolver; bg = white; };
 

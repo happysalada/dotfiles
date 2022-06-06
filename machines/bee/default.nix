@@ -24,18 +24,8 @@ in
       # ./plausible.nix
     ];
 
-    # Use GRUB2 as the boot loader.
-    # We don't use systemd-boot because Hetzner uses BIOS legacy boot.
-    boot.loader.systemd-boot.enable = false;
-    boot.loader.grub = {
-      enable = true;
-      efiSupport = false;
-      devices = [
-        "/dev/disk/by-id/nvme-SAMSUNG_MZQLB3T8HALS-00007_S438NC0R804840"
-        "/dev/disk/by-id/nvme-SAMSUNG_MZQLB3T8HALS-00007_S438NC0R811800"
-      ];
-      copyKernels = true;
-    };
+    boot.loader.systemd-boot.enable = true;
+    boot.loade.efi.canTouchEfiVariables = true;
 
     boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 
@@ -61,25 +51,10 @@ in
       systemPackages = with pkgs; [ vim lsof git ];
     };
 
-    networking.hostName = "htz";
+    networking.hostName = "bee";
     networking.hostId = "00000001";
 
     networking.enableIPv6 = true;
-    networking.useDHCP = false;
-    networking.interfaces."enp7s0".ipv4.addresses = [
-      {
-        address = "65.108.111.190";
-        prefixLength = 24;
-      }
-    ];
-    networking.interfaces."enp7s0".ipv6.addresses = [
-      {
-        address = "2a01:4f9:6b:232c::1";
-        prefixLength = 64;
-      }
-    ];
-    networking.defaultGateway = "65.108.111.129";
-    networking.defaultGateway6 = { address = "fe80::1"; interface = "enp7s0"; };
     networking.nameservers = [
       # cloudflare
       "1.1.1.1"
@@ -128,7 +103,7 @@ in
     # compatible, in order to avoid breaking some software such as database
     # servers. You should change this only after NixOS release notes say you
     # should.
-    system.stateVersion = "21.11"; # Did you read the comment?
+    system.stateVersion = "22.05"; # Did you read the comment?
   })
   agenix.nixosModules.age
   # vf-sqlite-graphql.nixosModules.backend
@@ -174,8 +149,8 @@ in
   }
   {
     _module.args.nixinate = {
-      host = "65.108.111.190";
-      sshUser = "root";
+      host = "24.48.87.104";
+      sshUser = "yt";
       buildOn = "remote"; # valid args are "local" or "remote"
     };
   }

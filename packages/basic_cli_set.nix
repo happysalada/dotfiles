@@ -4,7 +4,7 @@ with pkgs; [
   ripgrep # better grep
   tealdeer # terser man
   fd # improved find
-  procs # process monitor
+  # procs # process monitor
   # tailscale # vpn management # not supported on macos
   smartmontools # ssd health monitoring
   bottom # a better top

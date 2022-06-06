@@ -188,9 +188,8 @@
           # comby # use in a shell when needed, very heavy
           tmate
           # zig
-          android-file-transfer
           openscad
-          
+
           # machine specific
           nixpkgs-review.defaultPackage.x86_64-darwin
           agenix.defaultPackage.x86_64-darwin
@@ -199,14 +198,15 @@
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../packages/dev/rust.nix { inherit pkgs; }) ++
         (import ../packages/dev/js.nix { inherit pkgs; }) ++
-        # (import ../packages/offensive.nix { inherit pkgs; }) ++
+        (import ../packages/offensive.nix { inherit pkgs; }) ++
         (import ../packages/crypto.nix { inherit pkgs; }) ++
         (import ../packages/dev/nix.nix { inherit pkgs; });
 
         file.".cargo/config.toml".source = ../config/cargo.toml;
       };
       news.display = "silent";
-      programs = import ../homes/common.nix { inherit pkgs; };
+      programs = import ../homes/common.nix { inherit pkgs; } //
+        { git = import ../homes/programs/git.nix { inherit pkgs; }; };
     });
   }
 ]

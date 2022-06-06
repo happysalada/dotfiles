@@ -16,7 +16,7 @@
     # https://github.com/rust-lang/cargo/issues/3381
     # causing problems on servers as well
     # causing problems without on my local to push
-    url = { "git@github.com:" = { insteadOf = "https://github.com/"; }; };
+    url = { "git@github.com:happysalada" = { insteadOf = "https://github.com/happysalada"; }; };
 
     push.default = "upstream";
 

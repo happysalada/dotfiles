@@ -64,5 +64,10 @@
         system = "x86_64-linux";
         modules = import ./machines/hetzner_dedicated/default.nix { inherit home-manager agenix rust-overlay; };
       };
+      
+      nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = import ./machines/bee/default.nix { inherit home-manager agenix rust-overlay; };
+      };
     };
 }
