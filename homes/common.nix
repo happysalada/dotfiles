@@ -64,10 +64,14 @@
     enable = true;
   };
 
+  # TODO check that the config and env are usable
   nushell = {
     enable = true;
-    settings = {
-      edit_mode = "vi";
-    };
+    configFile.text = ''
+      let $config = {
+        edit_mode = vi
+      }
+    '';
+    envFile.text = "";
   };
 }

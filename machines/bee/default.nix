@@ -12,7 +12,7 @@ in
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/vector.nix
-      # ../modules/postgresql.nix
+      ../../modules/postgresql.nix
       ../../modules/grafana
       ../../modules/chrony.nix
       ../../modules/loki.nix
@@ -25,7 +25,7 @@ in
     ];
 
     boot.loader.systemd-boot.enable = true;
-    boot.loade.efi.canTouchEfiVariables = true;
+    boot.loader.efi.canTouchEfiVariables = true;
 
     boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 

@@ -7,7 +7,7 @@
   services.caddy = {
     enable = true;
     # acmeCA = "https://acme-staging-v02.api.letsencrypt.org/directory"; # comment once tested
-    email = "raphael@megzari.com";
+    email = "raphael@sassy.technology";
     extraConfig = ''
       (ban_bot) {
         @bot {
