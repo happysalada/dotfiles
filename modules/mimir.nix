@@ -8,19 +8,9 @@
 
       blocks_storage = {
         backend = "filesystem";
-        bucket_store = {
-          sync_dir = "/var/lib/mimir/tsdb-sync";
-        };
-        filesystem = {
-          dir = "/var/lib/mimir/data/tsdb";
-        };
-        tsdb = {
-          dir = "/var/lib/mimir/tsdb";
-        };
       };
 
       compactor = {
-        data_dir = "/var/lib/mimir/compactor";
         sharding_ring = {
           instance_addr = "127.0.0.1";
           kvstore = {
@@ -50,7 +40,6 @@
       };
 
       ruler = {
-        rule_path = "/var/lib/mimir/data-ruler";
         ring = {
           instance_addr = "127.0.0.1";
         };
@@ -59,7 +48,7 @@
       ruler_storage = {
         backend = "local";
         local = {
-          directory = "/var/lib/mimir/rules";
+          directory = "/var/lib/mimir";
         };
       };
 
@@ -75,10 +64,6 @@
           replication_factor = 1;
           instance_addr = "127.0.0.1";
         };
-      };
-      
-      activity_tracker = {
-        filepath = "/var/lib/mimir/metrics-activity.log";
       };
       
       memberlist = {
