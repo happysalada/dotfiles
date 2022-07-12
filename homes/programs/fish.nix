@@ -21,6 +21,7 @@
     # nix
     nixgc = "nix store gc -v";
     snixgc = "sudo nix-collect-garbage -d";
+    nixroots = "nix-store --gc --print-roots";
     # git
     gps = "git push --set-upstream origin HEAD";
     gl = "git log --pretty=oneline --abbrev-commit";

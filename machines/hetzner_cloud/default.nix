@@ -5,7 +5,7 @@ in
 [
   {
     environment.systemPackages = [ agenix.defaultPackage.x86_64-linux ];
-    nixpkgs.overlays = [ rust-overlay.overlay ];
+    nixpkgs.overlays = [ rust-overlay.overlays.default ];
   }
   ({pkgs, ...}:{
     imports = [

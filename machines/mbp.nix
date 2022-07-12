@@ -131,7 +131,7 @@
     })
   agenix.nixosModules.age
   {
-    nixpkgs.overlays = [ rust-overlay.overlay ];
+    nixpkgs.overlays = [ rust-overlay.overlays.default ];
   }
   # `home-manager` module
   home-manager.darwinModules.home-manager

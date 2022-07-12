@@ -1,11 +1,11 @@
-{ home-manager, agenix, rust-overlay }:
+{ home-manager, agenix, rust-overlay, nix-update }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
   {
     environment.systemPackages = [ agenix.defaultPackage.x86_64-linux ];
-    nixpkgs.overlays = [ rust-overlay.overlay ];
+    nixpkgs.overlays = [ rust-overlay.overlays.default ];
   }
   ({ pkgs, config, ... }: {
     imports = [
@@ -31,8 +31,10 @@ in
 
     nix = {
       package = pkgs.nixFlakes;
-      autoOptimiseStore = true;
-      buildCores = 32;
+      settings = {
+        cores = 24;  
+        auto-optimise-store = true;
+      };
       extraOptions = ''
         experimental-features = nix-command flakes
       '';
@@ -137,6 +139,9 @@ in
           shellcheck
 
           remarshal
+          dgraph
+
+          nix-update.defaultPackage.x86_64-linux
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../../packages/dev/rust.nix { inherit pkgs; }) ++

@@ -67,7 +67,7 @@
       
       nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = import ./machines/bee/default.nix { inherit home-manager agenix rust-overlay; };
+        modules = import ./machines/bee/default.nix { inherit home-manager agenix rust-overlay nix-update; };
       };
     };
 }
