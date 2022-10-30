@@ -4,7 +4,6 @@
   services.vaultwarden = {
     enable = true;
     dbBackend = "sqlite";
-    backupDir = "/var/lib/vaultwarden";
     config = {
       DOMAIN = "https://vaultwarden.megzari.com";
       SIGNUPS_ALLOWED = false;
@@ -14,6 +13,7 @@
       ROCKET_LOG = "critical";
 
       SMTP_HOST = "smtp.sendgrid.net";
+      SMTP_FROM = "raphael@megzari.com";
       SMTP_PORT = 465;
       SMTP_SECURITY = "force_tls";
       SMTP_USERNAME = "apikey";

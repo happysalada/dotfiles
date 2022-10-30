@@ -27,4 +27,5 @@ with pkgs; [
   ruplacer # sed with visual feedback
   ouch # painless (de)compression
   solo2-cli # updating solokeys
+  sqlite
 ]
