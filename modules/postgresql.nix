@@ -2,7 +2,7 @@
 {
   services.postgresql = {
     enable = true;
-    package = pkgs.postgresql_14;
+    package = pkgs.postgresql_15;
     # only use to make the initial upload
     # or create extensions
     # authentication = lib.mkForce ''

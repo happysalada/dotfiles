@@ -21,9 +21,10 @@ with pkgs; [
   moreutils # sponge
   zstd # fast compression
   jq # working with json
-  czkawka # finding and cleaning files
+  # czkawka # finding and cleaning files # broken on darwin
   btop # top with cpufreq
-  sequoia # openpgp in rust
+  # sequoia # openpgp in rust # compilation fails
   ruplacer # sed with visual feedback
   ouch # painless (de)compression
+  solo2-cli # updating solokeys
 ]

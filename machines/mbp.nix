@@ -97,8 +97,11 @@
           keep-derivations = true
           builders-use-substitutes = true
         '';
-        maxJobs = 4;
-        buildCores = 4;
+        configureBuildUsers = true;
+        settings = {
+          max-jobs = 4;
+          cores = 4;
+        };
         # - makes some builds fail midway
         # - takes more time to re-build something
         gc.automatic = false;
@@ -110,7 +113,6 @@
       };
 
       users = {
-        nix.configureBuildUsers = true;
         users.raphael = {
           home = /Users/raphael;
         };

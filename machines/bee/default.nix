@@ -20,13 +20,16 @@ in
       ../../modules/caddy.nix
       ../../modules/prometheus.nix
       ../../modules/ssh.nix
+      ../../modules/vaultwarden.nix
       # ./gitea.nix
       # ./plausible.nix
     ];
 
     boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
-
+    boot.loader.efi = {
+        canTouchEfiVariables = true;
+        # efiSysMountPoint = "/boot/EFI";
+    };
     boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 
     nix = {

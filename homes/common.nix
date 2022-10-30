@@ -37,7 +37,7 @@
   broot = {
     enable = true;
     enableFishIntegration = true;
-    verbs = [
+    settings.verbs = [
       {
         invocation = "edit";
         shortcut = "e";

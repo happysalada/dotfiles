@@ -16,4 +16,5 @@ with pkgs; [
   })
   worker-build
   wrangler
+  lldb_13
 ]

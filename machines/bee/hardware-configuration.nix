@@ -11,6 +11,7 @@
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelParams = [ "nohibernate" ]; # until zfs supports hibernate operation
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
@@ -26,6 +27,11 @@
   fileSystems."/var/lib/postgres" =
     { device = "rpool/postgres";
       fsType = "zfs";
+    };
+
+  fileSystems."/boot" =
+    { device = "/dev/nvme0n1p1";
+      fsType = "auto";
     };
 
   swapDevices = [ ];
