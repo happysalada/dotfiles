@@ -22,6 +22,8 @@
     rust-overlay.url = "github:oxalica/rust-overlay";
     nixinate.url = "github:matthewcroughan/nixinate";
     nixinate.inputs.nixpkgs.follows = "nixpkgs";
+    nil.url = "github:oxalica/nil";
+    nil.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -34,12 +36,13 @@
     , nix-update
     , rust-overlay
     , nixinate
+    , nil
     }@inputs: {
       apps = nixinate.nixinate.x86_64-darwin self;
 
       darwinConfigurations.mbp = darwin.lib.darwinSystem {
         system = "x86_64-darwin";
-        modules = import ./machines/mbp.nix { inherit home-manager nixpkgs-review agenix nix-update rust-overlay; };
+        modules = import ./machines/mbp.nix { inherit home-manager nixpkgs-review agenix nix-update rust-overlay nil; };
       };
 
       darwinConfigurations.m1 = darwin.lib.darwinSystem {

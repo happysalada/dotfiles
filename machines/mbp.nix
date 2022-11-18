@@ -1,4 +1,4 @@
-{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, }:
+{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, nil, }:
 [
   ({ pkgs, ... }:
     {
@@ -196,6 +196,7 @@
           nixpkgs-review.defaultPackage.x86_64-darwin
           agenix.defaultPackage.x86_64-darwin
           nix-update.defaultPackage.x86_64-darwin
+          nil.packages.x86_64-darwin.default
         ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../packages/dev/rust.nix { inherit pkgs; }) ++
