@@ -55,10 +55,16 @@
     enableFishIntegration = true;
   };
 
-  skim = {
+  fzf = {
     enable = true;
     enableFishIntegration = true;
   };
+
+  # ui not working anymore 
+  # skim = {
+  #   enable = true;
+  #   enableFishIntegration = true;
+  # };
 
   gitui = {
     enable = true;

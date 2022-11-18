@@ -191,6 +191,7 @@
           tmate
           # zig
           openscad
+          tremor-language-server
 
           # machine specific
           nixpkgs-review.defaultPackage.x86_64-darwin
