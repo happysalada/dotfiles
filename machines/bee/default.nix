@@ -21,6 +21,9 @@ in
       ../../modules/prometheus.nix
       ../../modules/ssh.nix
       ../../modules/vaultwarden.nix
+      ../../modules/erigon.nix
+      ../../modules/lighthouse.nix
+      ../../modules/influxdb.nix
       # ./gitea.nix
       # ./plausible.nix
     ];

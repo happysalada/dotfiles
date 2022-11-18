@@ -5,4 +5,5 @@ let
 in
 {
   "vaultwarden.env.age".publicKeys = [ yt bee ];
+  "erigon.jwt.age".publicKeys = [ yt bee ];
 }

@@ -19,7 +19,7 @@
       SMTP_USERNAME = "apikey";
       SMTP_AUTH_MECHANISM="Login";
     };
-    environmentFile = "/run/agenix/VAULTWARDEN_ENV";
+    environmentFile = config.age.secrets.VAULTWARDEN_ENV.path;
   };
   age.secrets =  {
     VAULTWARDEN_ENV = {
