@@ -10,6 +10,30 @@
       space.q = ":q";
     };
   };
+  
+  languages = [
+      {
+        name = "nix";
+        scope = "source.nix";
+        injection-regex = "nix";
+        file-types = ["nix"];
+        comment-token = "#";
+        language-server = { command = "nil"; };
+        indent = { tab-width = 2; unit = "  "; };
+        roots = [];
+      }
+      {
+        name = "tremor";
+        scope = "source.tremor";
+        injection-regex = "tremor";
+        file-types = ["troy" "tremor"];
+        auto-format = true;
+        language-server = { command = "tremor-language-server"; };
+        indent = { tab-width = 2; unit = "  "; };
+        roots = [];
+      }
+    ];
+
   themes = {
     happysalada =
       let

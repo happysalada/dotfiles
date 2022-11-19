@@ -24,6 +24,7 @@ in
       ../../modules/erigon.nix
       ../../modules/lighthouse.nix
       ../../modules/influxdb.nix
+      ../../modules/tremor-rs.nix
       # ./gitea.nix
       # ./plausible.nix
     ];
@@ -146,6 +147,7 @@ in
 
           remarshal
           dgraph
+          tremor-rs
 
           nix-update.defaultPackage.x86_64-linux
         ] ++
