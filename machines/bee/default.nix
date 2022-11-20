@@ -25,6 +25,7 @@ in
       ../../modules/lighthouse.nix
       ../../modules/influxdb.nix
       ../../modules/tremor-rs.nix
+      ../../modules/surrealdb.nix
       # ./gitea.nix
       # ./plausible.nix
     ];
@@ -74,6 +75,11 @@ in
       "2001:4860:4860::8888"
       "2001:4860:4860::8844"
     ];
+
+    nixpkgs.config = {
+      allowUnfree = true;
+      # contentAddressedByDefault = true; # build fails for now
+    };
 
     users = {
       mutableUsers = false;
