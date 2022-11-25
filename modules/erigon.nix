@@ -8,6 +8,7 @@
       "private.api.addr" = "localhost:9091";
       "authrpc.vhosts" = "*";
       externalcl = true;
+      "database.verbosity" = 3;
     };
   };
   age.secrets =  {
