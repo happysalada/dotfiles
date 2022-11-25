@@ -142,7 +142,7 @@
           # vlc # video player. does not compile on darwin
 
           #db
-          postgresql_13
+          postgresql_15
           # dbeaver
 
           # network

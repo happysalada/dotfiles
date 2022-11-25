@@ -1,4 +1,4 @@
-{ home-manager, agenix, rust-overlay, nix-update }:
+{ home-manager, agenix, rust-overlay, nix-update, macrodata }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -24,9 +24,9 @@ in
       ../../modules/erigon.nix
       ../../modules/lighthouse.nix
       ../../modules/influxdb.nix
-      ../../modules/tremor-rs.nix
       ../../modules/surrealdb.nix
-      # ./gitea.nix
+      ../../modules/gitea.nix
+      # ../../modules/tremor-rs.nix
       # ./plausible.nix
     ];
 
@@ -156,6 +156,7 @@ in
           tremor-rs
 
           nix-update.defaultPackage.x86_64-linux
+          macrodata.packages.x86_64-linux.default
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../../packages/dev/rust.nix { inherit pkgs; }) ++

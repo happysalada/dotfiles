@@ -1,4 +1,4 @@
-{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, nil, }:
+{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, nil }:
 [
   ({ pkgs, ... }:
     {
@@ -161,7 +161,7 @@
           element-desktop
 
           #db
-          postgresql_13
+          postgresql_15
           # dbeaver
 
           # network
@@ -198,7 +198,7 @@
           agenix.defaultPackage.x86_64-darwin
           nix-update.defaultPackage.x86_64-darwin
           nil.packages.x86_64-darwin.default
-        ] ++
+      ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../packages/dev/rust.nix { inherit pkgs; }) ++
         (import ../packages/dev/js.nix { inherit pkgs; }) ++

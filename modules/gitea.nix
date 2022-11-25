@@ -8,25 +8,25 @@
       createDatabase = true;
       socket = "/var/run/postgresql";
     };
-    domain = "git.union.rocks";
-    rootUrl = "https://git.union.rocks";
+    domain = "git.sassy.technology";
+    rootUrl = "https://git.sassy.technology";
     httpPort = 3030;
     httpAddress = "127.0.0.1";
-    cookieSecure = true;
-    ssh.enable = true;
     settings = {
       repository = {
         PREFERRED_LICENSES = "AGPL-3.0,GPL-3.0,GPL-2.0,LGPL-3.0,LGPL-2.1";
       };
+      
+      session.COOKIE_SECURE = true;
 
       mailer = {
         ENABLED = true;
         MAILER_TYPE = "sendmail";
-        FROM = "yt@union.rocks";
+        FROM = "yt@sassy.technology";
         SENDMAIL_PATH = "${pkgs.system-sendmail}/bin/sendmail";
         # SUBJECT = "%(APP_NAME)s";
         # HOST = "petabyte.dev:465";
-        # USER = "gitea@union.rocks";
+        # USER = "gitea@sassy.technology";
         # SEND_AS_PLAIN_TEXT = true;
         # USE_SENDMAIL = false;
         # FROM = "\"PetaByteBoy's Gitea\" <gitea@petabyte.dev>";
@@ -44,9 +44,11 @@
         REGISTER_EMAIL_CONFIRM = true;
         ENABLE_NOTIFY_MAIL = true;
         ENABLE_CAPTCHA = true;
-        NO_REPLY_ADDRESS = "union.rocks";
+        NO_REPLY_ADDRESS = "sassy.technology";
+        DISABLE_REGISTRATION = true;
       };
 
+      # custom ui doesn't work anymore
       ui = {
         THEMES = "gitea,arc-green,pitchblack";
         DEFAULT_THEME = "pitchblack";
@@ -67,7 +69,7 @@
     ''}/theme-pitchblack.css /var/lib/gitea/custom/public/assets/css/theme-pitchblack.css"
   ];
 
-  services.caddy.virtualHosts."git.union.rocks" = {
+  services.caddy.virtualHosts."git.sassy.technology" = {
     extraConfig = ''
       reverse_proxy 127.0.0.1:${toString config.services.gitea.httpPort}
     '';
