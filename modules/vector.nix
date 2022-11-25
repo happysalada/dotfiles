@@ -51,16 +51,12 @@
           if err == null {
             .message = msg.msg
           }
+          msg, err = parse_json(.message)
+          if err == null {
+            . = merge!(., msg)
+            del(.message)
+          }
         '';
-        # TODO add the lvl and msg
-        # lvl = parse_regex!(.message, r'lvl=(?P<lvl>\w+)') 
-        # msg = parse_regex!(.message, r'msg=(?P<msg>.+)')
-        # if lvl.lvl != null {
-        #   .level = lvl.lvl
-        # }
-        # if msg.msg != null {
-        #   .message = msg.msg
-        # }
       };
 
       sinks = {
