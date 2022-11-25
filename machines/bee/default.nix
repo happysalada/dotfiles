@@ -5,7 +5,7 @@ in
 [
   {
     environment.systemPackages = [ agenix.defaultPackage.x86_64-linux ];
-    nixpkgs.overlays = [ rust-overlay.overlays.default ];
+    nixpkgs.overlays = [ rust-overlay.overlays.default macrodata.overlay ];
   }
   ({ pkgs, config, ... }: {
     imports = [
@@ -26,6 +26,7 @@ in
       ../../modules/influxdb.nix
       ../../modules/surrealdb.nix
       ../../modules/gitea.nix
+      ../../modules/macrodata.nix
       # ../../modules/tremor-rs.nix
       # ./plausible.nix
     ];
@@ -121,6 +122,7 @@ in
     system.stateVersion = "22.05"; # Did you read the comment?
   })
   agenix.nixosModules.age
+  macrodata.nixosModules.macrodata
   # vf-sqlite-graphql.nixosModules.backend
   home-manager.nixosModules.home-manager
   {
@@ -156,7 +158,6 @@ in
           tremor-rs
 
           nix-update.defaultPackage.x86_64-linux
-          macrodata.packages.x86_64-linux.default
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../../packages/dev/rust.nix { inherit pkgs; }) ++
