@@ -18,7 +18,7 @@
     # causing problems without on my local to push
     url = { 
       "git@github.com:happysalada" = { insteadOf = "https://github.com/happysalada"; };
-      "gitea@git.sassy.technology" = { insteadOf = "https://gitea.sassy.technology"; };
+      "ssh://gitea@gitea.sassy.technology" = { insteadOf = "file:///var/lib/gitea/repositories"; };
     };
 
     push.default = "upstream";
