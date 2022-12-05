@@ -6,4 +6,5 @@ in
 {
   "vaultwarden.env.age".publicKeys = [ yt bee ];
   "erigon.jwt.age".publicKeys = [ yt bee ];
+  "influxdb.token.age".publicKeys = [ yt bee];
 }
