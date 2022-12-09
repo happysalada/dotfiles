@@ -190,11 +190,11 @@
           # comby # use in a shell when needed, very heavy
           tmate
           # zig
-          openscad
+          # openscad # fails to build on darwin
           tremor-language-server
 
           # machine specific
-          nixpkgs-review.defaultPackage.x86_64-darwin
+          nixpkgs-review.packages.x86_64-darwin.default
           agenix.defaultPackage.x86_64-darwin
           nix-update.defaultPackage.x86_64-darwin
           nil.packages.x86_64-darwin.default
