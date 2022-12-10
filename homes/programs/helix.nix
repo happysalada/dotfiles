@@ -2,8 +2,12 @@
   enable = true;
   settings = {
     theme = "happysalada";
-    editor.idle-timeout = 100;
-    editor.lsp.display-messages = true;
+    editor = {
+      idle-timeout = 100;
+      lsp.display-messages = true;
+      auto-save = true;
+      bufferline = "always";
+    };
     keys.normal = {
       space.space = "file_picker";
       space.w = ":w";
