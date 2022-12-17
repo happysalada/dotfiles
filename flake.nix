@@ -4,7 +4,7 @@
   inputs = {
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    # nixpkgs.url = "github:nixos/nixpkgs";
+    # nixpkgs.url = "github:happysalada/nixpkgs/surrealdb_add_package_option";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
@@ -25,9 +25,17 @@
     nil.url = "github:oxalica/nil";
     nil.inputs.nixpkgs.follows = "nixpkgs";
     
-    # programs
+    # macrodata
+    crane.url = "github:ipetkov/crane";
+    crane.inputs.nixpkgs.follows = "nixpkgs";
+
     macrodata.url = "git+file:///var/lib/gitea/repositories/yt/macrodata";
     macrodata.inputs.nixpkgs.follows = "nixpkgs";
+    macrodata.inputs.crane.follows = "crane";
+
+    surrealdb.url = "github:surrealdb/surrealdb";
+    # surrealdb.inputs.nixpkgs.follows = "nixpkgs";
+    surrealdb.inputs.crane.follows = "crane";
   };
 
   outputs =
@@ -42,6 +50,8 @@
     , nixinate
     , nil
     , macrodata
+    , surrealdb
+    , ...
     }: {
       apps = nixinate.nixinate.x86_64-darwin self;
 
@@ -75,7 +85,7 @@
       
       nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = import ./machines/bee/default.nix { inherit home-manager agenix rust-overlay nix-update macrodata; };
+        modules = import ./machines/bee/default.nix { inherit home-manager agenix rust-overlay nix-update macrodata surrealdb; };
       };
     };
 }

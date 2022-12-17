@@ -3,18 +3,14 @@
 {
   services.macrodata = {
     enable = true;
-    influxdbTokenPath = config.age.secrets.INFLUXDB_TOKEN.path;
+    surrealdbUsernamePath = config.age.secrets.SURREALDB_USERNAME.path;
+    surrealdbPasswordPath = config.age.secrets.SURREALDB_PASSWORD.path;
     settings = {
-      influxdb = {
-        host = "http://localhost:8086";
-        org = "sassy tech";
-        bucket = "sassy_initial";
+      surrealdb = {
+        namespace = "test";
+        database = "test";
+        host = "127.0.0.1:${toString config.services.surrealdb.port}";
       };
-    };
-  };
-  age.secrets =  {
-    INFLUXDB_TOKEN = {
-      file = ../secrets/influxdb.token.age;
     };
   };
 }

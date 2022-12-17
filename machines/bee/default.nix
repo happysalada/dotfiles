@@ -1,4 +1,4 @@
-{ home-manager, agenix, rust-overlay, nix-update, macrodata }:
+{ home-manager, agenix, rust-overlay, nix-update, macrodata, surrealdb }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -6,6 +6,7 @@ in
   {
     environment.systemPackages = [ agenix.defaultPackage.x86_64-linux ];
     nixpkgs.overlays = [ rust-overlay.overlays.default macrodata.overlay ];
+
   }
   ({ pkgs, config, ... }: {
     imports = [
@@ -30,6 +31,7 @@ in
       # ../../modules/tremor-rs.nix
       # ./plausible.nix
     ];
+
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi = {
@@ -111,6 +113,9 @@ in
         MaxRetentionSec=1week
         SystemMaxUse=1G
       '';
+
+      # hack to get the correct packake without having to mess up the modules
+      surrealdb.package = surrealdb.packages.x86_64-linux.default;
     };
 
     programs.mosh.enable = true;
@@ -158,6 +163,7 @@ in
           tremor-rs
 
           nix-update.defaultPackage.x86_64-linux
+          surrealdb.packages.x86_64-linux.default
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../../packages/dev/rust.nix { inherit pkgs; }) ++
@@ -173,6 +179,7 @@ in
       host = "142.126.18.6";
       sshUser = "yt";
       buildOn = "remote"; # valid args are "local" or "remote"
+      hermetic = false;
     };
   }
 ]

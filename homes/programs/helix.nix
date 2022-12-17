@@ -24,17 +24,7 @@
         comment-token = "#";
         language-server = { command = "nil"; };
         indent = { tab-width = 2; unit = "  "; };
-        roots = [];
-      }
-      {
-        name = "tremor";
-        scope = "source.tremor";
-        injection-regex = "tremor";
-        file-types = ["troy" "tremor"];
-        auto-format = true;
-        language-server = { command = "tremor-language-server"; };
-        indent = { tab-width = 2; unit = "  "; };
-        roots = [];
+        formatter = { command = "nixpkgs-fmt"; };
       }
     ];
 
@@ -46,7 +36,7 @@
         lavender = "#a4a0e8";
         comet = "#5a5977";
         bossanova = "#452859";
-        midnight = "#3b224c";
+        # midnight = "#3b224c";
         revolver = "#281733";
 
         silver = "#cccccc";
@@ -62,10 +52,10 @@
         orange = "#fdba74";
         light_blue = "#9DB7FE";
         pastel_pink = "#f0abfc";
-        light_green = "#A6E22E";
+        # light_green = "#A6E22E";
         emerald = "#61C2A2";
         red = "#E06C75";
-        highlight_pink = "#991F4E";
+        # highlight_pink = "#991F4E";
         candy_pink = "#E673AA";
         purple = "#540099";
       in
@@ -123,6 +113,11 @@
         "ui.highlight" = { bg = bossanova; };
 
         "ui.menu.selected" = { fg = revolver; bg = white; };
+
+        "diff.plus" = "light-green";
+        "diff.delta" = "light-blue";
+        "diff.delta.moved" = "blue";
+        "diff.minus" = "light-red";
 
         diagnostic = { modifiers = [ "underlined" ]; };
 
