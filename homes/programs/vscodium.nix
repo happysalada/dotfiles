@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  enable = false;
+  enable = true;
   package = pkgs.vscodium;
   extensions = with pkgs.vscode-extensions; [
     vscodevim.vim
@@ -21,9 +21,10 @@
     bodil.file-browser
     vspacecode.vspacecode
     vspacecode.whichkey
-    tiehuis.zig
-    elixir-lsp.vscode-elixir-ls
+    # tiehuis.zig
+    # elixir-lsp.vscode-elixir-ls
     timonwong.shellcheck
+    github.copilot
     # eugleo.magic-racket
     # betterthantomorrow.calva
   ];

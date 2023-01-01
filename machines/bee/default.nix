@@ -162,7 +162,7 @@ in
           dgraph
           tremor-rs
 
-          nix-update.defaultPackage.x86_64-linux
+          nix-update.packages.x86_64-linux.default
           surrealdb.packages.x86_64-linux.default
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++

@@ -196,7 +196,7 @@
           # machine specific
           nixpkgs-review.packages.x86_64-darwin.default
           agenix.defaultPackage.x86_64-darwin
-          nix-update.defaultPackage.x86_64-darwin
+          nix-update.packages.x86_64-darwin.default
           nil.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
@@ -210,6 +210,7 @@
       };
       news.display = "silent";
       programs = import ../homes/common.nix { inherit pkgs; } //
+        { vscode = import ../homes/programs/vscodium.nix { inherit pkgs; }; } //
         { git = import ../homes/programs/git.nix { inherit pkgs; }; };
     });
   }
