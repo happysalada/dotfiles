@@ -176,7 +176,7 @@ in
   }
   {
     _module.args.nixinate = {
-      host = "142.126.18.6";
+      host = "70.53.243.253";
       sshUser = "yt";
       buildOn = "remote"; # valid args are "local" or "remote"
       hermetic = false;

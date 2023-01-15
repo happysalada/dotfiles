@@ -15,6 +15,5 @@ with pkgs; [
     extensions = [ "rust-src" ]; 
   })
   worker-build
-  wrangler
   lldb_13
 ]

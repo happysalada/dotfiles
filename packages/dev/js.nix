@@ -6,4 +6,5 @@ with pkgs; [
   nodePackages.npm-check-updates
   nodePackages.svelte-language-server
   nodejs-18_x
+  nodePackages.wrangler
 ]
