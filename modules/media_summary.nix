@@ -3,13 +3,17 @@
 {
   services.mediaSummary = {
     enable = true;
-    gcloudSecretFilePath = config.age.secrets.GCLOUD_SECRET.path;
+    gcloudSecretPath = config.age.secrets.GCLOUD_SECRET.path;
+    openaiKeyPath = config.age.secrets.OPENAI_KEY.path;
     port = 8787;
   };
 
   age.secrets =  {
     GCLOUD_SECRET = {
       file = ../secrets/gcloud_secrets.env.age;
+    };
+    OPENAI_KEY = {
+      file = ../secrets/openai.key.age;
     };
   };
 
