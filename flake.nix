@@ -37,6 +37,10 @@
     surrealdb.url = "github:surrealdb/surrealdb";
     # surrealdb.inputs.nixpkgs.follows = "nixpkgs";
     surrealdb.inputs.crane.follows = "crane";
+
+    mediaSummary.url = "git+file:///var/lib/gitea/repositories/yt/media_summary";
+    mediaSummary.inputs.nixpkgs.follows = "nixpkgs";
+    mediaSummary.inputs.crane.follows = "crane";
   };
 
   outputs =
@@ -52,6 +56,7 @@
     , nil
     , macrodata
     , surrealdb
+    , mediaSummary
     , ...
     }: {
       apps = nixinate.nixinate.x86_64-darwin self;
@@ -86,7 +91,7 @@
       
       nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = import ./machines/bee/default.nix { inherit home-manager agenix rust-overlay nix-update macrodata surrealdb; };
+        modules = import ./machines/bee/default.nix { inherit home-manager agenix rust-overlay nix-update macrodata surrealdb mediaSummary; };
       };
     };
 }

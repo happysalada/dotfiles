@@ -7,9 +7,9 @@
   services = {
     openssh = {
       enable = true;
-      permitRootLogin = "prohibit-password";
-      passwordAuthentication = false;
-      kbdInteractiveAuthentication = false;
+      settings.permitRootLogin = "prohibit-password";
+      settings.kbdInteractiveAuthentication = false;
+      settings.passwordAuthentication = false;
       listenAddresses = [{ addr = "0.0.0.0"; port = 22;} {addr = "[::]"; port = 22;}];
     };
   };

@@ -6,7 +6,8 @@ in
 {
   "vaultwarden.env.age".publicKeys = [ yt bee ];
   "erigon.jwt.age".publicKeys = [ yt bee ];
-  "influxdb.token.age".publicKeys = [ yt bee];
-  "surreal.username.age".publicKeys = [ yt bee];
-  "surreal.password.age".publicKeys = [ yt bee];
+  "influxdb.token.age".publicKeys = [ yt bee ];
+  "surreal.username.age".publicKeys = [ yt bee ];
+  "surreal.password.age".publicKeys = [ yt bee ];
+  "gcloud_secrets.env.age".publicKeys = [ yt bee ];
 }

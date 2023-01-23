@@ -1,11 +1,11 @@
-{ home-manager, agenix, rust-overlay, nix-update, macrodata, surrealdb }:
+{ home-manager, agenix, rust-overlay, nix-update, macrodata, surrealdb, mediaSummary }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
   {
     environment.systemPackages = [ agenix.defaultPackage.x86_64-linux ];
-    nixpkgs.overlays = [ rust-overlay.overlays.default macrodata.overlay ];
+    nixpkgs.overlays = [ rust-overlay.overlays.default macrodata.overlay mediaSummary.overlays.x86_64-linux.default ];
 
   }
   ({ pkgs, config, ... }: {
@@ -22,14 +22,15 @@ in
       ../../modules/prometheus.nix
       ../../modules/ssh.nix
       ../../modules/vaultwarden.nix
-      ../../modules/erigon.nix
-      ../../modules/lighthouse.nix
-      ../../modules/influxdb.nix
+      # ../../modules/erigon.nix
+      # ../../modules/lighthouse.nix
+      # ../../modules/influxdb.nix
       ../../modules/surrealdb.nix
       ../../modules/gitea.nix
       ../../modules/macrodata.nix
       # ../../modules/tremor-rs.nix
       # ./plausible.nix
+      ../../modules/media_summary.nix
     ];
 
 
@@ -128,7 +129,7 @@ in
   })
   agenix.nixosModules.age
   macrodata.nixosModules.macrodata
-  # vf-sqlite-graphql.nixosModules.backend
+  mediaSummary.nixosModules.x86_64-linux.mediaSummary
   home-manager.nixosModules.home-manager
   {
     # `home-manager` config

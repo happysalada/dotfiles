@@ -7,7 +7,7 @@
 
           mdbook # for documentation sites
           nextdns # better dns
-          ion # rust shell
+          # ion # rust shell # compilation fails
         ];
         variables = {
           EDITOR = "hx";
