@@ -55,10 +55,19 @@
     enableFishIntegration = true;
   };
 
-  fzf = {
+  atuin = {
     enable = true;
     enableFishIntegration = true;
+    enableBashIntegration = true;
+    settings = {
+      auto_sync = false;
+    };
   };
+
+  # fzf = {
+  #   enable = true;
+  #   enableFishIntegration = true;
+  # };
 
   # ui not working anymore 
   # skim = {
@@ -71,13 +80,14 @@
   };
 
   # TODO check that the config and env are usable
-  nushell = {
-    enable = true;
-    configFile.text = ''
-      let $config = {
-        edit_mode = vi
-      }
-    '';
-    envFile.text = "";
-  };
+  # conpilation fails on darwin
+  # nushell = {
+  #   enable = true;
+  #   configFile.text = ''
+  #     let $config = {
+  #       edit_mode = vi
+  #     }
+  #   '';
+  #   envFile.text = "";
+  # };
 }

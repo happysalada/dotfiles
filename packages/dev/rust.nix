@@ -10,10 +10,13 @@ with pkgs; [
   cargo-bloat
   cargo-cross
   cargo-sort
+  cargo-sweep
+  cargo-cache
   rust-analyzer-unwrapped
   (rust-bin.stable.latest.default.override {
     extensions = [ "rust-src" ]; 
   })
   worker-build
-  lldb_13
+  clang_14
+  lldb_14
 ]

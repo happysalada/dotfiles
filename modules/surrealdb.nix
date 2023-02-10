@@ -5,7 +5,7 @@
     enable = true;
     userNamePath = config.age.secrets.SURREALDB_USERNAME.path;
     passwordPath = config.age.secrets.SURREALDB_PASSWORD.path;
-    dbPath = "memory";
+    dbPath = "file:///var/lib/surrealdb";
   };
 
   age.secrets =  {

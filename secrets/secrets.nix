@@ -11,4 +11,5 @@ in
   "surreal.password.age".publicKeys = [ yt bee ];
   "gcloud_secrets.env.age".publicKeys = [ yt bee ];
   "openai.key.age".publicKeys = [ yt bee ];
+  "twitter.bearer_token.age".publicKeys = [ yt bee ];
 }

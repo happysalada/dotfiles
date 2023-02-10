@@ -28,4 +28,5 @@ with pkgs; [
   ouch # painless (de)compression
   solo2-cli # updating solokeys
   sqlite
+  ffmpeg
 ]

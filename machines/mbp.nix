@@ -194,8 +194,8 @@
           tremor-language-server
 
           # machine specific
-          nixpkgs-review.packages.x86_64-darwin.default
-          agenix.defaultPackage.x86_64-darwin
+          # nixpkgs-review.packages.x86_64-darwin.default
+          agenix.packages.x86_64-darwin.default
           nix-update.packages.x86_64-darwin.default
           nil.packages.x86_64-darwin.default
       ] ++

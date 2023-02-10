@@ -1,11 +1,17 @@
-{ home-manager, agenix, rust-overlay, nix-update, macrodata, surrealdb, mediaSummary }:
+{ home-manager, agenix, rust-overlay, nix-update, macrodata, surrealdb, adafilter }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
   {
-    environment.systemPackages = [ agenix.defaultPackage.x86_64-linux ];
-    nixpkgs.overlays = [ rust-overlay.overlays.default macrodata.overlay mediaSummary.overlays.x86_64-linux.default ];
+    environment.systemPackages = [
+      agenix.packages.x86_64-linux.default
+    ];
+    nixpkgs.overlays = [
+      rust-overlay.overlays.default
+      macrodata.overlay
+      adafilter.overlay
+    ];
 
   }
   ({ pkgs, config, ... }: {
@@ -30,7 +36,8 @@ in
       ../../modules/macrodata.nix
       # ../../modules/tremor-rs.nix
       # ./plausible.nix
-      ../../modules/media_summary.nix
+      # ../../modules/media_summary.nix
+      ../../modules/adafilter.nix
     ];
 
 
@@ -85,6 +92,11 @@ in
       # contentAddressedByDefault = true; # build fails for now
     };
 
+    # making amdgpu work
+    systemd.tmpfiles.rules = [
+      "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.hip}"
+    ];
+
     users = {
       mutableUsers = false;
       users = {
@@ -129,7 +141,7 @@ in
   })
   agenix.nixosModules.age
   macrodata.nixosModules.macrodata
-  mediaSummary.nixosModules.x86_64-linux.mediaSummary
+  adafilter.nixosModules.adafilter
   home-manager.nixosModules.home-manager
   {
     # `home-manager` config
@@ -165,6 +177,18 @@ in
 
           nix-update.packages.x86_64-linux.default
           surrealdb.packages.x86_64-linux.default
+          openai-whisper-cpp
+          openai-whisper
+          # (let torchWithRocm = python3Packages.torchWithRocm;
+          #   in
+          # openai-whisper.override {
+          #   torch = torchWithRocm;
+          #   transformers = python3Packages.transformers.override {
+          #     torch = torchWithRocm;
+          #   };
+          # })
+          rocminfo # GPU info
+          nvtop-amd # GPU usage
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../../packages/dev/rust.nix { inherit pkgs; }) ++
