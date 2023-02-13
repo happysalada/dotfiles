@@ -25,7 +25,9 @@
     nixinate.inputs.nixpkgs.follows = "nixpkgs";
     nil.url = "github:oxalica/nil";
     nil.inputs.nixpkgs.follows = "nixpkgs";
-    
+    alejandra.url = "github:kamadorueda/alejandra";
+    alejandra.inputs.nixpkgs.follows = "nixpkgs";
+
     # macrodata
     crane.url = "github:ipetkov/crane";
     crane.inputs.nixpkgs.follows = "nixpkgs";
@@ -43,55 +45,55 @@
     adafilter.inputs.crane.follows = "crane";
   };
 
-  outputs =
-    { self
-    , nixpkgs
-    , darwin
-    , home-manager
-    , nixpkgs-review
-    , agenix
-    , nix-update
-    , rust-overlay
-    , nixinate
-    , nil
-    , macrodata
-    , surrealdb
-    , adafilter
-    , ...
-    }: {
-      apps = nixinate.nixinate.x86_64-darwin self;
+  outputs = {
+    self,
+    nixpkgs,
+    darwin,
+    home-manager,
+    nixpkgs-review,
+    agenix,
+    nix-update,
+    rust-overlay,
+    nixinate,
+    nil,
+    alejandra,
+    macrodata,
+    surrealdb,
+    adafilter,
+    ...
+  }: {
+    apps = nixinate.nixinate.x86_64-darwin self;
 
-      darwinConfigurations.mbp = darwin.lib.darwinSystem {
-        system = "x86_64-darwin";
-        modules = import ./machines/mbp.nix { inherit home-manager nixpkgs-review agenix nix-update rust-overlay nil; };
-      };
-
-      darwinConfigurations.m1 = darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
-        modules = import ./machines/m1.nix { inherit home-manager agenix rust-overlay; };
-      };
-
-      homeConfigurations.thinkpad = home-manager.lib.homeManagerConfiguration {
-        system = "x86_64-linux";
-        homeDirectory = "/home/user";
-        username = "user";
-        configuration.imports = [ ./machines/thinkpad.nix ];
-      };
-
-
-      nixosConfigurations.hetzi = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = import ./machines/hetzner_cloud/default.nix { inherit home-manager agenix rust-overlay; };
-      };
-
-      nixosConfigurations.htz = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = import ./machines/hetzner_dedicated/default.nix { inherit home-manager agenix rust-overlay; };
-      };
-      
-      nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = import ./machines/bee/default.nix { inherit home-manager agenix rust-overlay nix-update macrodata surrealdb adafilter; };
-      };
+    darwinConfigurations.mbp = darwin.lib.darwinSystem {
+      system = "x86_64-darwin";
+      modules = import ./machines/mbp.nix {inherit home-manager nixpkgs-review agenix nix-update rust-overlay nil alejandra;};
     };
+
+    darwinConfigurations.m1 = darwin.lib.darwinSystem {
+      system = "aarch64-darwin";
+      modules = import ./machines/m1.nix {inherit home-manager agenix rust-overlay;};
+    };
+
+    homeConfigurations.thinkpad = home-manager.lib.homeManagerConfiguration {
+      system = "x86_64-linux";
+      homeDirectory = "/home/user";
+      username = "user";
+      configuration.imports = [./machines/thinkpad.nix];
+    };
+
+    nixosConfigurations.hetzi = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = import ./machines/hetzner_cloud/default.nix {inherit home-manager agenix rust-overlay;};
+    };
+
+    nixosConfigurations.htz = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = import ./machines/hetzner_dedicated/default.nix {inherit home-manager agenix rust-overlay;};
+    };
+
+    nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = import ./machines/bee/default.nix {inherit home-manager agenix rust-overlay nix-update macrodata surrealdb adafilter;};
+    };
+  };
 }

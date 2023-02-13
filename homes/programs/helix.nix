@@ -24,7 +24,7 @@
         comment-token = "#";
         language-server = { command = "nil"; };
         indent = { tab-width = 2; unit = "  "; };
-        formatter = { command = "nixpkgs-fmt"; };
+        formatter = { command = "alejandra"; };
       }
     ];
 

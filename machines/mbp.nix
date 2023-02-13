@@ -1,4 +1,4 @@
-{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, nil }:
+{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, nil, alejandra }:
 [
   ({ pkgs, ... }:
     {
@@ -192,12 +192,14 @@
           # zig
           # openscad # fails to build on darwin
           tremor-language-server
+          youtube-dl
 
           # machine specific
           # nixpkgs-review.packages.x86_64-darwin.default
           agenix.packages.x86_64-darwin.default
           nix-update.packages.x86_64-darwin.default
           nil.packages.x86_64-darwin.default
+          alejandra.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../packages/dev/rust.nix { inherit pkgs; }) ++
