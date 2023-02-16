@@ -18,9 +18,11 @@
     nixpkgs-review.inputs.nixpkgs.follows = "nixpkgs";
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
+    agenix.inputs.darwin.follows = "darwin";
     nix-update.url = "github:Mic92/nix-update";
     nix-update.inputs.nixpkgs.follows = "nixpkgs";
     rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
     nixinate.url = "github:matthewcroughan/nixinate";
     nixinate.inputs.nixpkgs.follows = "nixpkgs";
     nil.url = "github:oxalica/nil";
@@ -31,18 +33,22 @@
     # macrodata
     crane.url = "github:ipetkov/crane";
     crane.inputs.nixpkgs.follows = "nixpkgs";
+    crane.inputs.rust-overlay.follows = "rust-overlay";
 
     macrodata.url = "git+file:///var/lib/gitea/repositories/yt/macrodata";
     macrodata.inputs.nixpkgs.follows = "nixpkgs";
     macrodata.inputs.crane.follows = "crane";
+    macrodata.inputs.surrealdb.follows = "surrealdb";
+    macrodata.inputs.rust-overlay.follows = "rust-overlay";
 
     surrealdb.url = "github:surrealdb/surrealdb";
-    # surrealdb.inputs.nixpkgs.follows = "nixpkgs";
+    surrealdb.inputs.nixpkgs.follows = "nixpkgs";
     surrealdb.inputs.crane.follows = "crane";
 
     adafilter.url = "git+file:///var/lib/gitea/repositories/yt/adafilter";
     adafilter.inputs.nixpkgs.follows = "nixpkgs";
     adafilter.inputs.crane.follows = "crane";
+    adafilter.inputs.rust-overlay.follows = "rust-overlay";
   };
 
   outputs = {

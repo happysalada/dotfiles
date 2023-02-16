@@ -51,7 +51,7 @@ in
     nix = {
       package = pkgs.nixFlakes;
       settings = {
-        cores = 24;  
+        cores = 8;  
         auto-optimise-store = true;
       };
       extraOptions = ''
@@ -129,6 +129,8 @@ in
 
       # hack to get the correct packake without having to mess up the modules
       surrealdb.package = surrealdb.packages.x86_64-linux.default;
+      macrodata.surrealdbPackage = surrealdb.packages.x86_64-linux.default;
+      adafilter.surrealdbPackage = surrealdb.packages.x86_64-linux.default;
     };
 
     programs.mosh.enable = true;
