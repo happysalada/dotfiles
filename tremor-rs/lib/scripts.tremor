@@ -1,5 +1,0 @@
-## The main script, the event gets processed here
-define script main
-script
-  event
-end;

@@ -7,4 +7,5 @@ with pkgs; [
   # nix-du # compilation fails on darwin
   graphviz # needed to visualize nix-du
   nix-prefetch
+  nvd
 ]

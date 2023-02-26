@@ -38,6 +38,7 @@ in
       # ./plausible.nix
       # ../../modules/media_summary.nix
       ../../modules/adafilter.nix
+      # ../../modules/qdrant.nix
     ];
 
 
@@ -134,6 +135,14 @@ in
     };
 
     programs.mosh.enable = true;
+
+    # simple nix version diff tool
+    # MIT Jörg Thalheim - https://github.com/Mic92/dotfiles/blob/c6cad4e57016945c4816c8ec6f0a94daaa0c3203/nixos/modules/upgrade-diff.nix
+    system.activationScripts.diff = ''
+      if [[ -e /run/current-system ]]; then
+        ${pkgs.nix}/bin/nix store diff-closures /run/current-system "$systemConfig"
+      fi
+    '';
 
     # This value determines the NixOS release with which your system is to be
     # compatible, in order to avoid breaking some software such as database
