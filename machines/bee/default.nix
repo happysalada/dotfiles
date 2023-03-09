@@ -38,7 +38,7 @@ in
       # ./plausible.nix
       # ../../modules/media_summary.nix
       ../../modules/adafilter.nix
-      # ../../modules/qdrant.nix
+      ../../modules/qdrant.nix
     ];
 
 
