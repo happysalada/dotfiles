@@ -1,4 +1,4 @@
-{ pkgs }:
+{ config, pkgs }:
 {
   alacritty = import ./programs/alacritty.nix;
   fish = import ./programs/fish.nix;
@@ -64,17 +64,6 @@
     };
   };
 
-  # fzf = {
-  #   enable = true;
-  #   enableFishIntegration = true;
-  # };
-
-  # ui not working anymore 
-  # skim = {
-  #   enable = true;
-  #   enableFishIntegration = true;
-  # };
-
   gitui = {
     enable = true;
   };
@@ -108,14 +97,15 @@
       alias gu = git reset --soft HEAD~1
       alias grh = git reset --hard
       # misc
-      # alias ls = exa --reverse --sort=size --all --header --long
       alias b = broot -ghi
 
     '';
+
     envFile.text = ''
       let-env PATH = ($env.PATH |
         prepend "/run/current-system/sw/bin" |
         prepend "/Users/raphael/.nix-profile/bin")
-    '';
+      '';
+    # envFile.source = config.age.secrets.ENV_NU.path;
   };
 }

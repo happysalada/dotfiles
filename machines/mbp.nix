@@ -122,25 +122,23 @@
         nix-daemon.enable = true;
         # smartd = { enable = true; }; # unavailable on macos
         # avahi.enable = true; # unavailable on macos
-
-        # fails and clutters the logs
-        # logs located at /var/log/system.log
-        nextdns = {
-          enable = false;
-          arguments = [ "-config" "e42bf1" ];
-        };
       };
     })
   agenix.nixosModules.age
   {
     nixpkgs.overlays = [ rust-overlay.overlays.default ];
+    age.secrets =  {
+      NU_ENV = {
+        file = ../secrets/env.nu.age;
+      };
+    };
   }
   # `home-manager` module
   home-manager.darwinModules.home-manager
   {
     # `home-manager` config
     home-manager.useGlobalPkgs = true;
-    home-manager.users.raphael = ({ pkgs, ... }: {
+    home-manager.users.raphael = ({ pkgs, config, ... }: {
       home = {
         username = "raphael";
         # This value determines the Home Manager release that your
@@ -211,7 +209,7 @@
         file.".cargo/config.toml".source = ../config/cargo.toml;
       };
       news.display = "silent";
-      programs = import ../homes/common.nix { inherit pkgs; } //
+      programs = import ../homes/common.nix { inherit pkgs config; } //
         { vscode = import ../homes/programs/vscodium.nix { inherit pkgs; }; } //
         { git = import ../homes/programs/git.nix { inherit pkgs; }; };
     });
