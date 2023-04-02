@@ -1,4 +1,4 @@
-{ home-manager, agenix, rust-overlay, nix-update, macrodata, surrealdb, adafilter }:
+{ home-manager, agenix, rust-overlay, nix-update, surrealdb  }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -9,8 +9,6 @@ in
     ];
     nixpkgs.overlays = [
       rust-overlay.overlays.default
-      macrodata.overlay
-      adafilter.overlay
     ];
 
   }
@@ -33,12 +31,13 @@ in
       # ../../modules/influxdb.nix
       ../../modules/surrealdb.nix
       ../../modules/gitea.nix
-      ../../modules/macrodata.nix
+      # ../../modules/macrodata.nix
       # ../../modules/tremor-rs.nix
       # ./plausible.nix
       # ../../modules/media_summary.nix
-      ../../modules/adafilter.nix
+      # ../../modules/adafilter.nix
       ../../modules/qdrant.nix
+      ../../modules/chatgpt_retrieval_plugin.nix
     ];
 
 
@@ -129,9 +128,7 @@ in
       '';
 
       # hack to get the correct packake without having to mess up the modules
-      surrealdb.package = surrealdb.packages.x86_64-linux.default;
-      macrodata.surrealdbPackage = surrealdb.packages.x86_64-linux.default;
-      adafilter.surrealdbPackage = surrealdb.packages.x86_64-linux.default;
+      # surrealdb.package = surrealdb.packages.x86_64-linux.default;
     };
 
     programs.mosh.enable = true;
@@ -151,8 +148,6 @@ in
     system.stateVersion = "22.05"; # Did you read the comment?
   })
   agenix.nixosModules.age
-  macrodata.nixosModules.macrodata
-  adafilter.nixosModules.adafilter
   home-manager.nixosModules.home-manager
   {
     # `home-manager` config
@@ -184,10 +179,9 @@ in
 
           remarshal
           dgraph
-          tremor-rs
 
           nix-update.packages.x86_64-linux.default
-          surrealdb.packages.x86_64-linux.default
+          # surrealdb.packages.x86_64-linux.default
           openai-whisper-cpp
           openai-whisper
           # (let torchWithRocm = python3Packages.torchWithRocm;
@@ -212,7 +206,7 @@ in
   }
   {
     _module.args.nixinate = {
-      host = "70.53.243.253";
+      host = "bee";
       sshUser = "yt";
       buildOn = "remote"; # valid args are "local" or "remote"
       hermetic = false;

@@ -6,31 +6,10 @@
   controlPersist = "5m";
   compression = true;
   matchBlocks = {
-    "136.243.134.16" = {
-      hostname = "136.243.134.16";
-      user = "root";
-    };
-    "nixos_prod" = {
-      # same as hetzner zfs, just through tailscale
-      hostname = "100.86.131.112";
+    "bee" = {
+      # hostname = "69.159.117.14";
+      hostname = "192.168.2.10";
       user = "yt";
-    };
-    "hetzner-AX41-UEFI-ZFS-NVME" = {
-      hostname = "144.76.153.92";
-      user = "root";
-    };
-    "storagebox.de" = {
-      hostname = "u255596.your-storagebox.de";
-      user = "u255596";
-      extraOptions = { PasswordAuthentication = "yes"; };
-    };
-    "jonringer" = {
-      hostname = "73.157.50.82";
-      port = 2222;
-      user = "happysalada";
-      extraOptions = {
-        IdentitiesOnly = "yes";
-      };
     };
   };
   matchBlocks."*" = {

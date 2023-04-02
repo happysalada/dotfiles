@@ -10,7 +10,7 @@
     matklad.rust-analyzer
     jock.svg
     editorconfig.editorconfig
-    coenraads.bracket-pair-colorizer-2
+    # coenraads.bracket-pair-colorizer-2
     esbenp.prettier-vscode
     emmanuelbeziat.vscode-great-icons
     davidanson.vscode-markdownlint

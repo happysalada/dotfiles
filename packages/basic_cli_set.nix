@@ -4,13 +4,13 @@ with pkgs; [
   ripgrep # better grep
   tealdeer # terser man
   fd # improved find
-  # procs # process monitor
+  procs # process monitor
   # tailscale # vpn management # not supported on macos
   smartmontools # ssd health monitoring
   bottom # a better top
   dua # a better du
   borgbackup # backup
-  oil # better shell language for scripts
+  # oil # better shell language for scripts
   gitAndTools.delta # better git diff
   sd # better sed
   choose # better cut & awk
@@ -21,12 +21,16 @@ with pkgs; [
   moreutils # sponge
   zstd # fast compression
   jq # working with json
-  # czkawka # finding and cleaning files # broken on darwin
   btop # top with cpufreq
-  # sequoia # openpgp in rust # compilation fails
+  sequoia # openpgp in rust # compilation fails
   ruplacer # sed with visual feedback
   ouch # painless (de)compression
   solo2-cli # updating solokeys
   sqlite
   ffmpeg
+  uutils-coreutils
+  shell_gpt
+  chatgpt-cli
+  gptcommit
+  skim # search mode for atuin
 ]

@@ -5,7 +5,7 @@
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # nixpkgs.url = "github:nixos/nixpkgs";
-    # nixpkgs.url = "github:happysalada/nixpkgs/qdrant_service_init";
+    # nixpkgs.url = "github:happysalada/nixpkgs/chatgpt_retrieval_plugin_module";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
@@ -41,21 +41,10 @@
     crane.inputs.rust-overlay.follows = "rust-overlay";
     crane.inputs.flake-utils.follows = "flake-utils";
 
-    macrodata.url = "git+file:///var/lib/gitea/repositories/yt/macrodata";
-    macrodata.inputs.nixpkgs.follows = "nixpkgs";
-    macrodata.inputs.crane.follows = "crane";
-    macrodata.inputs.surrealdb.follows = "surrealdb";
-    macrodata.inputs.rust-overlay.follows = "rust-overlay";
-
     surrealdb.url = "github:surrealdb/surrealdb";
     # surrealdb.inputs.nixpkgs.follows = "nixpkgs";
     surrealdb.inputs.crane.follows = "crane";
     surrealdb.inputs.flake-utils.follows = "flake-utils";
-
-    adafilter.url = "git+file:///var/lib/gitea/repositories/yt/adafilter";
-    adafilter.inputs.nixpkgs.follows = "nixpkgs";
-    adafilter.inputs.crane.follows = "crane";
-    adafilter.inputs.rust-overlay.follows = "rust-overlay";
   };
 
   outputs = {
@@ -70,9 +59,7 @@
     nixinate,
     nil,
     alejandra,
-    macrodata,
     surrealdb,
-    adafilter,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
@@ -106,7 +93,7 @@
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/bee/default.nix {inherit home-manager agenix rust-overlay nix-update macrodata surrealdb adafilter;};
+      modules = import ./machines/bee/default.nix {inherit home-manager agenix rust-overlay nix-update surrealdb;};
     };
   };
 }

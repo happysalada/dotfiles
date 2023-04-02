@@ -37,9 +37,6 @@
     GCLOUD_SECRET = {
       file = ../secrets/gcloud_secrets.env.age;
     };
-    OPENAI_KEY = {
-      file = ../secrets/openai.key.age;
-    };
   };
 
   services.caddy.virtualHosts."summary.sassy.technology" = {

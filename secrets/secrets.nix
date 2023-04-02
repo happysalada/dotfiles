@@ -12,4 +12,5 @@ in
   "gcloud_secrets.env.age".publicKeys = [ yt bee ];
   "openai.key.age".publicKeys = [ yt bee ];
   "twitter.bearer_token.age".publicKeys = [ yt bee ];
+  "chatgpt_retrieval_plugin.bearer_token.age".publicKeys = [ yt bee ];
 }
