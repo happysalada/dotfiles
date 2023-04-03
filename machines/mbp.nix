@@ -1,4 +1,4 @@
-{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, nil, alejandra }:
+{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, alejandra }:
 [
   ({ pkgs, ... }:
     {
@@ -156,7 +156,6 @@
         # $ nix-env -qaP | grep wget
         packages = with pkgs; [
           # vlc # video player. does not compile on darwin
-          element-desktop
 
           #db
           postgresql_15
@@ -189,14 +188,12 @@
           tmate
           # zig
           # openscad # fails to build on darwin
-          tremor-language-server
           youtube-dl
 
           # machine specific
           # nixpkgs-review.packages.x86_64-darwin.default
           agenix.packages.x86_64-darwin.default
           nix-update.packages.x86_64-darwin.default
-          nil.packages.x86_64-darwin.default
           alejandra.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++

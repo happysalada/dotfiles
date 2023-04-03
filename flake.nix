@@ -3,14 +3,14 @@
 
   inputs = {
     # Package sets
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    # nixpkgs.url = "github:nixos/nixpkgs";
+    # nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs";
     # nixpkgs.url = "github:happysalada/nixpkgs/chatgpt_retrieval_plugin_module";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url = "github:nix-community/home-manager";
+    home-manager.url = "github:happysalada/home-manager/atuin_add_nushell_integration";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # nix
@@ -29,10 +29,6 @@
     rust-overlay.inputs.flake-utils.follows = "flake-utils";
     nixinate.url = "github:matthewcroughan/nixinate";
     nixinate.inputs.nixpkgs.follows = "nixpkgs";
-    nil.url = "github:oxalica/nil";
-    nil.inputs.nixpkgs.follows = "nixpkgs";
-    nil.inputs.flake-utils.follows = "flake-utils";
-    nil.inputs.rust-overlay.follows = "rust-overlay";
     alejandra.url = "github:kamadorueda/alejandra";
     alejandra.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -57,7 +53,6 @@
     nix-update,
     rust-overlay,
     nixinate,
-    nil,
     alejandra,
     surrealdb,
     ...
@@ -66,7 +61,7 @@
 
     darwinConfigurations.mbp = darwin.lib.darwinSystem {
       system = "x86_64-darwin";
-      modules = import ./machines/mbp.nix {inherit home-manager nixpkgs-review agenix nix-update rust-overlay nil alejandra;};
+      modules = import ./machines/mbp.nix {inherit home-manager nixpkgs-review agenix nix-update rust-overlay alejandra;};
     };
 
     darwinConfigurations.m1 = darwin.lib.darwinSystem {

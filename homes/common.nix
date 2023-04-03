@@ -57,16 +57,15 @@
     enable = true;
     enableFishIntegration = true;
     enableBashIntegration = true;
+    enableNushellIntegration = true;
     settings = {
       auto_sync = false;
-      # search_mode = "skim";
+      search_mode = "skim";
       show_preview = true;
     };
   };
 
-  gitui = {
-    enable = true;
-  };
+  gitui.enable = true;
 
   # TODO check that the config and env are usable
   # conpilation fails on darwin
@@ -97,8 +96,8 @@
       alias gu = git reset --soft HEAD~1
       alias grh = git reset --hard
       # misc
+      alias l = (ls -a | select name size | sort-by size | reverse)
       alias b = broot -ghi
-
     '';
 
     envFile.text = ''

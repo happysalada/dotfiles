@@ -17,6 +17,6 @@ with pkgs; [
     extensions = [ "rust-src" ]; 
   })
   worker-build
-  clang_14
-  lldb_14
+  llvmPackages_latest.clang
+  llvmPackages_latest.lldb
 ]

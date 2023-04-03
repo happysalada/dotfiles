@@ -8,4 +8,5 @@ with pkgs; [
   graphviz # needed to visualize nix-du
   nix-prefetch
   nvd
+  nil
 ]
