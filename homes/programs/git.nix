@@ -21,7 +21,10 @@
       "ssh://gitea@gitea.sassy.technology" = { insteadOf = "file:///var/lib/gitea/repositories"; };
     };
 
-    push.default = "upstream";
+    push = {
+      default = "upstream";
+      autoSetupRemote = true;
+    };
 
     pull.rebase = true;
 

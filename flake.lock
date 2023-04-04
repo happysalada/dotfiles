@@ -59,11 +59,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1680479184,
-        "narHash": "sha256-FXWFQlK8SL2m/7zgN3ovQfXpnK/QRkZNEiGARguAujc=",
+        "lastModified": 1680584903,
+        "narHash": "sha256-uraq+D3jcLzw/UVk0xMHcnfILfIMa0DLrtAEq2nNlxU=",
         "owner": "ipetkov",
         "repo": "crane",
-        "rev": "aab6d4f865f2cb2a6d61168be5a6e8205daa7e26",
+        "rev": "65d3f6a3970cd46bef5eedfd458300f72c56b3c5",
         "type": "github"
       },
       "original": {
@@ -221,29 +221,6 @@
         "type": "github"
       }
     },
-    "nix-update": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1679881753,
-        "narHash": "sha256-Vgn26PV6tZFvb+7FbVtkAGIImnFm28Z0XrKpIFwQPwc=",
-        "owner": "Mic92",
-        "repo": "nix-update",
-        "rev": "f7eba589cc99a0cb6f0bab298e194c7c5705be13",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Mic92",
-        "repo": "nix-update",
-        "type": "github"
-      }
-    },
     "nixinate": {
       "inputs": {
         "nixpkgs": [
@@ -266,39 +243,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1680559222,
-        "narHash": "sha256-DigbmUE0PHiLVcTWVhcWHg7R88Wg2NZa37rq50WZYm4=",
+        "lastModified": 1680619645,
+        "narHash": "sha256-i2QRqPHMY1pULBlxBoppzcTX+93EknzrY000cKdLPNk=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "a001b446a25be51c5f0cf054c190334c53b77da2",
+        "rev": "a143b6f42494c1f1e9dbf446ebcf53741d1d3b95",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
         "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-review": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1679847229,
-        "narHash": "sha256-9fdoTKaYfqsAXysRwgLq44UrmOGlr5rjF5Ge93PcHDk=",
-        "owner": "Mic92",
-        "repo": "nixpkgs-review",
-        "rev": "30a6655d29da7b380d504b9fdbe06a60ae9ea911",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Mic92",
-        "repo": "nixpkgs-review",
         "type": "github"
       }
     },
@@ -326,10 +280,8 @@
         "darwin": "darwin",
         "flake-utils": "flake-utils",
         "home-manager": "home-manager",
-        "nix-update": "nix-update",
         "nixinate": "nixinate",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-review": "nixpkgs-review",
         "rust-overlay": "rust-overlay",
         "surrealdb": "surrealdb"
       }
@@ -404,11 +356,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1680461822,
-        "narHash": "sha256-JJ0o17DHire/Bvq6f+DWWBMgyBHa11kE3nbsi988id8=",
+        "lastModified": 1680613476,
+        "narHash": "sha256-JLtcLqI0eYJ23LdIN4HtCyl8v4iPHXeKBU4S2+83lnk=",
         "owner": "surrealdb",
         "repo": "surrealdb",
-        "rev": "5eafebd64b15879b126532e1823a3d36554ca49b",
+        "rev": "8a84033a08c8f0d2de06f1b593f2133cabd55d12",
         "type": "github"
       },
       "original": {

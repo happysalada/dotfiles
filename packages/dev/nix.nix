@@ -4,9 +4,10 @@ with pkgs; [
   editorconfig-checker
   rnix-lsp
   nix-tree
-  # nix-du # compilation fails on darwin
   graphviz # needed to visualize nix-du
   nix-prefetch
   nvd
   nil
+  nix-update
+  nixpkgs-review
 ]

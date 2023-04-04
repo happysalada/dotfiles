@@ -14,16 +14,10 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # nix
-    nixpkgs-review.url = "github:Mic92/nixpkgs-review";
-    nixpkgs-review.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs-review.inputs.flake-utils.follows = "flake-utils";
     flake-utils.url = "github:numtide/flake-utils";
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
     agenix.inputs.darwin.follows = "darwin";
-    nix-update.url = "github:Mic92/nix-update";
-    nix-update.inputs.nixpkgs.follows = "nixpkgs";
-    nix-update.inputs.flake-utils.follows = "flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
     rust-overlay.inputs.flake-utils.follows = "flake-utils";
@@ -48,9 +42,7 @@
     nixpkgs,
     darwin,
     home-manager,
-    nixpkgs-review,
     agenix,
-    nix-update,
     rust-overlay,
     nixinate,
     alejandra,
@@ -61,7 +53,7 @@
 
     darwinConfigurations.mbp = darwin.lib.darwinSystem {
       system = "x86_64-darwin";
-      modules = import ./machines/mbp.nix {inherit home-manager nixpkgs-review agenix nix-update rust-overlay alejandra;};
+      modules = import ./machines/mbp.nix {inherit home-manager agenix rust-overlay alejandra;};
     };
 
     darwinConfigurations.m1 = darwin.lib.darwinSystem {
@@ -88,7 +80,7 @@
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/bee/default.nix {inherit home-manager agenix rust-overlay nix-update surrealdb;};
+      modules = import ./machines/bee/default.nix {inherit home-manager agenix rust-overlay surrealdb;};
     };
   };
 }

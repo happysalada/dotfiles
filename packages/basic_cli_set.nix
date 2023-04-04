@@ -30,7 +30,6 @@ with pkgs; [
   ffmpeg
   uutils-coreutils
   shell_gpt
-  chatgpt-cli
   gptcommit
   skim # search mode for atuin
 ]

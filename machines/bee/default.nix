@@ -1,4 +1,4 @@
-{ home-manager, agenix, rust-overlay, nix-update, surrealdb  }:
+{ home-manager, agenix, rust-overlay, surrealdb  }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -180,7 +180,6 @@ in
           remarshal
           dgraph
 
-          nix-update.packages.x86_64-linux.default
           # surrealdb.packages.x86_64-linux.default
           openai-whisper-cpp
           openai-whisper

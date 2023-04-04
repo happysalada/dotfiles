@@ -1,4 +1,4 @@
-{ home-manager, nixpkgs-review, agenix, nix-update, rust-overlay, alejandra }:
+{ home-manager, agenix, rust-overlay, alejandra }:
 [
   ({ pkgs, ... }:
     {
@@ -191,9 +191,7 @@
           youtube-dl
 
           # machine specific
-          # nixpkgs-review.packages.x86_64-darwin.default
           agenix.packages.x86_64-darwin.default
-          nix-update.packages.x86_64-darwin.default
           alejandra.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
