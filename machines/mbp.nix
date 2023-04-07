@@ -13,6 +13,7 @@
           EDITOR = "hx";
           LANG = "en_US.UTF-8";
         };
+        shells = with pkgs; [ fish nushell ];
       };
 
       programs = {
@@ -115,6 +116,7 @@
       users = {
         users.raphael = {
           home = /Users/raphael;
+          shell = with pkgs; [ nushell ];
         };
       };
 

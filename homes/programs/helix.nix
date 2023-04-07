@@ -4,9 +4,14 @@
     theme = "happysalada";
     editor = {
       idle-timeout = 100;
-      lsp.display-messages = true;
       auto-save = true;
       bufferline = "always";
+      soft-wrap.enable = true;
+      completion-replace = true;
+      lsp = {
+        display-inlay-hints = true;
+        display-messages = true;
+      };
     };
     keys.normal = {
       space.space = "file_picker";

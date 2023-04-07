@@ -32,4 +32,5 @@ with pkgs; [
   shell_gpt
   gptcommit
   skim # search mode for atuin
+  pueue
 ]

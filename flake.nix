@@ -3,9 +3,9 @@
 
   inputs = {
     # Package sets
-    # nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs";
-    # nixpkgs.url = "github:happysalada/nixpkgs/chatgpt_retrieval_plugin_module";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # nixpkgs.url = "github:nixos/nixpkgs";
+    # nixpkgs.url = "github:happysalada/nixpkgs/nushell_plugins";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";

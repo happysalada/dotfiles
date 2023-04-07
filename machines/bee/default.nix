@@ -70,6 +70,7 @@ in
     environment = {
       enableDebugInfo = true;
       systemPackages = with pkgs; [ vim lsof git ];
+      shells = with pkgs; [ nushell ];
     };
 
     networking.hostName = "bee";
@@ -92,11 +93,6 @@ in
       # contentAddressedByDefault = true; # build fails for now
     };
 
-    # making amdgpu work
-    systemd.tmpfiles.rules = [
-      "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.hip}"
-    ];
-
     users = {
       mutableUsers = false;
       users = {
@@ -111,6 +107,7 @@ in
           # mkpasswd -m sha-512
           hashedPassword = "$6$AtFC2R2J$SO/WAdF0jthAKEfbSiWWYFz0sQudi3U9WuIehWk7jx9c9.QYUFjXt4NLWEPDOajnzjAN829v2jqvLWKfJz5N.0";
           openssh.authorizedKeys.keys = [ raphaelSshKey ];
+          shell = pkgs.nushell;
         };
       };
     };
@@ -191,7 +188,6 @@ in
           #     torch = torchWithRocm;
           #   };
           # })
-          rocminfo # GPU info
           nvtop-amd # GPU usage
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
