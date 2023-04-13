@@ -7,7 +7,6 @@
       auto-save = true;
       bufferline = "always";
       soft-wrap.enable = true;
-      completion-replace = true;
       lsp = {
         display-inlay-hints = true;
         display-messages = true;

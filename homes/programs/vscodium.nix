@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  enable = true;
+  enable = false;
   package = pkgs.vscodium;
   extensions = with pkgs.vscode-extensions; [
     vscodevim.vim

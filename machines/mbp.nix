@@ -3,28 +3,16 @@
   ({ pkgs, ... }:
     {
       environment = {
-        systemPackages = with pkgs; [
-
-          mdbook # for documentation sites
-          nextdns # better dns
-          # ion # rust shell # compilation fails
-        ];
         variables = {
           EDITOR = "hx";
           LANG = "en_US.UTF-8";
         };
-        shells = with pkgs; [ fish nushell ];
       };
 
       programs = {
         gnupg.agent = {
           enable = true;
           enableSSHSupport = true;
-        };
-        fish = {
-          enable = true;
-          useBabelfish = true;
-          babelfishPackage = pkgs.babelfish;
         };
       };
 
@@ -44,12 +32,15 @@
           InitialKeyRepeat = 10;
           KeyRepeat = 3;
           _HIHideMenuBar = true;
+          NSAutomaticWindowAnimationsEnabled = false;
         };
 
         dock = {
           autohide = true;
           mru-spaces = false;
           tilesize = 512;
+          expose-animation-duration = 0.1;
+          autohide-time-modifier = 0.1;
         };
 
         finder = {

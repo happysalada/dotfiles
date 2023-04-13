@@ -18,5 +18,5 @@ with pkgs; [
   })
   worker-build
   llvmPackages_latest.clang
-  llvmPackages_latest.lldb
+  llvmPackages_latest.lld
 ]
