@@ -4,6 +4,7 @@
   fish = import ./programs/fish.nix;
   ssh = import ./programs/ssh.nix;
   helix = import ./programs/helix.nix;
+  nushell = import ./programs/nushell.nix { inherit pkgs; };
 
   direnv = {
     enable = true;

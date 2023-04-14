@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
 }: {
   enable = true;
@@ -579,8 +578,11 @@
     alias gu = git reset --soft HEAD~1
     alias grh = git reset --hard
     # misc
-    alias l = (ls -a | select name size | sort-by size | reverse)
     alias b = broot -ghi
+
+    def l [] {
+      ls -a | select name size | sort-by size | reverse
+    }
   '';
 
   envFile.text = ''
