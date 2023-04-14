@@ -565,7 +565,9 @@
     # git
     alias gp = git push
     alias gps = git push --set-upstream origin HEAD
+    alias gpf = git push --force
     alias gl = git log --pretty=oneline --abbrev-commit
+    alias gb = git branch
     alias gbd = git branch --delete --force
     alias gc = git checkout
     alias gpp = git pull --prune
@@ -574,8 +576,6 @@
     alias gsa = git stage --all
     alias gfu = git fetch upstream
     alias gmu = git merge upstream/master master
-    alias gb = git branch
-    alias gpf = git push --force
     alias gu = git reset --soft HEAD~1
     alias grh = git reset --hard
     # misc
