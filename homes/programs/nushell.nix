@@ -563,6 +563,7 @@
     alias snixgc = sudo nix-collect-garbage -d
     alias nixroots = nix-store --gc --print-roots
     # git
+    alias gp = git push
     alias gps = git push --set-upstream origin HEAD
     alias gl = git log --pretty=oneline --abbrev-commit
     alias gbd = git branch --delete --force
