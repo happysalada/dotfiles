@@ -1,4 +1,4 @@
-{ config, pkgs }:
+{ pkgs }:
 {
   alacritty = import ./programs/alacritty.nix;
   fish = import ./programs/fish.nix;

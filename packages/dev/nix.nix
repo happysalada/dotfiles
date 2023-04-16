@@ -4,10 +4,10 @@ with pkgs; [
   editorconfig-checker
   rnix-lsp
   nix-tree
-  graphviz # needed to visualize nix-du
   nix-prefetch
   nvd
   nil
   nix-update
   nixpkgs-review
+  poetry # packaging python projects for nix
 ]

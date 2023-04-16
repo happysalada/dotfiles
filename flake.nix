@@ -3,8 +3,8 @@
 
   inputs = {
     # Package sets
-    # nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # nixpkgs.url = "github:nixos/nixpkgs";
     # nixpkgs.url = "github:happysalada/nixpkgs/nushell_dataframes";
 
     # Environment/system management

@@ -584,6 +584,10 @@
     def l [] {
       ls -a | select name size | sort-by size | reverse
     }
+
+    def gcb [name: string] {
+      git checkout -b $name
+    }
   '';
 
   envFile.text = ''

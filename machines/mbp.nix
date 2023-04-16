@@ -197,7 +197,7 @@
         file.".cargo/config.toml".source = ../config/cargo.toml;
       };
       news.display = "silent";
-      programs = import ../homes/common.nix { inherit pkgs config; } //
+      programs = import ../homes/common.nix { inherit pkgs; } //
         { vscode = import ../homes/programs/vscodium.nix { inherit pkgs; }; } //
         { git = import ../homes/programs/git.nix { inherit pkgs; }; };
     });
