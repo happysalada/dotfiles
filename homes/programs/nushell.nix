@@ -559,34 +559,12 @@
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/tealdeer/tldr-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/zellij/zellij-completions.nu *
 
-    alias nixgc = nix store gc -v
-    alias snixgc = sudo nix-collect-garbage -d
-    alias nixroots = nix-store --gc --print-roots
-    # git
-    alias gp = git push
-    alias gps = git push --set-upstream origin HEAD
-    alias gpf = git push --force
-    alias gl = git log --pretty=oneline --abbrev-commit
-    alias gb = git branch
-    alias gbd = git branch --delete --force
-    alias gc = git checkout
-    alias gpp = git pull --prune
-    alias gsi = git stash --include-untracked
-    alias gsp = git stash pop
-    alias gsa = git stage --all
-    alias gfu = git fetch upstream
-    alias gmu = git merge upstream/master master
-    alias gu = git reset --soft HEAD~1
-    alias grh = git reset --hard
-    # misc
-    alias b = broot -ghi
-
-    def l [] {
-      ls -a | select name size | sort-by size | reverse
-    }
-
     def gcb [name: string] {
       git checkout -b $name
+    }
+
+    def l [directory: string = "."] {
+      ls -a $directory | select name size | sort-by size | reverse
     }
   '';
 
@@ -599,4 +577,27 @@
     let-env EDITOR = hx;
   '';
   # envFile.source = config.age.secrets.ENV_NU.path;
+  shellAliases = {
+    nixgc = "nix store gc -v";
+    snixgc = "sudo nix-collect-garbage -d";
+    nixroots = "nix-store --gc --print-roots";
+    # git
+    gp = "git push";
+    gps = "git push --set-upstream origin HEAD";
+    gpf = "git push --force";
+    gl = "git log --pretty=oneline --abbrev-commit";
+    gb = "git branch";
+    gbd = "git branch --delete --force";
+    c = "git checkout";
+    gpp = "git pull --prune";
+    gsi = "git stash --include-untracked";
+    gsp = "git stash pop";
+    gsa = "git stage --all";
+    gfu = "git fetch upstream";
+    gmu = "git merge upstream/master master";
+    gu = "git reset --soft HEAD~1";
+    grh = "git reset --hard";
+    # misc
+    b = "broot -ghi";
+  };
 }
