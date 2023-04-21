@@ -563,6 +563,10 @@
       git checkout -b $name
     }
 
+    def gc [name: string] {
+      git checkout $name
+    }
+
     def l [directory: string = "."] {
       ls -a $directory | select name size | sort-by size | reverse
     }

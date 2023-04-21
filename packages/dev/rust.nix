@@ -16,7 +16,10 @@ with pkgs; [
   (rust-bin.stable.latest.default.override {
     extensions = [ "rust-src" ]; 
   })
+  # both of the following are required for cloudflare workers
   worker-build
+  nodePackages_latest.wrangler
+  # compilation related
   llvmPackages_latest.clang
   llvmPackages_latest.lld
 ]
