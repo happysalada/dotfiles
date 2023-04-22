@@ -570,6 +570,11 @@
     def l [directory: string = "."] {
       ls -a $directory | select name size | sort-by size | reverse
     }
+
+    def ggc [] {
+      git reflog expire --all --expire=now
+      git gc --prune=now --aggressive
+    }
   '';
 
   envFile.text = ''
