@@ -546,15 +546,15 @@
     register ${pkgs.nushellPlugins.query}/bin/nu_plugin_query
 
     # maybe useful functions
-    # use ${pkgs.nu_scripts}/share/nu_scripts/formatting/number-format.nu *
-    # use ${pkgs.nu_scripts}/share/nu_scripts/api_wrappers/wolframalpha.nu *
-    use ${pkgs.nu_scripts}/share/nu_scripts/background_task/job.nu *
-    # use ${pkgs.nu_scripts}/share/nu_scripts/ssh/ssh.nu *
+    # use ${pkgs.nu_scripts}/share/nu_scripts/modules/formats/to-number-format.nu *
+    # use ${pkgs.nu_scripts}/share/nu_scripts/sourced/api_wrappers/wolframalpha.nu *
+    # use ${pkgs.nu_scripts}/share/nu_scripts/modules/background_task/job.nu *
+    # use ${pkgs.nu_scripts}/share/nu_scripts/modules/network/ssh.nu *
 
     # completions
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/git/git-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/btm/btm-completions.nu *
-    # use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/cargo/cargo-completions.nu *
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/cargo/cargo-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/nix/nix-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/tealdeer/tldr-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/zellij/zellij-completions.nu *
@@ -575,6 +575,11 @@
       git reflog expire --all --expire=now
       git gc --prune=now --aggressive
     }
+
+    def nixgc [] {
+      nix store gc -v
+      sudo nix-collect-garbage -d
+    }
   '';
 
   envFile.text = ''
@@ -587,8 +592,6 @@
   '';
   # envFile.source = config.age.secrets.ENV_NU.path;
   shellAliases = {
-    nixgc = "nix store gc -v";
-    snixgc = "sudo nix-collect-garbage -d";
     nixroots = "nix-store --gc --print-roots";
     # git
     gp = "git push";

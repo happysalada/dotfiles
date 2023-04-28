@@ -8,11 +8,13 @@
       createDatabase = true;
       socket = "/var/run/postgresql";
     };
-    domain = "git.sassy.technology";
-    rootUrl = "https://git.sassy.technology";
-    httpPort = 3030;
-    httpAddress = "127.0.0.1";
     settings = {
+      server = {
+        ROOT_URL = "https://git.sassy.technology";
+        HTTP_PORT = 3030;
+        HTTP_ADDR = "127.0.0.1";
+        DOMAIN = "git.sassy.technology";
+      };
       repository = {
         PREFERRED_LICENSES = "AGPL-3.0,GPL-3.0,GPL-2.0,LGPL-3.0,LGPL-2.1";
       };

@@ -167,15 +167,8 @@ in
         # $ nix-env -qaP | grep wget
         packages = with pkgs; [
           # network
-          mtr # network traffic
+          # mtr # network traffic
           # tcptrack
-
-          # shell stuff
-          nodePackages.bash-language-server
-          shellcheck
-
-          remarshal
-          dgraph
 
           # surrealdb.packages.x86_64-linux.default
           openai-whisper-cpp
@@ -189,6 +182,7 @@ in
           #   };
           # })
           nvtop-amd # GPU usage
+          btop # top with cpu freq
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../../packages/dev/rust.nix { inherit pkgs; }) ++

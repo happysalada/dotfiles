@@ -10,4 +10,5 @@ with pkgs; [
   nix-update
   nixpkgs-review
   poetry # packaging python projects for nix
+  nix-output-monitor
 ]

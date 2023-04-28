@@ -6,6 +6,10 @@
     enable = true;
     journaldAccess = true;
     settings = {
+      # api = {
+      #   enabled = true;
+      #   address = "127.0.0.1:8686"; # is the default, added just to make it clear
+      # };
       sources.journald.type = "journald";
 
       transforms.modify = {
@@ -79,4 +83,10 @@
       };
     };
   };
+
+  # services.caddy.virtualHosts."vector.sassy.technology" = {
+  #   extraConfig = ''
+  #     reverse_proxy 127.0.0.1:8686
+  #   '';
+  # };
 }
