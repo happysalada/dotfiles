@@ -73,7 +73,7 @@
 
   services.caddy.virtualHosts."git.sassy.technology" = {
     extraConfig = ''
-      reverse_proxy 127.0.0.1:${toString config.services.gitea.httpPort}
+      reverse_proxy 127.0.0.1:${toString config.services.gitea.settings.server.HTTP_PORT}
     '';
   };
 }

@@ -1,6 +1,6 @@
 { pkgs }:
 with pkgs; [
-  solana-testnet
-  solc
-  nodePackages.ganache
+  # solana-testnet
+  # solc
+  # nodePackages.ganache
 ]

@@ -1,7 +1,8 @@
 { pkgs }:
 with pkgs; [
   # js
-  nodejs-slim
+  # nodejs-slim # use again when holochain project is over
+  nodejs
   nodePackages_latest.prettier
   nodePackages_latest.pnpm
   nodePackages_latest.npm-check-updates

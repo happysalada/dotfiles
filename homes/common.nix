@@ -1,10 +1,10 @@
-{ pkgs }:
+{ pkgs, config }:
 {
   alacritty = import ./programs/alacritty.nix;
   fish = import ./programs/fish.nix;
   ssh = import ./programs/ssh.nix;
   helix = import ./programs/helix.nix;
-  nushell = import ./programs/nushell.nix { inherit pkgs; };
+  nushell = import ./programs/nushell.nix { inherit pkgs config; };
 
   direnv = {
     enable = true;
@@ -26,7 +26,7 @@
 
   starship = {
     enable = true;
-    enableFishIntegration = true;
+    # enableFishIntegration = true;
     enableNushellIntegration = true;
     settings = {
       add_newline = false;
@@ -36,7 +36,7 @@
 
   broot = {
     enable = true;
-    enableFishIntegration = true;
+    # enableFishIntegration = true;
     settings.verbs = [
       {
         invocation = "edit";
@@ -52,13 +52,13 @@
 
   zoxide = {
     enable = true;
-    enableFishIntegration = true;
+    # enableFishIntegration = true;
     enableNushellIntegration = true;
   };
 
   atuin = {
     enable = true;
-    enableFishIntegration = true;
+    # enableFishIntegration = true;
     enableBashIntegration = true;
     enableNushellIntegration = true;
     settings = {

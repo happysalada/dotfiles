@@ -1,5 +1,6 @@
 {
   pkgs,
+  config,
 }: {
   enable = true;
   package = pkgs.nushell.override {additionalFeatures = p: p ++ ["dataframe"];};
@@ -582,15 +583,14 @@
     }
   '';
 
-  envFile.text = ''
-    let-env PATH = ($env.PATH |
-      prepend "/run/current-system/sw/bin" |
-      prepend "/Users/raphael/.nix-profile/bin" |
-      str join ":")
-
-    let-env EDITOR = hx;
-  '';
-  # envFile.source = config.age.secrets.ENV_NU.path;
+  # envFile.source = config.age.secrets.NU_ENV.path;
+  # extraEnv = ''
+  #   let-env EDITOR = hx;
+  # '';
+  environmentVariables = {
+    EDITOR = "hx";
+    # OPENAI_API_KEY = "(open /run/agenix/OPENAI_API_KEY)";
+  };
   shellAliases = {
     nixroots = "nix-store --gc --print-roots";
     # git

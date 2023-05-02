@@ -117,14 +117,17 @@
         # avahi.enable = true; # unavailable on macos
       };
     })
-  agenix.nixosModules.age
+  # agenix.darwinModules.age
   {
     nixpkgs.overlays = [ rust-overlay.overlays.default ];
-    age.secrets =  {
-      NU_ENV = {
-        file = ../secrets/env.nu.age;
-      };
-    };
+    # age = {
+    #   identityPaths = [ "/Users/raphael/.ssh/id_ed25519" ];
+    #   secrets =  {
+    #     OPENAI_API_KEY = {
+    #       file = ../secrets/openai.key.age;
+    #     };
+    #   };
+    # };
   }
   # `home-manager` module
   home-manager.darwinModules.home-manager
@@ -197,7 +200,7 @@
         file.".cargo/config.toml".source = ../config/cargo.toml;
       };
       news.display = "silent";
-      programs = import ../homes/common.nix { inherit pkgs; } //
+      programs = import ../homes/common.nix { inherit pkgs config; } //
         { vscode = import ../homes/programs/vscodium.nix { inherit pkgs; }; } //
         { git = import ../homes/programs/git.nix { inherit pkgs; }; };
     });

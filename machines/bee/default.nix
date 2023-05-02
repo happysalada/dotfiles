@@ -37,7 +37,7 @@ in
       # ../../modules/media_summary.nix
       # ../../modules/adafilter.nix
       ../../modules/qdrant.nix
-      ../../modules/chatgpt_retrieval_plugin.nix
+      # ../../modules/chatgpt_retrieval_plugin.nix
     ];
 
 
