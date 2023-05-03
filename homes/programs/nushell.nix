@@ -578,8 +578,11 @@
     }
 
     def nixgc [] {
+      sudo /Users/raphael/dotfiles/result/sw/bin/nix-collect-garbage -d
+      for file in (glob $'($env.HOME)/.local/state/nix/profiles/*') {
+        rm $file
+      }
       nix store gc -v
-      sudo nix-collect-garbage -d
     }
   '';
 
@@ -589,6 +592,7 @@
   # '';
   environmentVariables = {
     EDITOR = "hx";
+    PATH = "($env.PATH | prepend '/run/current-system/sw/bin' | prepend '/Users/raphael/.nix-profile/bin' | str join ':')";
     # OPENAI_API_KEY = "(open /run/agenix/OPENAI_API_KEY)";
   };
   shellAliases = {
