@@ -24,7 +24,7 @@ with pkgs; [
   # btop # top with cpufreq
   # sequoia # openpgp in rust
   # ruplacer # sed with visual feedback
-  # ouch # painless (de)compression
+  ouch # painless (de)compression
   solo2-cli # updating solokeys
   # sqlite
   # ffmpeg
@@ -34,4 +34,6 @@ with pkgs; [
   skim # search mode for atuin
   pueue
   # sniffnet # packet analysis
+  awscli2 # used to get logs out of r2
+  # wireguard-tools # for wireguard
 ]

@@ -593,7 +593,7 @@
   environmentVariables = {
     EDITOR = "hx";
     PATH = "($env.PATH | prepend '/run/current-system/sw/bin' | prepend '/Users/raphael/.nix-profile/bin' | str join ':')";
-    # OPENAI_API_KEY = "(open /run/agenix/OPENAI_API_KEY)";
+    OPENAI_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
   };
   shellAliases = {
     nixroots = "nix-store --gc --print-roots";

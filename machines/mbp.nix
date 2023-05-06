@@ -135,6 +135,17 @@
     # `home-manager` config
     home-manager.useGlobalPkgs = true;
     home-manager.users.raphael = ({ pkgs, config, ... }: {
+      imports = [
+        agenix.homeManagerModules.age
+      ];
+      age = {
+        identityPaths = [ "/Users/raphael/.ssh/id_ed25519" ];
+        secrets =  {
+          OPENAI_API_KEY = {
+            file = ../secrets/openai.key.age;
+          };
+        };
+      };
       home = {
         username = "raphael";
         # This value determines the Home Manager release that your
