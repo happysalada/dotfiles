@@ -9,4 +9,5 @@ with pkgs; [
   nodePackages_latest.svelte-language-server
   nodePackages_latest.degit
   nodePackages_latest.typescript-language-server
+  nodePackages_latest."@tailwindcss/language-server"
 ]

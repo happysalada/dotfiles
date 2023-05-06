@@ -4,6 +4,87 @@
 }: {
   enable = true;
   package = pkgs.nushell.override {additionalFeatures = p: p ++ ["dataframe"];};
+
+  environmentVariables = {
+    EDITOR = "hx";
+    PATH = "($env.PATH | prepend '/run/current-system/sw/bin' | prepend '/Users/raphael/.nix-profile/bin' | str join ':')";
+    OPENAI_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
+  };
+  shellAliases = {
+    # nix
+    nixroots = "nix-store --gc --print-roots";
+    # git
+    gp = "git push";
+    gps = "git push --set-upstream origin HEAD";
+    gpf = "git push --force";
+    gl = "git log --pretty=oneline --abbrev-commit";
+    gb = "git branch";
+    gbd = "git branch --delete --force";
+    c = "git checkout";
+    gpp = "git pull --prune";
+    gsi = "git stash --include-untracked";
+    gsp = "git stash pop";
+    gsa = "git stage --all";
+    gfu = "git fetch upstream";
+    gmu = "git merge upstream/master master";
+    gu = "git reset --soft HEAD~1";
+    grh = "git reset --hard";
+    # misc
+    b = "broot -ghi";
+  };
+
+  extraConfig = ''
+    let-env config = ($env.config | merge {
+      edit_mode: vi
+      show_banner: false
+    });
+
+    register ${pkgs.nushellPlugins.query}/bin/nu_plugin_query
+
+    # maybe useful functions
+    # use ${pkgs.nu_scripts}/share/nu_scripts/modules/formats/to-number-format.nu *
+    # use ${pkgs.nu_scripts}/share/nu_scripts/sourced/api_wrappers/wolframalpha.nu *
+    # use ${pkgs.nu_scripts}/share/nu_scripts/modules/background_task/job.nu *
+    # use ${pkgs.nu_scripts}/share/nu_scripts/modules/network/ssh.nu *
+
+    # completions
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/git/git-completions.nu *
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/btm/btm-completions.nu *
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/cargo/cargo-completions.nu *
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/nix/nix-completions.nu *
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/tealdeer/tldr-completions.nu *
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/zellij/zellij-completions.nu *
+
+    def gcb [name: string] {
+      git checkout -b $name
+    }
+
+    def gc [name: string] {
+      git checkout $name
+    }
+
+    def l [directory: string = "."] {
+      ls -a $directory | select name size | sort-by size | reverse
+    }
+
+    def cl [directory: string] {
+      cd $directory | l
+    }
+
+    def ggc [] {
+      git reflog expire --all --expire=now
+      git gc --prune=now --aggressive
+    }
+
+    def nixgc [] {
+      sudo /Users/raphael/dotfiles/result/sw/bin/nix-collect-garbage -d
+      for file in (glob $'($env.HOME)/.local/state/nix/profiles/*') {
+        rm $file
+      }
+      nix store gc -v
+    }
+  '';
+
   configFile.text = ''
     # For more information on defining custom themes, see
     # https://www.nushell.sh/book/coloring_and_theming.html
@@ -538,82 +619,4 @@
       ]
     }
   '';
-  extraConfig = ''
-    let-env config = ($env.config | merge {
-      edit_mode: vi
-      show_banner: false
-    });
-
-    register ${pkgs.nushellPlugins.query}/bin/nu_plugin_query
-
-    # maybe useful functions
-    # use ${pkgs.nu_scripts}/share/nu_scripts/modules/formats/to-number-format.nu *
-    # use ${pkgs.nu_scripts}/share/nu_scripts/sourced/api_wrappers/wolframalpha.nu *
-    # use ${pkgs.nu_scripts}/share/nu_scripts/modules/background_task/job.nu *
-    # use ${pkgs.nu_scripts}/share/nu_scripts/modules/network/ssh.nu *
-
-    # completions
-    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/git/git-completions.nu *
-    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/btm/btm-completions.nu *
-    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/cargo/cargo-completions.nu *
-    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/nix/nix-completions.nu *
-    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/tealdeer/tldr-completions.nu *
-    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/zellij/zellij-completions.nu *
-
-    def gcb [name: string] {
-      git checkout -b $name
-    }
-
-    def gc [name: string] {
-      git checkout $name
-    }
-
-    def l [directory: string = "."] {
-      ls -a $directory | select name size | sort-by size | reverse
-    }
-
-    def ggc [] {
-      git reflog expire --all --expire=now
-      git gc --prune=now --aggressive
-    }
-
-    def nixgc [] {
-      sudo /Users/raphael/dotfiles/result/sw/bin/nix-collect-garbage -d
-      for file in (glob $'($env.HOME)/.local/state/nix/profiles/*') {
-        rm $file
-      }
-      nix store gc -v
-    }
-  '';
-
-  # envFile.source = config.age.secrets.NU_ENV.path;
-  # extraEnv = ''
-  #   let-env EDITOR = hx;
-  # '';
-  environmentVariables = {
-    EDITOR = "hx";
-    PATH = "($env.PATH | prepend '/run/current-system/sw/bin' | prepend '/Users/raphael/.nix-profile/bin' | str join ':')";
-    OPENAI_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
-  };
-  shellAliases = {
-    nixroots = "nix-store --gc --print-roots";
-    # git
-    gp = "git push";
-    gps = "git push --set-upstream origin HEAD";
-    gpf = "git push --force";
-    gl = "git log --pretty=oneline --abbrev-commit";
-    gb = "git branch";
-    gbd = "git branch --delete --force";
-    c = "git checkout";
-    gpp = "git pull --prune";
-    gsi = "git stash --include-untracked";
-    gsp = "git stash pop";
-    gsa = "git stage --all";
-    gfu = "git fetch upstream";
-    gmu = "git merge upstream/master master";
-    gu = "git reset --soft HEAD~1";
-    grh = "git reset --hard";
-    # misc
-    b = "broot -ghi";
-  };
 }
