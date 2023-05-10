@@ -10,12 +10,12 @@
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url = "github:happysalada/home-manager/nushell_add_env_vars_attribute";
+    home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # nix
     flake-utils.url = "github:numtide/flake-utils";
-    agenix.url = "github:ryantm/agenix";
+    agenix.url = "github:ambroisie/agenix/add-home-manager";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
     agenix.inputs.darwin.follows = "darwin";
     rust-overlay.url = "github:oxalica/rust-overlay";
@@ -31,10 +31,12 @@
     crane.inputs.rust-overlay.follows = "rust-overlay";
     crane.inputs.flake-utils.follows = "flake-utils";
 
-    surrealdb.url = "github:surrealdb/surrealdb";
+    # surrealdb.url = "github:surrealdb/surrealdb";
     # surrealdb.inputs.nixpkgs.follows = "nixpkgs";
-    surrealdb.inputs.crane.follows = "crane";
-    surrealdb.inputs.flake-utils.follows = "flake-utils";
+    # surrealdb.inputs.crane.follows = "crane";
+    # surrealdb.inputs.flake-utils.follows = "flake-utils";
+
+    # helix.url = "github:helix-editor/helix";
   };
 
   outputs = {
@@ -46,7 +48,6 @@
     rust-overlay,
     nixinate,
     alejandra,
-    surrealdb,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
@@ -80,7 +81,7 @@
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/bee/default.nix {inherit home-manager agenix rust-overlay surrealdb;};
+      modules = import ./machines/bee/default.nix {inherit home-manager agenix rust-overlay;};
     };
   };
 }

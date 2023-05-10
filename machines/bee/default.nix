@@ -1,4 +1,4 @@
-{ home-manager, agenix, rust-overlay, surrealdb  }:
+{ home-manager, agenix, rust-overlay  }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -38,6 +38,8 @@ in
       # ../../modules/adafilter.nix
       ../../modules/qdrant.nix
       # ../../modules/chatgpt_retrieval_plugin.nix
+      ../../modules/uptime-kuma.nix
+      ../../modules/atuin.nix
     ];
 
 
@@ -49,7 +51,7 @@ in
     boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 
     nix = {
-      package = pkgs.nixFlakes;
+      package = pkgs.nixUnstable;
       settings = {
         cores = 8;  
         auto-optimise-store = true;
@@ -149,7 +151,18 @@ in
   {
     # `home-manager` config
     home-manager.useGlobalPkgs = true;
-    home-manager.users.yt = ({ pkgs, ... }: {
+    home-manager.users.yt = ({ pkgs, config, lib, ... }: {
+      imports = [
+        agenix.homeManagerModules.age
+      ];
+      # age = {
+      #   identityPaths = [ "/home/yt/.ssh/id_ed25519" ];
+      #   secrets =  {
+      #     OPENAI_API_KEY = {
+      #       file = ../secrets/openai.key.age;
+      #     };
+      #   };
+      # };
       home = {
         username = "yt";
         # This value determines the Home Manager release that your
@@ -171,6 +184,9 @@ in
           # tcptrack
 
           # surrealdb.packages.x86_64-linux.default
+          surrealdb
+          surrealdb-migrations
+
           openai-whisper-cpp
           openai-whisper
           # (let torchWithRocm = python3Packages.torchWithRocm;
@@ -190,7 +206,7 @@ in
         (import ../../packages/dev/nix.nix { inherit pkgs; });
       };
       news.display = "silent";
-      programs = import ../../homes/common.nix { inherit pkgs; };
+      programs = import ../../homes/common.nix { inherit pkgs config lib; };
     });
   }
   {

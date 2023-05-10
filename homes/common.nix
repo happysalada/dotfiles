@@ -1,10 +1,10 @@
-{ pkgs, config }:
+{ pkgs, config, lib }:
 {
   alacritty = import ./programs/alacritty.nix;
   fish = import ./programs/fish.nix;
   ssh = import ./programs/ssh.nix;
   helix = import ./programs/helix.nix;
-  nushell = import ./programs/nushell.nix { inherit pkgs config; };
+  nushell = import ./programs/nushell.nix { inherit pkgs config lib; };
 
   direnv = {
     enable = true;
@@ -62,7 +62,9 @@
     enableBashIntegration = true;
     enableNushellIntegration = true;
     settings = {
-      auto_sync = false;
+      auto_sync = true;
+      sync_frequency = "5m";
+      sync_address = "https://atuin.sassy.technology";
       search_mode = "skim";
       show_preview = true;
     };
