@@ -1,4 +1,4 @@
-{ home-manager, agenix, rust-overlay, alejandra }:
+{ home-manager, agenix, rust-overlay, alejandra, nurl, nix-melt }:
 [
   ({ pkgs, ... }:
     {
@@ -99,9 +99,12 @@
         gc.automatic = false;
       };
 
-      nixpkgs.config = {
-        allowUnfree = true;
-        # contentAddressedByDefault = true; # build fails for now
+      nixpkgs = {
+        overlays = [ rust-overlay.overlays.default ];
+        config = {
+          allowUnfree = true;
+          # contentAddressedByDefault = true; # build fails for now
+        };
       };
 
       users = {
@@ -117,24 +120,15 @@
         # avahi.enable = true; # unavailable on macos
       };
     })
-  # agenix.darwinModules.age
-  {
-    nixpkgs.overlays = [ rust-overlay.overlays.default ];
-    # age = {
-    #   identityPaths = [ "/Users/raphael/.ssh/id_ed25519" ];
-    #   secrets =  {
-    #     OPENAI_API_KEY = {
-    #       file = ../secrets/openai.key.age;
-    #     };
-    #   };
-    # };
-  }
+  # {
+  #   nixpkgs.overlays = [ rust-overlay.overlays.default ];
+  # }
   # `home-manager` module
   home-manager.darwinModules.home-manager
   {
     # `home-manager` config
     home-manager.useGlobalPkgs = true;
-    home-manager.users.raphael = ({ pkgs, config, ... }: {
+    home-manager.users.raphael = ({ pkgs, config, lib, ... }: {
       imports = [
         agenix.homeManagerModules.age
       ];
@@ -196,10 +190,14 @@
           # zig
           # openscad # fails to build on darwin
           youtube-dl
+          surrealdb
+          surrealdb-migrations
 
           # machine specific
           agenix.packages.x86_64-darwin.default
           alejandra.packages.x86_64-darwin.default
+          nurl.packages.x86_64-darwin.default
+          nix-melt.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../packages/dev/rust.nix { inherit pkgs; }) ++
@@ -210,10 +208,13 @@
 
         file.".cargo/config.toml".source = ../config/cargo.toml;
       };
+
       news.display = "silent";
-      programs = import ../homes/common.nix { inherit pkgs config; } //
-        { vscode = import ../homes/programs/vscodium.nix { inherit pkgs; }; } //
-        { git = import ../homes/programs/git.nix { inherit pkgs; }; };
+      programs = import ../homes/common.nix { inherit pkgs config lib; } //
+        {
+          vscode = import ../homes/programs/vscodium.nix { inherit pkgs; };
+          git = import ../homes/programs/git.nix { inherit pkgs; };
+        };
     });
   }
 ]

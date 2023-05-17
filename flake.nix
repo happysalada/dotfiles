@@ -15,21 +15,27 @@
 
     # nix
     flake-utils.url = "github:numtide/flake-utils";
-    agenix.url = "github:ambroisie/agenix/add-home-manager";
+    agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
     agenix.inputs.darwin.follows = "darwin";
-    rust-overlay.url = "github:oxalica/rust-overlay";
-    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
-    rust-overlay.inputs.flake-utils.follows = "flake-utils";
+    agenix.inputs.home-manager.follows = "home-manager";
     nixinate.url = "github:matthewcroughan/nixinate";
     nixinate.inputs.nixpkgs.follows = "nixpkgs";
     alejandra.url = "github:kamadorueda/alejandra";
     alejandra.inputs.nixpkgs.follows = "nixpkgs";
+    nix-melt.url = "github:nix-community/nix-melt";
+    nix-melt.inputs.nixpkgs.follows = "nixpkgs";
+    nurl.url = "github:nix-community/nurl";
+    nurl.inputs.nixpkgs.follows = "nixpkgs";
 
+    # rust
     crane.url = "github:ipetkov/crane";
     crane.inputs.nixpkgs.follows = "nixpkgs";
     crane.inputs.rust-overlay.follows = "rust-overlay";
     crane.inputs.flake-utils.follows = "flake-utils";
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    rust-overlay.inputs.flake-utils.follows = "flake-utils";
 
     # surrealdb.url = "github:surrealdb/surrealdb";
     # surrealdb.inputs.nixpkgs.follows = "nixpkgs";
@@ -48,13 +54,15 @@
     rust-overlay,
     nixinate,
     alejandra,
+    nix-melt,
+    nurl,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
 
     darwinConfigurations.mbp = darwin.lib.darwinSystem {
       system = "x86_64-darwin";
-      modules = import ./machines/mbp.nix {inherit home-manager agenix rust-overlay alejandra;};
+      modules = import ./machines/mbp.nix {inherit home-manager agenix rust-overlay alejandra nix-melt nurl; };
     };
 
     darwinConfigurations.m1 = darwin.lib.darwinSystem {
