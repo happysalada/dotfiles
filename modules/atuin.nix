@@ -1,6 +1,7 @@
 {config, ...}: {
   services.atuin = {
     enable = true;
+    # openRegistration = true;
   };
   services.caddy.virtualHosts."atuin.sassy.technology" = {
     extraConfig = ''

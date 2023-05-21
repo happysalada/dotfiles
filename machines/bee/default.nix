@@ -40,6 +40,7 @@ in
       # ../../modules/chatgpt_retrieval_plugin.nix
       ../../modules/uptime-kuma.nix
       ../../modules/atuin.nix
+      ../../modules/meilisearch.nix
     ];
 
 
@@ -154,15 +155,32 @@ in
     home-manager.users.yt = ({ pkgs, config, lib, ... }: {
       imports = [
         agenix.homeManagerModules.age
+        {
+          config.programs.nushell.environmentVariables = {
+            OPENAI_API_KEY = "(open $'($env.XDG_RUNTIME_DIR)/agenix/OPENAI_API_KEY')";
+            GITHUB_ACCESS_TOKEN = "(open $'($env.XDG_RUNTIME_DIR)/agenix/GITHUB_ACCESS_TOKEN')";
+            SURREAL_USERNAME = "(open $'($env.XDG_RUNTIME_DIR)/agenix/SURREAL_USERNAME')";
+            SURREAL_PASSWORD = "(open $'($env.XDG_RUNTIME_DIR)/agenix/SURREAL_PASSWORD')";
+          };
+        }
       ];
-      # age = {
-      #   identityPaths = [ "/home/yt/.ssh/id_ed25519" ];
-      #   secrets =  {
-      #     OPENAI_API_KEY = {
-      #       file = ../secrets/openai.key.age;
-      #     };
-      #   };
-      # };
+      age = {
+        identityPaths = [ "/home/yt/.ssh/id_ed25519" ];
+        secrets =  {
+          OPENAI_API_KEY = {
+            file = ../../secrets/openai.key.age;
+          };
+          GITHUB_ACCESS_TOKEN = {
+            file = ../../secrets/github_access_token.age;
+          };
+          SURREAL_USERNAME = {
+            file = ../../secrets/surreal.username.age;
+          };
+          SURREAL_PASSWORD = {
+            file = ../../secrets/surreal.password.age;
+          };
+        };
+      };
       home = {
         username = "yt";
         # This value determines the Home Manager release that your

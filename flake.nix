@@ -10,7 +10,7 @@
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url = "github:nix-community/home-manager";
+    home-manager.url = "github:Philipp-M/home-manager/update-helix-languages-generation";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # nix
@@ -21,12 +21,13 @@
     agenix.inputs.home-manager.follows = "home-manager";
     nixinate.url = "github:matthewcroughan/nixinate";
     nixinate.inputs.nixpkgs.follows = "nixpkgs";
-    alejandra.url = "github:kamadorueda/alejandra";
-    alejandra.inputs.nixpkgs.follows = "nixpkgs";
     nix-melt.url = "github:nix-community/nix-melt";
     nix-melt.inputs.nixpkgs.follows = "nixpkgs";
     nurl.url = "github:nix-community/nurl";
     nurl.inputs.nixpkgs.follows = "nixpkgs";
+    # deploy-rs.url = "github:serokell/deploy-rs";
+    # deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+    # deploy-rs.inputs.utils.follows = "flake-utils";
 
     # rust
     crane.url = "github:ipetkov/crane";
@@ -42,7 +43,9 @@
     # surrealdb.inputs.crane.follows = "crane";
     # surrealdb.inputs.flake-utils.follows = "flake-utils";
 
-    # helix.url = "github:helix-editor/helix";
+    helix.url = "github:happysalada/helix/add_surql";
+    # copilot-lsp-src.url = "github:github/copilot.vim";
+    # copilot-lsp-src.flake = false;
   };
 
   outputs = {
@@ -53,43 +56,60 @@
     agenix,
     rust-overlay,
     nixinate,
-    alejandra,
     nix-melt,
     nurl,
+    helix,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
 
     darwinConfigurations.mbp = darwin.lib.darwinSystem {
       system = "x86_64-darwin";
-      modules = import ./machines/mbp.nix {inherit home-manager agenix rust-overlay alejandra nix-melt nurl; };
-    };
-
-    darwinConfigurations.m1 = darwin.lib.darwinSystem {
-      system = "aarch64-darwin";
-      modules = import ./machines/m1.nix {inherit home-manager agenix rust-overlay;};
-    };
-
-    homeConfigurations.thinkpad = home-manager.lib.homeManagerConfiguration {
-      system = "x86_64-linux";
-      homeDirectory = "/home/user";
-      username = "user";
-      configuration.imports = [./machines/thinkpad.nix];
-    };
-
-    nixosConfigurations.hetzi = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = import ./machines/hetzner_cloud/default.nix {inherit home-manager agenix rust-overlay;};
-    };
-
-    nixosConfigurations.htz = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = import ./machines/hetzner_dedicated/default.nix {inherit home-manager agenix rust-overlay;};
+      modules = import ./machines/mbp.nix {inherit home-manager agenix rust-overlay nix-melt nurl helix; };
     };
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = import ./machines/bee/default.nix {inherit home-manager agenix rust-overlay;};
     };
+
+    # deploy = {
+    #   magicRollback = true;
+    #   autoRollback = true;
+    #   remoteBuild = true;
+    #   nodes.bee = {
+    #     hostname = "bee";
+    #     sshUser = "yt";
+    #     profile.yt = {
+    #       user = "yt";
+    #       path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.bee;
+    #     };
+    #   };
+    # };
+
+    # This is highly advised, and will prevent many possible mistakes
+    # checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+
+    # nixosConfigurations.hetzi = nixpkgs.lib.nixosSystem {
+    #   system = "x86_64-linux";
+    #   modules = import ./machines/hetzner_cloud/default.nix {inherit home-manager agenix rust-overlay;};
+    # };
+
+    # nixosConfigurations.htz = nixpkgs.lib.nixosSystem {
+    #   system = "x86_64-linux";
+    #   modules = import ./machines/hetzner_dedicated/default.nix {inherit home-manager agenix rust-overlay;};
+    # };
+
+    # homeConfigurations.thinkpad = home-manager.lib.homeManagerConfiguration {
+    #   system = "x86_64-linux";
+    #   homeDirectory = "/home/user";
+    #   username = "user";
+    #   configuration.imports = [./machines/thinkpad.nix];
+    # };
+
+    # darwinConfigurations.m1 = darwin.lib.darwinSystem {
+    #   system = "aarch64-darwin";
+    #   modules = import ./machines/m1.nix {inherit home-manager agenix rust-overlay;};
+    # };
   };
 }

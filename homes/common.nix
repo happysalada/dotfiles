@@ -3,8 +3,9 @@
   alacritty = import ./programs/alacritty.nix;
   fish = import ./programs/fish.nix;
   ssh = import ./programs/ssh.nix;
-  helix = import ./programs/helix.nix;
+  helix = import ./programs/helix.nix { inherit pkgs; };
   nushell = import ./programs/nushell.nix { inherit pkgs config lib; };
+  # neovim = import ./programs/neovim.nix { inherit pkgs; };
 
   direnv = {
     enable = true;
@@ -18,7 +19,7 @@
       pane_frames = false;
       keybinds = {
         unbind = {
-          _args = [ "Ctrl b" ];
+          _args = [ "Ctrl b" "Ctrl n" "Ctrl p" "Ctrl g" "Ctrl h" "Ctrl o" "Ctrl q" ];
         };
       };
     };

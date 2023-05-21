@@ -9,7 +9,7 @@
   environmentVariables = {
     EDITOR = "hx";
     PATH = "($env.PATH | prepend '/run/current-system/sw/bin' | prepend '/Users/raphael/.nix-profile/bin' | str join ':')";
-    OPENAI_API_KEY = lib.mkIf pkgs.stdenv.isDarwin "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
+    # OPENAI_API_KEY = lib.mkIf pkgs.stdenv.isDarwin "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
     # no ssh keys created yet on the linux server
     # "(open $'($env.XDG_RUNTIME_DIR)/agenix/OPENAI_API_KEY')"
   };

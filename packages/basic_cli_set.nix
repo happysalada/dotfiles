@@ -36,4 +36,6 @@ with pkgs; [
   # sniffnet # packet analysis
   awscli2 # used to get logs out of r2
   # wireguard-tools # for wireguard
+  # trippy # network diagnostic tool
+  # rustypaste # file sharing service
 ]

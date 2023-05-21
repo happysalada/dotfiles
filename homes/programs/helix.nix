@@ -1,3 +1,4 @@
+{ pkgs }:
 {
   enable = true;
   settings = {
@@ -19,21 +20,39 @@
     };
   };
 
-  languages = [
-    {
-      name = "nix";
-      scope = "source.nix";
-      injection-regex = "nix";
-      file-types = ["nix"];
-      comment-token = "#";
-      language-server = {command = "nil";};
-      indent = {
-        tab-width = 2;
-        unit = "  ";
+  languages = {
+    language-server = with pkgs; with pkgs.nodePackages_latest; {
+      typescript-language-server =  {
+        command = "${typescript-language-server}/bin/typescript-language-server";
+        args = [ "--stdio" "--tsserver-path=''${typescript}/lib/node_modules/typescript/lib" ];
       };
-      formatter = {command = "alejandra";};
-    }
-  ];
+      svelteserver.command = "${svelte-language-server}/bin/svelteserver";
+      tailwindcss = {
+        command = "${nodePackages_latest."@tailwindcss/language-server"}/bin/tailwindcss-language-server";
+        language-id = "tailwindcss";
+        args = ["--stdio"];
+        config = { };
+      };
+      # copilot = {
+      #   command = "${copilot-lsp}/copilot";
+      #   language-id = "copilot";
+      #   args = ["--stdio"];
+      # };
+      rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
+      nil.command = "${nil}/bin/nil";
+    };
+    # language = [
+    #   {
+    #     name = "svelte";
+    #     # roots = ["tailwind.config.cjs" "tailwind.config.js"];
+    #     # language-servers = [  "tailwindcss" "svelteserver"];
+    #   }
+    #   {
+    #     name = "typescript";
+    #     language-servers = [ "typescript-language-server" ];
+    #   }
+    # ];
+  };
 
   themes = {
     happysalada = let

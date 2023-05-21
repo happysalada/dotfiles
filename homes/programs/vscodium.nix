@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
-  enable = false;
-  package = pkgs.vscodium;
+  enable = true;
+  package = pkgs.vscode;
   extensions = with pkgs.vscode-extensions; [
     vscodevim.vim
     serayuzgur.crates

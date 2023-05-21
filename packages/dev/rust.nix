@@ -12,7 +12,6 @@ with pkgs; [
   cargo-sort
   cargo-sweep
   cargo-cache
-  rust-analyzer-unwrapped
   (rust-bin.stable.latest.default.override {
     extensions = [ "rust-src" ]; 
   })

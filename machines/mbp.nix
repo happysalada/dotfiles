@@ -1,4 +1,4 @@
-{ home-manager, agenix, rust-overlay, alejandra, nurl, nix-melt }:
+{ home-manager, agenix, rust-overlay, nurl, nix-melt, helix }:
 [
   ({ pkgs, ... }:
     {
@@ -100,7 +100,27 @@
       };
 
       nixpkgs = {
-        overlays = [ rust-overlay.overlays.default ];
+        overlays = [
+          rust-overlay.overlays.default
+          helix.overlays.default
+          # deploy-rs.overlay
+          # (self: super: {
+          #   copilot-lsp = super.pkgs.stdenv.mkDerivation {
+          #     pname = "copilot-lsp";
+          #     version = "0.0.1";
+          #     src = copilot-lsp-src;              
+          #     nativeBuildInputs = [ super.pkgs.makeWrapper ];
+          #     dontConfigure = true;
+          #     dontBuild = true;
+          #     installPhase = ''
+          #       mkdir -p $out
+          #       cp $src/copilot/dist/* $out
+          #       makeWrapper '${super.pkgs.nodejs}/bin/node' "$out/copilot" \
+          #         --add-flags "$out/agent.js"
+          #     '';
+          #   };
+          # })
+        ];
         config = {
           allowUnfree = true;
           # contentAddressedByDefault = true; # build fails for now
@@ -131,6 +151,9 @@
     home-manager.users.raphael = ({ pkgs, config, lib, ... }: {
       imports = [
         agenix.homeManagerModules.age
+        {
+          config.programs.nushell.environmentVariables.OPENAI_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
+        }
       ];
       age = {
         identityPaths = [ "/Users/raphael/.ssh/id_ed25519" ];
@@ -158,18 +181,6 @@
         packages = with pkgs; [
           # vlc # video player. does not compile on darwin
 
-          #db
-          postgresql_15
-          # dbeaver
-
-          # network
-          mtr # network traffic
-          # tcptrack # does not work on macos
-
-          # shell stuff
-          nodePackages.bash-language-server
-          shellcheck
-
           # keyboard dactyl 
           # clojure
           # leiningen
@@ -184,9 +195,7 @@
 
           # testing out
           # blender # dep jemalloc failing
-          remarshal
           # comby # use in a shell when needed, very heavy
-          tmate
           # zig
           # openscad # fails to build on darwin
           youtube-dl
@@ -195,9 +204,9 @@
 
           # machine specific
           agenix.packages.x86_64-darwin.default
-          alejandra.packages.x86_64-darwin.default
           nurl.packages.x86_64-darwin.default
           nix-melt.packages.x86_64-darwin.default
+          # deploy-rs.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../packages/dev/rust.nix { inherit pkgs; }) ++
@@ -212,7 +221,7 @@
       news.display = "silent";
       programs = import ../homes/common.nix { inherit pkgs config lib; } //
         {
-          vscode = import ../homes/programs/vscodium.nix { inherit pkgs; };
+          # vscode = import ../homes/programs/vscodium.nix { inherit pkgs; };
           git = import ../homes/programs/git.nix { inherit pkgs; };
         };
     });
