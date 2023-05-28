@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ ... }:
 
 {
   # agent can only be started as non root
@@ -7,9 +7,9 @@
   services = {
     openssh = {
       enable = true;
-      settings.permitRootLogin = "prohibit-password";
-      settings.kbdInteractiveAuthentication = false;
-      settings.passwordAuthentication = false;
+      settings.PermitRootLogin = "prohibit-password";
+      settings.KbdInteractiveAuthentication = false;
+      settings.PasswordAuthentication = false;
       listenAddresses = [{ addr = "0.0.0.0"; port = 22;} {addr = "[::]"; port = 22;}];
     };
   };

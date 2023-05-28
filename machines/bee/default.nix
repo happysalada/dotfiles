@@ -41,6 +41,7 @@ in
       ../../modules/uptime-kuma.nix
       ../../modules/atuin.nix
       ../../modules/meilisearch.nix
+      ../../modules/ntfy.nix
     ];
 
 
@@ -156,12 +157,13 @@ in
       imports = [
         agenix.homeManagerModules.age
         {
-          config.programs.nushell.environmentVariables = {
-            OPENAI_API_KEY = "(open $'($env.XDG_RUNTIME_DIR)/agenix/OPENAI_API_KEY')";
-            GITHUB_ACCESS_TOKEN = "(open $'($env.XDG_RUNTIME_DIR)/agenix/GITHUB_ACCESS_TOKEN')";
-            SURREAL_USERNAME = "(open $'($env.XDG_RUNTIME_DIR)/agenix/SURREAL_USERNAME')";
-            SURREAL_PASSWORD = "(open $'($env.XDG_RUNTIME_DIR)/agenix/SURREAL_PASSWORD')";
-          };
+          # agenix home manager module doesn't seem to work with my current setup somehow.
+          # config.programs.nushell.environmentVariables = {
+          #   OPENAI_API_KEY = "(open $'($env.XDG_RUNTIME_DIR)/agenix/OPENAI_API_KEY')";
+          #   GITHUB_ACCESS_TOKEN = "(open $'($env.XDG_RUNTIME_DIR)/agenix/GITHUB_ACCESS_TOKEN')";
+          #   SURREAL_USERNAME = "(open $'($env.XDG_RUNTIME_DIR)/agenix/SURREAL_USERNAME')";
+          #   SURREAL_PASSWORD = "(open $'($env.XDG_RUNTIME_DIR)/agenix/SURREAL_PASSWORD')";
+          # };
         }
       ];
       age = {
