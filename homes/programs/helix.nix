@@ -21,7 +21,8 @@
   };
 
   languages = {
-    language-server = with pkgs; with pkgs.nodePackages_latest; {
+    # the language servers fail on _latest
+    language-server = with pkgs; with pkgs.nodePackages; {
       typescript-language-server =  {
         command = "${typescript-language-server}/bin/typescript-language-server";
         args = [ "--stdio" "--tsserver-path=''${typescript}/lib/node_modules/typescript/lib" ];

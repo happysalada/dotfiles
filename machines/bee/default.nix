@@ -74,7 +74,7 @@ in
     environment = {
       enableDebugInfo = true;
       systemPackages = with pkgs; [ vim lsof git ];
-      shells = with pkgs; [ nushell ];
+      shells = [(pkgs.nushell.override {additionalFeatures = p: p ++ ["dataframe"];})];
     };
 
     networking.hostName = "bee";
@@ -111,7 +111,7 @@ in
           # mkpasswd -m sha-512
           hashedPassword = "$6$AtFC2R2J$SO/WAdF0jthAKEfbSiWWYFz0sQudi3U9WuIehWk7jx9c9.QYUFjXt4NLWEPDOajnzjAN829v2jqvLWKfJz5N.0";
           openssh.authorizedKeys.keys = [ raphaelSshKey ];
-          shell = pkgs.nushell;
+          shell = pkgs.nushell.override {additionalFeatures = p: p ++ ["dataframe"];};
         };
       };
     };

@@ -3,9 +3,9 @@
 
   inputs = {
     # Package sets
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # nixpkgs.url = "github:nixos/nixpkgs";
-    # nixpkgs.url = "github:happysalada/nixpkgs/update_vector";
+    nixpkgs.url = "github:happysalada/nixpkgs/update_ntfy_service";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
@@ -43,7 +43,7 @@
     # surrealdb.inputs.crane.follows = "crane";
     # surrealdb.inputs.flake-utils.follows = "flake-utils";
 
-    helix.url = "github:happysalada/helix/add_surql";
+    helix.url = "github:helix-editor/helix";
     # copilot-lsp-src.url = "github:github/copilot.vim";
     # copilot-lsp-src.flake = false;
   };
