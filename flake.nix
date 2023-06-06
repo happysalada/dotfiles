@@ -3,14 +3,14 @@
 
   inputs = {
     # Package sets
-    # nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # nixpkgs.url = "github:nixos/nixpkgs";
-    nixpkgs.url = "github:happysalada/nixpkgs/update_ntfy_service";
+    # nixpkgs.url = "github:happysalada/nixpkgs/update_ntfy_service";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url = "github:Philipp-M/home-manager/update-helix-languages-generation";
+    home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # nix

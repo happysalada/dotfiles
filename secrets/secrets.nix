@@ -13,4 +13,5 @@ in
   "openai.key.age".publicKeys = [ yt bee yt_at_bee ];
   "chatgpt_retrieval_plugin.bearer_token.age".publicKeys = [ yt bee ];
   "github_access_token.age".publicKeys = [ yt yt_at_bee ];
+  "canlii_api.key.age".publicKeys = [ yt yt_at_bee ];
 }

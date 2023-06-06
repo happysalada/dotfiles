@@ -16,6 +16,7 @@ in
     imports = [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../../modules/fail2ban.nix
       ../../modules/vector.nix
       ../../modules/postgresql.nix
       ../../modules/grafana
@@ -117,9 +118,6 @@ in
     };
 
     services = {
-      # ssh-iptables jail is enabled by default
-      fail2ban.enable = true;
-
       # TODO use a cronjob to backup and delete old logs
       # https://askubuntu.com/questions/1012912/systemd-logs-journalctl-are-too-large-and-slow/1012913#1012913
       journald.extraConfig = ''
