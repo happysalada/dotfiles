@@ -1,4 +1,4 @@
-{ home-manager, agenix, rust-overlay  }:
+{ home-manager, agenix  }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -6,9 +6,6 @@ in
   {
     environment.systemPackages = [
       agenix.packages.x86_64-linux.default
-    ];
-    nixpkgs.overlays = [
-      rust-overlay.overlays.default
     ];
 
   }
@@ -27,22 +24,14 @@ in
       ../../modules/prometheus.nix
       ../../modules/ssh.nix
       ../../modules/vaultwarden.nix
-      # ../../modules/erigon.nix
-      # ../../modules/lighthouse.nix
-      # ../../modules/influxdb.nix
       ../../modules/surrealdb.nix
       ../../modules/gitea.nix
-      # ../../modules/macrodata.nix
-      # ../../modules/tremor-rs.nix
-      # ./plausible.nix
-      # ../../modules/media_summary.nix
-      # ../../modules/adafilter.nix
       ../../modules/qdrant.nix
-      # ../../modules/chatgpt_retrieval_plugin.nix
       ../../modules/uptime-kuma.nix
       ../../modules/atuin.nix
       ../../modules/meilisearch.nix
       ../../modules/ntfy.nix
+      ../../modules/restic.nix
     ];
 
 
@@ -205,8 +194,8 @@ in
           surrealdb
           surrealdb-migrations
 
-          openai-whisper-cpp
-          openai-whisper
+          # openai-whisper-cpp
+          # openai-whisper
           # (let torchWithRocm = python3Packages.torchWithRocm;
           #   in
           # openai-whisper.override {

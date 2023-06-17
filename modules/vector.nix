@@ -43,6 +43,7 @@
           del(._SYSTEMD_SESSION)
           del(._TRANSPORT)
           del(._UID)
+          del(._RUNTIME_SCOPE)
           del(.__MONOTONIC_TIMESTAMP)
           del(.__REALTIME_TIMESTAMP)
           del(.host)

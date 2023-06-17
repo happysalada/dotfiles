@@ -1,11 +1,10 @@
-{ home-manager, agenix, rust-overlay }:
+{ home-manager, agenix }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
   {
     environment.systemPackages = [ agenix.defaultPackage.x86_64-linux ];
-    nixpkgs.overlays = [ rust-overlay.overlays.default ];
   }
   ({pkgs, ...}:{
     imports = [

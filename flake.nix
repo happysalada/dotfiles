@@ -5,7 +5,7 @@
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # nixpkgs.url = "github:nixos/nixpkgs";
-    # nixpkgs.url = "github:happysalada/nixpkgs/update_ntfy_service";
+    # nixpkgs.url = "github:happysalada/nixpkgs/atuin_requires_postgres";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
@@ -32,11 +32,7 @@
     # rust
     crane.url = "github:ipetkov/crane";
     crane.inputs.nixpkgs.follows = "nixpkgs";
-    crane.inputs.rust-overlay.follows = "rust-overlay";
     crane.inputs.flake-utils.follows = "flake-utils";
-    rust-overlay.url = "github:oxalica/rust-overlay";
-    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
-    rust-overlay.inputs.flake-utils.follows = "flake-utils";
 
     # surrealdb.url = "github:surrealdb/surrealdb";
     # surrealdb.inputs.nixpkgs.follows = "nixpkgs";
@@ -54,7 +50,6 @@
     darwin,
     home-manager,
     agenix,
-    rust-overlay,
     nixinate,
     nix-melt,
     nurl,
@@ -65,12 +60,12 @@
 
     darwinConfigurations.mbp = darwin.lib.darwinSystem {
       system = "x86_64-darwin";
-      modules = import ./machines/mbp.nix {inherit home-manager agenix rust-overlay nix-melt nurl helix; };
+      modules = import ./machines/mbp.nix {inherit home-manager agenix nix-melt nurl helix; };
     };
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/bee/default.nix {inherit home-manager agenix rust-overlay;};
+      modules = import ./machines/bee/default.nix {inherit home-manager agenix;};
     };
 
     # deploy = {

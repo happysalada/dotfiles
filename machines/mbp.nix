@@ -1,4 +1,4 @@
-{ home-manager, agenix, rust-overlay, nurl, nix-melt, helix }:
+{ home-manager, agenix, nurl, nix-melt, helix }:
 [
   ({ pkgs, ... }:
     {
@@ -101,7 +101,6 @@
 
       nixpkgs = {
         overlays = [
-          rust-overlay.overlays.default
           helix.overlays.default
           # deploy-rs.overlay
           # (self: super: {
@@ -140,10 +139,6 @@
         # avahi.enable = true; # unavailable on macos
       };
     })
-  # {
-  #   nixpkgs.overlays = [ rust-overlay.overlays.default ];
-  # }
-  # `home-manager` module
   home-manager.darwinModules.home-manager
   {
     # `home-manager` config
@@ -199,7 +194,6 @@
           # zig
           # openscad # fails to build on darwin
           youtube-dl
-          surrealdb
           surrealdb-migrations
 
           # machine specific
@@ -209,7 +203,7 @@
           # deploy-rs.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
-        (import ../packages/dev/rust.nix { inherit pkgs; }) ++
+        (import ../packages/gui.nix { inherit pkgs; }) ++
         (import ../packages/dev/js.nix { inherit pkgs; }) ++
         (import ../packages/offensive.nix { inherit pkgs; }) ++
         (import ../packages/crypto.nix { inherit pkgs; }) ++

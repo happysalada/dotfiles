@@ -9,7 +9,7 @@ with pkgs; [
   smartmontools # ssd health monitoring
   bottom # a better top
   dua # a better du
-  borgbackup # backup
+  restic # backup
   # oil # better shell language for scripts
   gitAndTools.delta # better git diff
   # sd # better sed
@@ -38,4 +38,7 @@ with pkgs; [
   # wireguard-tools # for wireguard
   # trippy # network diagnostic tool
   # rustypaste # file sharing service
+  killport # kill a service on a port
+  clipboard-jh
+  libqalculate
 ]
