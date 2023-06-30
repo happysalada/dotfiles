@@ -32,6 +32,7 @@ in
       ../../modules/meilisearch.nix
       ../../modules/ntfy.nix
       ../../modules/restic.nix
+      ../../modules/rustus.nix
     ];
 
 
@@ -64,7 +65,7 @@ in
     environment = {
       enableDebugInfo = true;
       systemPackages = with pkgs; [ vim lsof git ];
-      shells = [(pkgs.nushell.override {additionalFeatures = p: p ++ ["dataframe"];})];
+      shells = [ pkgs.nushellFull ];
     };
 
     networking.hostName = "bee";
@@ -72,14 +73,15 @@ in
 
     networking.enableIPv6 = true;
     networking.nameservers = [
+      # Quad 9
+      "9.9.9.9"
+      "149.112.112.112"
+      # opendns
+      "208.67.222.222"
+      "208.67.220.220"
       # cloudflare
       "1.1.1.1"
-      "2606:4700:4700::1111"
-      "2606:4700:4700::1001"
-      # google
-      "8.8.8.8"
-      "2001:4860:4860::8888"
-      "2001:4860:4860::8844"
+      "1.0.0.1"
     ];
 
     nixpkgs.config = {

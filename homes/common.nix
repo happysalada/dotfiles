@@ -17,11 +17,35 @@
     enable = true;
     settings = {
       pane_frames = false;
+      default_shell = "nu";
+      default_layout = "compact";
+      ui = {
+          pane_frames = {
+              rounded_corners = true;
+              hide_session_name = true;
+          };
+      };
       keybinds = {
         unbind = {
           _args = [ "Ctrl b" "Ctrl n" "Ctrl p" "Ctrl g" "Ctrl h" "Ctrl o" "Ctrl q" ];
         };
       };
+      theme = "tokyo-night-dark";
+      # themes = {
+      #     tokyo-night-dark = {
+      #         fg = "169 177 214";
+      #         bg = "26 27 38";
+      #         black = "56 62 90";
+      #         red = "249 51 87";
+      #         green = "158 206 106";
+      #         yellow = "224 175 104";
+      #         blue = "122 162 247";
+      #         magenta = "187 154 247";
+      #         cyan = "42 195 222";
+      #         white = "192 202 245";
+      #         orange = "255 158 100";
+      #     };
+      # };
     };
   };
 

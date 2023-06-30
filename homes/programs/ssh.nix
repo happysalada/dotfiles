@@ -1,14 +1,14 @@
 {
   enable = true;
-  extraOptionOverrides = { Include = "~/.dotfiles/ssh.config"; };
+  includes = [ "/Users/raphael/dotfiles/ssh.config" ];
   controlMaster = "auto";
   controlPath = "~/.ssh/control/%r@%h:%p";
   controlPersist = "5m";
   compression = true;
   matchBlocks = {
     "bee" = {
-      # hostname = "69.159.117.14";
-      hostname = "192.168.2.10";
+      hostname = "142.170.43.141";
+      # hostname = "192.168.2.10";
       user = "yt";
     };
   };

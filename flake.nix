@@ -4,8 +4,9 @@
   inputs = {
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # nixpkgs.url = "github:nixos/nixpkgs/bff259efb29a9fe61375d5b49bec69d6ebf2cd71";
+    # nixpkgs.url = "github:happysalada/nixpkgs/limesurvey_enable_create_locally_with_postgres";
     # nixpkgs.url = "github:nixos/nixpkgs";
-    # nixpkgs.url = "github:happysalada/nixpkgs/atuin_requires_postgres";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
@@ -21,10 +22,6 @@
     agenix.inputs.home-manager.follows = "home-manager";
     nixinate.url = "github:matthewcroughan/nixinate";
     nixinate.inputs.nixpkgs.follows = "nixpkgs";
-    nix-melt.url = "github:nix-community/nix-melt";
-    nix-melt.inputs.nixpkgs.follows = "nixpkgs";
-    nurl.url = "github:nix-community/nurl";
-    nurl.inputs.nixpkgs.follows = "nixpkgs";
     # deploy-rs.url = "github:serokell/deploy-rs";
     # deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
     # deploy-rs.inputs.utils.follows = "flake-utils";
@@ -51,8 +48,6 @@
     home-manager,
     agenix,
     nixinate,
-    nix-melt,
-    nurl,
     helix,
     ...
   }: {
@@ -60,7 +55,7 @@
 
     darwinConfigurations.mbp = darwin.lib.darwinSystem {
       system = "x86_64-darwin";
-      modules = import ./machines/mbp.nix {inherit home-manager agenix nix-melt nurl helix; };
+      modules = import ./machines/mbp.nix {inherit home-manager agenix helix; };
     };
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {

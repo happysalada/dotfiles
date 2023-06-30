@@ -1,4 +1,4 @@
-{ home-manager, agenix, nurl, nix-melt, helix }:
+{ home-manager, agenix, helix }:
 [
   ({ pkgs, ... }:
     {
@@ -63,12 +63,15 @@
 
       networking = {
         dns = [
-          # provided by nextdns
-          "45.90.28.43"
-          "45.90.30.43"
-          # defaults
+          # Quad 9
+          "9.9.9.9"
+          "149.112.112.112"
+          # opendns
+          "208.67.222.222"
+          "208.67.220.220"
+          # cloudflare
           "1.1.1.1"
-          "8.8.8.8"
+          "1.0.0.1"
         ];
         knownNetworkServices = [
           "Wi-Fi"
@@ -129,7 +132,7 @@
       users = {
         users.raphael = {
           home = /Users/raphael;
-          shell = with pkgs; [ nushell ];
+          shell = with pkgs; [ nushellFull ];
         };
       };
 
@@ -198,8 +201,6 @@
 
           # machine specific
           agenix.packages.x86_64-darwin.default
-          nurl.packages.x86_64-darwin.default
-          nix-melt.packages.x86_64-darwin.default
           # deploy-rs.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
@@ -213,6 +214,8 @@
       };
 
       news.display = "silent";
+      manual.manpages.enable = false;
+      manual.html.enable = false;
       programs = import ../homes/common.nix { inherit pkgs config lib; } //
         {
           # vscode = import ../homes/programs/vscodium.nix { inherit pkgs; };

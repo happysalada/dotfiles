@@ -15,4 +15,6 @@ in
   "megzari.com.cloudflare.zone.id.age".publicKeys = [ yt bee ];
   "restic.backup.password.age".publicKeys = [ yt bee ];
   "restic.s3.credentials.age".publicKeys = [ yt bee ];
+  "rustus.r2.access.key.age".publicKeys = [ yt bee ];
+  "rustus.r2.secret.key.age".publicKeys = [ yt bee ];
 }

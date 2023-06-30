@@ -4,7 +4,7 @@
   lib,
 }: {
   enable = true;
-  package = pkgs.nushell.override {additionalFeatures = p: p ++ ["dataframe"];};
+  package = pkgs.nushellFull;
 
   environmentVariables = {
     EDITOR = "hx";
@@ -18,7 +18,6 @@
     nixroots = "nix-store --gc --print-roots";
     # git
     gp = "git push";
-    gps = "git push --set-upstream origin HEAD";
     gpf = "git push --force";
     gl = "git log --pretty=oneline --abbrev-commit";
     gb = "git branch";

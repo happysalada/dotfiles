@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 let
   s3_url = "46d381004464b9e0c88b3bb5a0f0f100.r2.cloudflarestorage.com/backup";
@@ -9,7 +9,7 @@ let
       Persistent = true;
     };
     passwordFile = config.age.secrets.BACKUP_PASSWORD.path;
-    s3CredentialsFile = config.age.secrets.S3_CREDENTIALS.path;
+    environmentFile = config.age.secrets.S3_CREDENTIALS.path;
     pruneOpts = [
       "--keep-daily 30"
       "--keep-weekly 52"
@@ -24,7 +24,7 @@ in
         paths = ["/root/pg_backup.sql"];
         repository = "s3:${s3_url}/postgresql";
         backupPrepareCommand = ''
-          sudo -u postgres pg_dumpall > /root/pg_backup.sql
+          ${pkgs.sudo}/bin/sudo -u postgres ${pkgs.postgresql_15}/bin/pg_dumpall > /root/pg_backup.sql
         '';
       };
       # surrealdb = defaults // {
