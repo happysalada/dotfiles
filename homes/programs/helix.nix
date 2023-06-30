@@ -39,20 +39,25 @@
       #   language-id = "copilot";
       #   args = ["--stdio"];
       # };
-      rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
+      # nixd.command = "${nixd}/bin/nixd";
       nil.command = "${nil}/bin/nil";
+      rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
     };
-    # language = [
-    #   {
-    #     name = "svelte";
-    #     # roots = ["tailwind.config.cjs" "tailwind.config.js"];
-    #     # language-servers = [  "tailwindcss" "svelteserver"];
-    #   }
-    #   {
-    #     name = "typescript";
-    #     language-servers = [ "typescript-language-server" ];
-    #   }
-    # ];
+    language = [
+      # {
+      #   name = "svelte";
+      #   # roots = ["tailwind.config.cjs" "tailwind.config.js"];
+      #   # language-servers = [  "tailwindcss" "svelteserver"];
+      # }
+      # {
+      #   name = "typescript";
+      #   language-servers = [ "typescript-language-server" ];
+      # }
+      # {
+      #   name = "nix";
+      #   language-servers = [ "nixd" ];
+      # }
+    ];
   };
 
   themes = {
