@@ -21,7 +21,6 @@
       default_layout = "compact";
       ui = {
           pane_frames = {
-              rounded_corners = true;
               hide_session_name = true;
           };
       };
@@ -34,10 +33,10 @@
       themes = {
           black = {
               fg = [169 177 214];
-              bg = [0 0 0];
+              bg = [49 46 129];
               black = [0 0 0];
               red = [249 51 87];
-              green = [158 206 106];
+              green = [5 150 105];
               yellow = [224 175 104];
               blue = [122 162 247];
               magenta = [187 154 247];
