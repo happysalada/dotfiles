@@ -196,7 +196,7 @@
           # comby # use in a shell when needed, very heavy
           # zig
           # openscad # fails to build on darwin
-          youtube-dl
+          # youtube-dl
           surrealdb-migrations
 
           # machine specific

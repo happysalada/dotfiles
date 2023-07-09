@@ -8,7 +8,6 @@ with pkgs; [
   nvd
   nix-update
   nixpkgs-review
-  poetry # packaging python projects for nix
   nix-output-monitor
   nurl
   nix-melt
