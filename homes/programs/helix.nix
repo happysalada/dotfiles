@@ -39,8 +39,8 @@
       #   language-id = "copilot";
       #   args = ["--stdio"];
       # };
-      # nixd.command = "${nixd}/bin/nixd";
-      nil.command = "${nil}/bin/nil";
+      nixd.command = "${nixd}/bin/nixd";
+      # nil.command = "${nil}/bin/nil";
       rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
     };
     language = [
@@ -53,10 +53,10 @@
       #   name = "typescript";
       #   language-servers = [ "typescript-language-server" ];
       # }
-      # {
-      #   name = "nix";
-      #   language-servers = [ "nixd" ];
-      # }
+      {
+        name = "nix";
+        language-servers = [ "nixd" ];
+      }
     ];
   };
 

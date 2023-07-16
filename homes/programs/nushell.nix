@@ -86,6 +86,12 @@
       }
       nix store gc -v
     }
+
+    # deletes the branches already merged upstream
+    def gbdm [] {
+      git pull --prune
+      git branch -vl | lines | split column " " BranchName Hash Status --collapse-empty | where Status == '[gone]' | each { |it| git branch -D $it.BranchName }
+    }
   '';
 
   configFile.text = ''

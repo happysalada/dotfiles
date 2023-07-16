@@ -11,6 +11,10 @@
       # hostname = "192.168.2.10";
       user = "yt";
     };
+    "hetz" = {
+      hostname = "116.202.222.51";
+      user = "root";
+    };
   };
   matchBlocks."*" = {
     extraOptions = {

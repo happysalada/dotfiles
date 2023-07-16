@@ -9,6 +9,7 @@ with pkgs; [
   nix-update
   nixpkgs-review
   nix-output-monitor
-  nurl
+  nix-init
   nix-melt
+  colmena
 ]

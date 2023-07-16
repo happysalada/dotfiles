@@ -86,7 +86,7 @@
     enableBashIntegration = true;
     enableNushellIntegration = true;
     settings = {
-      auto_sync = true;
+      auto_sync = false;
       sync_frequency = "5m";
       sync_address = "https://atuin.sassy.technology";
       search_mode = "skim";

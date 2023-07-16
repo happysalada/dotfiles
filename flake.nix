@@ -63,6 +63,26 @@
       modules = import ./machines/bee/default.nix {inherit home-manager agenix;};
     };
 
+    nixosConfigurations.hetz = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = import ./machines/hetz/default.nix {inherit home-manager agenix;};
+    };
+
+    # colmena = {
+    #   meta = {
+    #     nixpkgs = import nixpkgs {
+    #       system = "x86_64-linux";
+    #     };
+    #   };
+
+    #   hetz = { name, nodes, pkgs, ... }: {
+    #     deployment = {
+    #       targetHost = "116.202.222.51";
+    #       targetUser = "root";
+    #       buildOnTarget = "true";
+    #     };
+    #   };
+    # };
     # deploy = {
     #   magicRollback = true;
     #   autoRollback = true;
