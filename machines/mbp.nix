@@ -197,7 +197,6 @@
           # zig
           # openscad # fails to build on darwin
           # youtube-dl
-          surrealdb-migrations
 
           # machine specific
           agenix.packages.x86_64-darwin.default

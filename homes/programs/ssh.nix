@@ -13,7 +13,7 @@
     };
     "hetz" = {
       hostname = "116.202.222.51";
-      user = "root";
+      user = "yt";
     };
   };
   matchBlocks."*" = {

@@ -3,7 +3,6 @@ with pkgs; [
   nix-index
   editorconfig-checker
   rnix-lsp
-  nix-tree
   nix-prefetch
   nvd
   nix-update
@@ -11,5 +10,5 @@ with pkgs; [
   nix-output-monitor
   nix-init
   nix-melt
-  colmena
+  # colmena
 ]
