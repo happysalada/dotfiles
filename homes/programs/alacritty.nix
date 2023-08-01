@@ -10,7 +10,7 @@
     font.normal.family = "Fira Code";
     font.bold.family = "Fira Code";
     font.italic.family = "Fira Code";
-    font.size = 20;
+    font.size = 24;
     key_bindings = [
       { key = "V"; mods = "Command"; action = "Paste"; }
       { key = "C"; mods = "Command"; action = "Copy"; }
