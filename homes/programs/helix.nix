@@ -22,7 +22,7 @@
 
   languages = {
     # the language servers fail on _latest
-    language-server = with pkgs; with pkgs.nodePackages; {
+    language-server = with pkgs; with pkgs.nodePackages_latest; {
       typescript-language-server =  {
         command = "${typescript-language-server}/bin/typescript-language-server";
         args = [ "--stdio" "--tsserver-path=''${typescript}/lib/node_modules/typescript/lib" ];
@@ -39,8 +39,7 @@
       #   language-id = "copilot";
       #   args = ["--stdio"];
       # };
-      nixd.command = "${nixd}/bin/nixd";
-      # nil.command = "${nil}/bin/nil";
+      nil.command = "${nil}/bin/nil";
       rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
     };
     language = [
@@ -49,13 +48,20 @@
       #   # roots = ["tailwind.config.cjs" "tailwind.config.js"];
       #   # language-servers = [  "tailwindcss" "svelteserver"];
       # }
-      # {
-      #   name = "typescript";
-      #   language-servers = [ "typescript-language-server" ];
-      # }
       {
-        name = "nix";
-        language-servers = [ "nixd" ];
+        name = "javascript";
+        formatter = { command = "prettier"; args = ["--parser" "typescript"]; };
+        auto-format = true;
+      }
+      {
+        name = "typescript";
+        formatter = { command = "prettier"; args = ["--parser" "typescript"]; };
+        auto-format = true;
+      }
+      {
+        name = "svelte";
+        formatter = { command = "prettier"; args = [ "--plugin" "prettier-plugin-svelte" ]; };
+        auto-format = true;
       }
     ];
   };
