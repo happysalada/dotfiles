@@ -4,10 +4,22 @@
   userName = "happysalada";
   ignores = [ "*~" ".DS_Store" ];
   package = pkgs.gitAndTools.gitFull;
+  # this doesn't change anything in gitui
+  # difftastic = {
+  #   enable = true;
+  #   background = "dark";
+  # };
+  delta = {
+    enable = true;
+    options = {
+      plus-color = "#012800";
+      minus-color = "#340001";
+      side-by-side = true;
+    };
+  };
   extraConfig = {
     core = {
       editor = "hx";
-      pager = "delta";
     };
     init = { defaultBranch = "master"; };
 
@@ -33,13 +45,6 @@
       autoStash = true;
     };
 
-    delta = {
-      plus-color = "#012800";
-      minus-color = "#340001";
-      side-by-side = true;
-    };
-
-    interactive = { diffFilter = "delta --color-only"; };
     credential.helper = "store";
   };
 }

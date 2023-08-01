@@ -204,8 +204,6 @@
       };
 
       news.display = "silent";
-      manual.manpages.enable = false;
-      manual.html.enable = false;
       programs = import ../homes/common.nix { inherit pkgs config lib; } //
         {
           # vscode = import ../homes/programs/vscodium.nix { inherit pkgs; };
