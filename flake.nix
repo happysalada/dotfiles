@@ -11,7 +11,8 @@
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url = "github:nix-community/home-manager";
+    # home-manager.url = "github:nix-community/home-manager";
+    home-manager.url = "github:happysalada/home-manager/nushell_let_env";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # nix
@@ -37,6 +38,7 @@
     # surrealdb.inputs.flake-utils.follows = "flake-utils";
 
     helix.url = "github:helix-editor/helix";
+    helix.inputs.nixpkgs.follows = "nixpkgs";
     # copilot-lsp-src.url = "github:github/copilot.vim";
     # copilot-lsp-src.flake = false;
   };

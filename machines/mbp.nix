@@ -177,8 +177,6 @@
         # List packages installed in system profile. To search by name, run:
         # $ nix-env -qaP | grep wget
         packages = with pkgs; [
-          # vlc # video player. does not compile on darwin
-
           # keyboard dactyl 
           # clojure
           # leiningen
@@ -190,13 +188,6 @@
           # cargo-flash                                                    
           # cargo-embed                                                     
           # cargo-binutils                                                  
-
-          # testing out
-          # blender # dep jemalloc failing
-          # comby # use in a shell when needed, very heavy
-          # zig
-          # openscad # fails to build on darwin
-          # youtube-dl
 
           # machine specific
           agenix.packages.x86_64-darwin.default

@@ -5,7 +5,7 @@
   ssh = import ./programs/ssh.nix;
   helix = import ./programs/helix.nix { inherit pkgs; };
   nushell = import ./programs/nushell.nix { inherit pkgs config lib; };
-  # neovim = import ./programs/neovim.nix { inherit pkgs; };
+  neovim = import ./programs/neovim.nix { inherit pkgs; };
 
   direnv = {
     enable = true;
