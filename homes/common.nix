@@ -91,6 +91,7 @@
       sync_address = "https://atuin.sassy.technology";
       search_mode = "skim";
       show_preview = true;
+      update_check = false;
     };
   };
 

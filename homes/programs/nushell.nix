@@ -66,7 +66,7 @@
     }
 
     def l [directory: string = "."] {
-      ls -a $directory | select name size | sort-by size | reverse
+      ls -a $directory | select name size | sort-by name | reverse
     }
 
     def cl [directory: string] {

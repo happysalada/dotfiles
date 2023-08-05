@@ -7,9 +7,9 @@
     };
     scrolling.history = 100000;
     colors.primary.background = "0x000000";
-    font.normal.family = "Fira Code";
-    font.bold.family = "Fira Code";
-    font.italic.family = "Fira Code";
+    font.normal.family = "FiraCode Nerd Font";
+    font.bold.family = "FiraCode Nerd Font";
+    font.italic.family = "FiraCode Nerd Font";
     font.size = 24;
     key_bindings = [
       { key = "V"; mods = "Command"; action = "Paste"; }
