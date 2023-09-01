@@ -91,12 +91,12 @@
           keep-outputs = true
           keep-derivations = true
           builders-use-substitutes = true
-          flake-registry = ""
           connect-timeout = 5
           log-lines = 25
           min-free = 128000000 # 128 MB
           max-free = 1000000000 # 1 GB
-          auto-optimise-store = true
+          # broken on darwin for now
+          # auto-optimise-store = true
         '';
         configureBuildUsers = true;
         settings = {
@@ -177,12 +177,12 @@
         # You can update Home Manager without changing this value. See
         # the Home Manager release notes for a list of state version
         # changes in each release.
-        stateVersion = "22.05";
+        stateVersion = "23.05";
         homeDirectory = /Users/raphael;
 
         # List packages installed in system profile. To search by name, run:
         # $ nix-env -qaP | grep wget
-        packages = with pkgs; [
+        packages = [
           # keyboard dactyl 
           # clojure
           # leiningen

@@ -62,42 +62,13 @@
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/bee/default.nix {inherit home-manager agenix;};
+      modules = import ./machines/bee {inherit home-manager agenix;};
     };
 
     nixosConfigurations.hetz = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/hetz/default.nix {inherit home-manager agenix;};
+      modules = import ./machines/hetz {inherit home-manager agenix helix;};
     };
-
-    # colmena = {
-    #   meta = {
-    #     nixpkgs = import nixpkgs {
-    #       system = "x86_64-linux";
-    #     };
-    #   };
-
-    #   hetz = { name, nodes, pkgs, ... }: {
-    #     deployment = {
-    #       targetHost = "116.202.222.51";
-    #       targetUser = "root";
-    #       buildOnTarget = "true";
-    #     };
-    #   };
-    # };
-    # deploy = {
-    #   magicRollback = true;
-    #   autoRollback = true;
-    #   remoteBuild = true;
-    #   nodes.bee = {
-    #     hostname = "bee";
-    #     sshUser = "yt";
-    #     profile.yt = {
-    #       user = "yt";
-    #       path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.bee;
-    #     };
-    #   };
-    # };
 
     # This is highly advised, and will prevent many possible mistakes
     # checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
