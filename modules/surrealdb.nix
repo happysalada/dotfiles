@@ -17,9 +17,4 @@
     };
   };
 
-  services.caddy.virtualHosts."surrealdb.sassy.technology" = {
-    extraConfig = ''
-      reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
-    '';
-  };
 }

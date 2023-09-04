@@ -26,7 +26,7 @@
       };
       keybinds = {
         unbind = {
-          _args = [ "Ctrl b" "Ctrl n" "Ctrl p" "Ctrl g" "Ctrl h" "Ctrl o" "Ctrl q" ];
+          _args = [ "Ctrl b" "Ctrl n" "Ctrl p" "Ctrl g" "Ctrl h" "Ctrl q" ];
         };
       };
       theme = "black";
@@ -50,7 +50,6 @@
 
   starship = {
     enable = true;
-    # enableFishIntegration = true;
     enableNushellIntegration = true;
     settings = {
       add_newline = false;
@@ -60,7 +59,6 @@
 
   broot = {
     enable = true;
-    # enableFishIntegration = true;
     settings.verbs = [
       {
         invocation = "edit";
@@ -76,19 +74,17 @@
 
   zoxide = {
     enable = true;
-    # enableFishIntegration = true;
     enableNushellIntegration = true;
   };
 
   atuin = {
     enable = true;
-    # enableFishIntegration = true;
     enableBashIntegration = true;
     enableNushellIntegration = true;
     settings = {
-      auto_sync = false;
+      auto_sync = true;
       sync_frequency = "5m";
-      sync_address = "https://atuin.sassy.technology";
+      sync_address = "https://atuin.megzari.com";
       search_mode = "skim";
       show_preview = true;
       update_check = false;

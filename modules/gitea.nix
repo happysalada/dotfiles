@@ -10,7 +10,7 @@
     };
     settings = {
       server = {
-        ROOT_URL = "https://git.sassy.technology";
+        ROOT_URL = "https://git.megzari.com";
         HTTP_PORT = 3030;
         HTTP_ADDR = "127.0.0.1";
         DOMAIN = "git.sassy.technology";
@@ -71,7 +71,7 @@
     ''}/theme-pitchblack.css /var/lib/gitea/custom/public/assets/css/theme-pitchblack.css"
   ];
 
-  services.caddy.virtualHosts."git.sassy.technology" = {
+  services.caddy.virtualHosts."git.megzari.com" = {
     extraConfig = ''
       reverse_proxy 127.0.0.1:${toString config.services.gitea.settings.server.HTTP_PORT}
     '';

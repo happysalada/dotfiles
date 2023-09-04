@@ -30,9 +30,7 @@ in
       ../../modules/uptime-kuma.nix
       ../../modules/atuin.nix
       ../../modules/meilisearch.nix
-      ../../modules/ntfy.nix
       ../../modules/restic.nix
-      ../../modules/rustus.nix
     ];
 
 
@@ -103,7 +101,7 @@ in
           # mkpasswd -m sha-512
           hashedPassword = "$6$AtFC2R2J$SO/WAdF0jthAKEfbSiWWYFz0sQudi3U9WuIehWk7jx9c9.QYUFjXt4NLWEPDOajnzjAN829v2jqvLWKfJz5N.0";
           openssh.authorizedKeys.keys = [ raphaelSshKey ];
-          shell = pkgs.nushell.override {additionalFeatures = p: p ++ ["dataframe"];};
+          shell = pkgs.nushellFull;
         };
       };
     };
@@ -119,9 +117,42 @@ in
 
       # hack to get the correct packake without having to mess up the modules
       # surrealdb.package = surrealdb.packages.x86_64-linux.default;
+      caddy.virtualHosts = {
+        "grafana.megzari.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:3000
+          '';
+        };
+      "atuin.megzari.com" = {
+        extraConfig = ''
+          reverse_proxy ${config.services.atuin.host}:${toString config.services.atuin.port}
+        '';
+      };
+      "qdrant.megzari.com" = {
+        extraConfig = ''
+          reverse_proxy 127.0.0.1:${toString config.services.qdrant.settings.service.http_port}
+        '';
+      };
+      "meilisearch.megzari.com" = {
+        extraConfig = ''
+          reverse_proxy ${config.services.meilisearch.listenAddress}:${toString config.services.meilisearch.listenPort}
+        '';
+      };
+      "uptime.megzari.com" = {
+        extraConfig = ''
+          reverse_proxy ${config.services.uptime-kuma.settings.HOST}:${config.services.uptime-kuma.settings.PORT}
+        '';
+      };
+      "surrealdb.megzari.com" = {
+        extraConfig = ''
+          reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
+        '';
+      };
+      };
     };
 
-    programs.mosh.enable = true;
+    # mosh uses a random port between 60000 and 61000 so no bueno behind the router
+    # programs.mosh.enable = true;
 
     # simple nix version diff tool
     # MIT Jörg Thalheim - https://github.com/Mic92/dotfiles/blob/c6cad4e57016945c4816c8ec6f0a94daaa0c3203/nixos/modules/upgrade-diff.nix
@@ -135,7 +166,7 @@ in
     # compatible, in order to avoid breaking some software such as database
     # servers. You should change this only after NixOS release notes say you
     # should.
-    system.stateVersion = "22.05"; # Did you read the comment?
+    system.stateVersion = "23.05"; # Did you read the comment?
   })
   agenix.nixosModules.age
   home-manager.nixosModules.home-manager
@@ -194,7 +225,7 @@ in
 
           # surrealdb.packages.x86_64-linux.default
           surrealdb
-          surrealdb-migrations
+          # surrealdb-migrations
 
           # openai-whisper-cpp
           # openai-whisper

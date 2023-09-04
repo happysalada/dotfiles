@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ ... }:
 
 {
   services.grafana = {
@@ -38,11 +38,5 @@
         ];
       };
     };
-  };
-
-  services.caddy.virtualHosts."grafana.sassy.technology" = {
-    extraConfig = ''
-      reverse_proxy 127.0.0.1:3000
-    '';
   };
 }
