@@ -1,7 +1,6 @@
 { pkgs, config, lib }:
 {
   alacritty = import ./programs/alacritty.nix;
-  fish = import ./programs/fish.nix;
   ssh = import ./programs/ssh.nix;
   helix = import ./programs/helix.nix { inherit pkgs; };
   nushell = import ./programs/nushell.nix { inherit pkgs config lib; };

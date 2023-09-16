@@ -123,31 +123,50 @@ in
             reverse_proxy 127.0.0.1:3000
           '';
         };
-      "atuin.megzari.com" = {
-        extraConfig = ''
-          reverse_proxy ${config.services.atuin.host}:${toString config.services.atuin.port}
-        '';
+        "atuin.megzari.com" = {
+          extraConfig = ''
+            reverse_proxy ${config.services.atuin.host}:${toString config.services.atuin.port}
+          '';
+        };
+        "qdrant.megzari.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.qdrant.settings.service.http_port}
+          '';
+        };
+        "meilisearch.megzari.com" = {
+          extraConfig = ''
+            reverse_proxy ${config.services.meilisearch.listenAddress}:${toString config.services.meilisearch.listenPort}
+          '';
+        };
+        "uptime.megzari.com" = {
+          extraConfig = ''
+            reverse_proxy ${config.services.uptime-kuma.settings.HOST}:${config.services.uptime-kuma.settings.PORT}
+          '';
+        };
+        "surrealdb.megzari.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
+          '';
+        };
       };
-      "qdrant.megzari.com" = {
-        extraConfig = ''
-          reverse_proxy 127.0.0.1:${toString config.services.qdrant.settings.service.http_port}
-        '';
+
+      cfdyndns = {
+        enable = true;
+        apiTokenFile = config.age.secrets.CLOUDFLARE_API_TOKEN.path;
+        records = [
+          "grafana.megzari.com"
+          "atuin.megzari.com"
+          "qdrant.megzari.com"
+          "meilisearch.megzari.com"
+          "uptime.megzari.com"
+          "surrealdb.megzari.com"
+        ];
       };
-      "meilisearch.megzari.com" = {
-        extraConfig = ''
-          reverse_proxy ${config.services.meilisearch.listenAddress}:${toString config.services.meilisearch.listenPort}
-        '';
-      };
-      "uptime.megzari.com" = {
-        extraConfig = ''
-          reverse_proxy ${config.services.uptime-kuma.settings.HOST}:${config.services.uptime-kuma.settings.PORT}
-        '';
-      };
-      "surrealdb.megzari.com" = {
-        extraConfig = ''
-          reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
-        '';
-      };
+    };
+
+    age.secrets =  {
+      CLOUDFLARE_API_TOKEN = {
+        file = ../../secrets/cloudflare.api.token.age;
       };
     };
 
@@ -166,7 +185,7 @@ in
     # compatible, in order to avoid breaking some software such as database
     # servers. You should change this only after NixOS release notes say you
     # should.
-    system.stateVersion = "23.05"; # Did you read the comment?
+    system.stateVersion = "23.11"; # Did you read the comment?
   })
   agenix.nixosModules.age
   home-manager.nixosModules.home-manager
