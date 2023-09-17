@@ -1,4 +1,4 @@
-{ home-manager, agenix }:
+{ home-manager, agenix, helix }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -18,9 +18,6 @@ in
       ../../modules/prometheus.nix
       ../../modules/ssh.nix
       ../../modules/surrealdb.nix
-      ../../modules/qdrant.nix
-      ../../modules/uptime-kuma.nix
-      ../../modules/meilisearch.nix
       ../../modules/ntfy.nix
       ../../modules/restic.nix
       ../../modules/rustus.nix
@@ -49,6 +46,14 @@ in
       };
       extraOptions = ''
         experimental-features = nix-command flakes
+        keep-outputs = true
+        keep-derivations = true
+        builders-use-substitutes = true
+        connect-timeout = 5
+        log-lines = 25
+        min-free = 128000000 # 128 MB
+        max-free = 1000000000 # 1 GB
+        auto-optimise-store = true
       '';
 
       gc = {
@@ -65,6 +70,8 @@ in
       systemPackages = with pkgs; [ vim lsof git agenix.packages.x86_64-linux.default ];
       shells = [ pkgs.nushellFull ];
     };
+
+    fonts.packages = import ../../packages/fonts.nix { inherit pkgs; };
 
     networking.hostName = "hetzner-AX41-UEFI-ZFS-NVME";
     networking.hostId = "00000007";
@@ -101,7 +108,12 @@ in
       "2001:4860:4860::8888"
       "2001:4860:4860::8844"
     ];
-    nixpkgs.config.allowUnfree = true;
+    nixpkgs = {
+      overlays = [
+        helix.overlays.default
+      ];
+      config.allowUnfree = true;
+    };
 
     users = {
       mutableUsers = false;
@@ -133,6 +145,19 @@ in
         MaxRetentionSec=1week
         SystemMaxUse=1G
       '';
+
+      caddy.virtualHosts = {
+        "grafana.sassy.technology" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:3000
+          '';
+        };
+        "surrealdb.sassy.technology" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
+          '';
+        };
+      };
     };
 
     programs.mosh.enable = true;
@@ -149,7 +174,7 @@ in
     # compatible, in order to avoid breaking some software such as database
     # servers. You should change this only after NixOS release notes say you
     # should.
-    system.stateVersion = "23.05"; # Did you read the comment?
+    system.stateVersion = "23.11"; # Did you read the comment?
   })
   agenix.nixosModules.age
   home-manager.nixosModules.home-manager
@@ -189,7 +214,7 @@ in
   }
   {
     _module.args.nixinate = {
-      host = "116.202.222.51";
+      host = "hetz";
       sshUser = "yt";
       buildOn = "remote"; # valid args are "local" or "remote"
       hermetic = false;
