@@ -19,4 +19,5 @@ in
   "rustus.r2.access.key.age".publicKeys = [ yt bee hetz ];
   "rustus.r2.secret.key.age".publicKeys = [ yt bee hetz ];
   "huggingface.token.age".publicKeys = [ yt bee ];
+  "unstructured.api.key.age".publicKeys = [ yt bee ];
 }

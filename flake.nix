@@ -41,6 +41,9 @@
     helix.inputs.nixpkgs.follows = "nixpkgs";
     # copilot-lsp-src.url = "github:github/copilot.vim";
     # copilot-lsp-src.flake = false;
+    document-search.url = "github:happysalada/document-search";
+    document-search.inputs.nixpkgs.follows = "nixpkgs";
+    document-search.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = {
@@ -51,6 +54,7 @@
     agenix,
     nixinate,
     helix,
+    document-search,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
@@ -62,7 +66,7 @@
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/bee {inherit home-manager agenix;};
+      modules = import ./machines/bee {inherit home-manager agenix document-search;};
     };
 
     nixosConfigurations.hetz = nixpkgs.lib.nixosSystem {

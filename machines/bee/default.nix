@@ -1,8 +1,9 @@
-{ home-manager, agenix  }:
+{ home-manager, agenix, document-search }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
+  document-search.nixosModules.x86_64-linux.default
   {
     environment.systemPackages = [
       agenix.packages.x86_64-linux.default
@@ -148,6 +149,11 @@ in
             reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
           '';
         };
+        "docsearch.toagora.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.document-search.port}
+          '';
+        };
       };
 
       cfdyndns = {
@@ -160,7 +166,13 @@ in
           "meilisearch.megzari.com"
           "uptime.megzari.com"
           "surrealdb.megzari.com"
+          "docsearch.toagora.com"
         ];
+      };
+
+      document-search = {
+        enable = true;
+        package = document-search.packages.x86_64-linux.default;
       };
     };
 
@@ -214,12 +226,6 @@ in
           GITHUB_ACCESS_TOKEN = {
             file = ../../secrets/github_access_token.age;
           };
-          SURREAL_USERNAME = {
-            file = ../../secrets/surreal.username.age;
-          };
-          SURREAL_PASSWORD = {
-            file = ../../secrets/surreal.password.age;
-          };
         };
       };
       home = {
@@ -243,8 +249,9 @@ in
           # tcptrack
 
           # surrealdb.packages.x86_64-linux.default
-          surrealdb
+          # surrealdb
           # surrealdb-migrations
+          document-search.packages.x86_64-linux.default
 
           # openai-whisper-cpp
           # openai-whisper
