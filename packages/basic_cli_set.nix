@@ -39,6 +39,8 @@ with pkgs; [
   # trippy # network diagnostic tool
   # rustypaste # file sharing service
   killport # kill a service on a port
-  clipboard-jh
+  # clipboard-jh # fails to build on macos
   libqalculate
+  igrep
+  ast-grep
 ]

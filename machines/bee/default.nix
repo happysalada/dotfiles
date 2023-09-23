@@ -149,7 +149,7 @@ in
             reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
           '';
         };
-        "docsearch.toagora.com" = {
+        "search.toagora.com" = {
           extraConfig = ''
             reverse_proxy 127.0.0.1:${toString config.services.document-search.port}
           '';
@@ -166,19 +166,29 @@ in
           "meilisearch.megzari.com"
           "uptime.megzari.com"
           "surrealdb.megzari.com"
-          "docsearch.toagora.com"
+          "search.toagora.com"
         ];
       };
 
       document-search = {
         enable = true;
         package = document-search.packages.x86_64-linux.default;
+        origin = "https://search.toagora.com";
+        huggingfaceApiTokenPath = config.age.secrets.HUGGINGFACE_API_TOKEN.path;
+        unstructuredApiKeyPath = config.age.secrets.UNSTRUCTURED_API_KEY.path;
+        collection = "agora_anonymised_3";
       };
     };
 
     age.secrets =  {
       CLOUDFLARE_API_TOKEN = {
         file = ../../secrets/cloudflare.api.token.age;
+      };
+      HUGGINGFACE_API_TOKEN = {
+        file = ../../secrets/huggingface.token.age;
+      };
+      UNSTRUCTURED_API_KEY = {
+        file = ../../secrets/unstructured.api.key.age;
       };
     };
 
