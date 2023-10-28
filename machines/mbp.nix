@@ -1,4 +1,4 @@
-{ home-manager, agenix, helix }:
+{ home-manager, agenix }:
 [
   ({ pkgs, ... }:
     {
@@ -29,8 +29,8 @@
           AppleTemperatureUnit = "Celsius";
           AppleKeyboardUIMode = 3;
           ApplePressAndHoldEnabled = false;
-          InitialKeyRepeat = 10;
-          KeyRepeat = 3;
+          InitialKeyRepeat = 8;
+          KeyRepeat = 1;
           _HIHideMenuBar = true;
           NSAutomaticWindowAnimationsEnabled = false;
         };
@@ -110,7 +110,7 @@
 
       nixpkgs = {
         overlays = [
-          helix.overlays.default
+          # helix.overlays.default
           # deploy-rs.overlay
           # (self: super: {
           #   copilot-lsp = super.pkgs.stdenv.mkDerivation {

@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   services.gitea = {
@@ -70,10 +70,4 @@
       }}/theme-pitchblack.css $out/
     ''}/theme-pitchblack.css /var/lib/gitea/custom/public/assets/css/theme-pitchblack.css"
   ];
-
-  services.caddy.virtualHosts."git.megzari.com" = {
-    extraConfig = ''
-      reverse_proxy 127.0.0.1:${toString config.services.gitea.settings.server.HTTP_PORT}
-    '';
-  };
 }

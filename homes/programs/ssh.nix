@@ -1,13 +1,12 @@
 {
   enable = true;
-  includes = [ "/Users/raphael/dotfiles/ssh.config" ];
   controlMaster = "auto";
   controlPath = "~/.ssh/control/%r@%h:%p";
   controlPersist = "5m";
   compression = true;
   matchBlocks = {
     "bee" = {
-      hostname = "69.159.117.249";
+      hostname = "142.170.43.99";
       # hostname = "192.168.2.10";
       user = "yt";
     };
@@ -18,6 +17,18 @@
   };
   matchBlocks."*" = {
     extraOptions = {
+      Protocol = "2";
+
+      # also this stuff
+      TCPKeepAlive = "yes";
+      ServerAliveInterval = "20";
+      ServerAliveCountMax = "10";
+
+      # stop bugging me about a new host
+      StrictHostKeyChecking = "no";
+
+      # run gui programs on local
+      ForwardX11 = "yes";
       UseRoaming = "no";
       KexAlgorithms =
         "curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256";

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   services.vaultwarden = {
@@ -27,9 +27,4 @@
     };
   };
 
-  services.caddy.virtualHosts."vaultwarden.megzari.com" = {
-    extraConfig = ''
-      reverse_proxy 127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}
-    '';
-  };
 }

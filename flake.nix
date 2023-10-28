@@ -5,7 +5,7 @@
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # nixpkgs.url = "github:nixos/nixpkgs/bff259efb29a9fe61375d5b49bec69d6ebf2cd71";
-    # nixpkgs.url = "github:happysalada/nixpkgs/cfdyndns";
+    # nixpkgs.url = "github:happysalada/nixpkgs/windmill_init_module";
     # nixpkgs.url = "github:nixos/nixpkgs";
 
     # Environment/system management
@@ -30,15 +30,14 @@
     # rust
     crane.url = "github:ipetkov/crane";
     crane.inputs.nixpkgs.follows = "nixpkgs";
-    crane.inputs.flake-utils.follows = "flake-utils";
 
     # surrealdb.url = "github:surrealdb/surrealdb";
     # surrealdb.inputs.nixpkgs.follows = "nixpkgs";
     # surrealdb.inputs.crane.follows = "crane";
     # surrealdb.inputs.flake-utils.follows = "flake-utils";
 
-    helix.url = "github:helix-editor/helix";
-    helix.inputs.nixpkgs.follows = "nixpkgs";
+    # helix.url = "github:AlexanderDickie/helix/copilot";
+    # helix.inputs.nixpkgs.follows = "nixpkgs";
     # copilot-lsp-src.url = "github:github/copilot.vim";
     # copilot-lsp-src.flake = false;
     document-search.url = "github:happysalada/document-search";
@@ -53,7 +52,6 @@
     home-manager,
     agenix,
     nixinate,
-    helix,
     document-search,
     ...
   }: {
@@ -61,7 +59,7 @@
 
     darwinConfigurations.mbp = darwin.lib.darwinSystem {
       system = "x86_64-darwin";
-      modules = import ./machines/mbp.nix {inherit home-manager agenix helix; };
+      modules = import ./machines/mbp.nix {inherit home-manager agenix; };
     };
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
@@ -71,7 +69,7 @@
 
     nixosConfigurations.hetz = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/hetz {inherit home-manager agenix helix;};
+      modules = import ./machines/hetz {inherit home-manager agenix;};
     };
 
     # This is highly advised, and will prevent many possible mistakes

@@ -1,5 +1,2 @@
 [net]
 git-fetch-with-cli = true
-
-[build]
-rustc-wrapper = "/Users/raphael/.nix-profile/bin/sccache"

@@ -1,4 +1,4 @@
-{ home-manager, agenix, helix }:
+{ home-manager, agenix }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -21,6 +21,7 @@ in
       ../../modules/ntfy.nix
       ../../modules/restic.nix
       ../../modules/rustus.nix
+      ../../modules/windmill.nix
     ];
 
     # Use GRUB2 as the boot loader.
@@ -110,7 +111,7 @@ in
     ];
     nixpkgs = {
       overlays = [
-        helix.overlays.default
+        # helix.overlays.default
       ];
       config.allowUnfree = true;
     };
@@ -157,6 +158,11 @@ in
             reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
           '';
         };
+        "vector.sassy.technology" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:8687
+          '';
+        };
       };
     };
 
@@ -201,7 +207,7 @@ in
           # network
           mtr # network traffic
           # tcptrack
-          surrealdb-migrations
+          # surrealdb-migrations
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
         (import ../../packages/dev/rust.nix { inherit pkgs; }) ++

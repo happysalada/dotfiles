@@ -119,6 +119,16 @@ in
       # hack to get the correct packake without having to mess up the modules
       # surrealdb.package = surrealdb.packages.x86_64-linux.default;
       caddy.virtualHosts = {
+        "vaultwarden.megzari.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}
+          '';
+        };
+        "git.megzari.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.gitea.settings.server.HTTP_PORT}
+          '';
+        };
         "grafana.megzari.com" = {
           extraConfig = ''
             reverse_proxy 127.0.0.1:3000
@@ -160,6 +170,9 @@ in
         enable = true;
         apiTokenFile = config.age.secrets.CLOUDFLARE_API_TOKEN.path;
         records = [
+          "vaultwarden.megzari.com"
+          "git.megzari.com"
+          "gitea.megzari.com"
           "grafana.megzari.com"
           "atuin.megzari.com"
           "qdrant.megzari.com"
