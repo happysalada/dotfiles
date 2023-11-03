@@ -31,6 +31,7 @@
     gmu = "git merge upstream/master master";
     gu = "git reset --soft HEAD~1";
     grh = "git reset --hard";
+    grm = "git rebase master";
     # misc
     b = "broot -ghi";
   };
@@ -42,6 +43,8 @@
     });
 
     register ${pkgs.nushellPlugins.query}/bin/nu_plugin_query
+    register ${pkgs.nushellPlugins.net}/bin/nu_plugin_net
+    register ${pkgs.nushellPlugins.regex}/bin/nu_plugin_regex
 
     # maybe useful functions
     # use ${pkgs.nu_scripts}/share/nu_scripts/modules/formats/to-number-format.nu *
@@ -81,10 +84,11 @@
 
     def nixgc [] {
       sudo /Users/raphael/dotfiles/result/sw/bin/nix-collect-garbage -d
-      for file in (glob $'($env.HOME)/.local/state/nix/profiles/*') {
-        rm $file
-      }
-      nix store gc -v
+      # test just removing that for now to see if the home-manager-version 1 keeps
+      # for file in (glob $'($env.HOME)/.local/state/nix/profiles/*') {
+      #   rm $file
+      # }
+      # nix store gc -v
     }
 
     # deletes the branches already merged upstream
@@ -92,6 +96,29 @@
       git pull --prune
       git branch -vl | lines | split column " " BranchName Hash Status --collapse-empty | where Status == '[gone]' | each { |it| git branch -D $it.BranchName }
     }
+
+    # Define a function to fetch secrets using systemd-credentials
+    def fetch_secrets [secrets_json: string] {
+        # Parse the input configuration
+        let secrets_config = ($secrets_json | from json)
+        let secrets_list = $secrets_config.secrets
+
+        # Initialize an empty table to hold the results
+        mut results = {}
+
+        # Iterate over each secret in the list
+        for $secret in $secrets_list {
+            # Run systemd-credentials and capture both stdout and stderr
+            let output = (do { ^systemd-creds cat $"($secret)_FILE" } | complete)
+
+            # Append the result row to the results table
+            $results = ($results | insert $"($secret)" { value: ($output.stdout | str trim), error: $output.stderr})
+        }
+
+        # Output the results table as JSON
+        $results | to json
+    }
+
   '';
 
   configFile.text = ''
@@ -197,9 +224,6 @@
       }
       rm: {
         always_trash: false # always act as if -t was given. Can be overridden with -p
-      }
-      cd: {
-        abbreviations: false # allows `cd s/o/f` to expand to `cd some/other/folder`
       }
       table: {
         mode: rounded # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
