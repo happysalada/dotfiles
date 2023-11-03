@@ -28,11 +28,13 @@
         args = [ "--stdio" "--tsserver-path=''${typescript}/lib/node_modules/typescript/lib" ];
       };
       svelteserver.command = "${svelte-language-server}/bin/svelteserver";
-      tailwindcss = {
-        command = "${nodePackages_latest."@tailwindcss/language-server"}/bin/tailwindcss-language-server";
-        language-id = "tailwindcss";
+      tailwindcss-ls.command = "${tailwindcss-language-server}/bin/tailwindcss-language-server";
+      nixd = {
+        command = "${nixd}/bin/nixd";
+      };
+      eslint = {
+        command = "${eslint}/bin/eslint";
         args = ["--stdio"];
-        config = { };
       };
       # copilot = {
       #   command = "${copilot-lsp}/copilot";
@@ -43,25 +45,28 @@
       rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
     };
     language = [
-      # {
-      #   name = "svelte";
-      #   # roots = ["tailwind.config.cjs" "tailwind.config.js"];
-      #   # language-servers = [  "tailwindcss" "svelteserver"];
-      # }
       {
         name = "javascript";
         formatter = { command = "prettier"; args = ["--parser" "typescript"]; };
+        language-servers = [ "typescript-language-server" "eslint" ];
         auto-format = true;
       }
       {
         name = "typescript";
         formatter = { command = "prettier"; args = ["--parser" "typescript"]; };
+        language-servers = [ "typescript-language-server" "eslint" ];
         auto-format = true;
       }
       {
         name = "svelte";
         formatter = { command = "prettier"; args = [ "--plugin" "prettier-plugin-svelte" ]; };
+        language-servers = [ "tailwindcss-ls" "svelteserver" "eslint" ];
         auto-format = true;
+      }
+      {
+        name = "nix";
+        auto-format = false;
+        language-servers = [ "nixd" "nil" ];
       }
     ];
   };
