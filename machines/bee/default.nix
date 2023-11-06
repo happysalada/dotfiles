@@ -1,9 +1,9 @@
-{ home-manager, agenix, document-search }:
+{ home-manager, agenix }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
-  document-search.nixosModules.x86_64-linux.default
+  # document-search.nixosModules.x86_64-linux.default
   {
     environment.systemPackages = [
       agenix.packages.x86_64-linux.default
@@ -159,11 +159,11 @@ in
             reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
           '';
         };
-        "search.toagora.com" = {
-          extraConfig = ''
-            reverse_proxy 127.0.0.1:${toString config.services.document-search.port}
-          '';
-        };
+        # "search.toagora.com" = {
+        #   extraConfig = ''
+        #     reverse_proxy 127.0.0.1:${toString config.services.document-search.port}
+        #   '';
+        # };
       };
 
       cfdyndns = {
@@ -183,14 +183,14 @@ in
         ];
       };
 
-      document-search = {
-        enable = true;
-        package = document-search.packages.x86_64-linux.default;
-        origin = "https://search.toagora.com";
-        huggingfaceApiTokenPath = config.age.secrets.HUGGINGFACE_API_TOKEN.path;
-        unstructuredApiKeyPath = config.age.secrets.UNSTRUCTURED_API_KEY.path;
-        collection = "agora_anonymised_3";
-      };
+      # document-search = {
+      #   enable = true;
+      #   package = document-search.packages.x86_64-linux.default;
+      #   origin = "https://search.toagora.com";
+      #   huggingfaceApiTokenPath = config.age.secrets.HUGGINGFACE_API_TOKEN.path;
+      #   unstructuredApiKeyPath = config.age.secrets.UNSTRUCTURED_API_KEY.path;
+      #   collection = "agora_anonymised_3";
+      # };
     };
 
     age.secrets =  {
@@ -273,8 +273,8 @@ in
 
           # surrealdb.packages.x86_64-linux.default
           # surrealdb
-          # surrealdb-migrations
-          document-search.packages.x86_64-linux.default
+          surrealdb-migrations
+          # document-search.packages.x86_64-linux.default
 
           # openai-whisper-cpp
           # openai-whisper
