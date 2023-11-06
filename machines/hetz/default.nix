@@ -1,10 +1,11 @@
-{ home-manager, agenix }:
+{ home-manager, agenix, monorepo }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
   ({ pkgs, config, ... }: {
     imports = [
+      monorepo.nixosModules.x86_64-linux.brocop
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
@@ -21,7 +22,8 @@ in
       ../../modules/ntfy.nix
       ../../modules/restic.nix
       ../../modules/rustus.nix
-      ../../modules/windmill.nix
+      # ../../modules/windmill.nix
+      ../../modules/monorepo.nix
     ];
 
     # Use GRUB2 as the boot loader.
@@ -112,6 +114,7 @@ in
     nixpkgs = {
       overlays = [
         # helix.overlays.default
+        monorepo.overlays.x86_64-linux.default
       ];
       config.allowUnfree = true;
     };

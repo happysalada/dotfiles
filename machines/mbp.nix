@@ -1,7 +1,10 @@
 { home-manager, agenix }:
 [
-  ({ pkgs, ... }:
+  ({ pkgs, config, ... }:
     {
+      imports = [
+        agenix.darwinModules.age
+      ];
       environment = {
         variables = {
           EDITOR = "hx";
@@ -142,6 +145,7 @@
         };
       };
 
+
       services = {
         nix-daemon.enable = true;
         # smartd = { enable = true; }; # unavailable on macos
@@ -156,7 +160,10 @@
       imports = [
         agenix.homeManagerModules.age
         {
-          config.programs.nushell.environmentVariables.OPENAI_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
+          config.programs.nushell.environmentVariables = {
+            OPENAI_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
+            NIX_CONFIG = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/NIX_ACCESS_TOKENS')";
+          };
         }
       ];
       age = {
@@ -164,6 +171,9 @@
         secrets =  {
           OPENAI_API_KEY = {
             file = ../secrets/openai.key.age;
+          };
+          NIX_ACCESS_TOKENS = {
+            file = ../secrets/nix.conf.extra.age;
           };
         };
       };

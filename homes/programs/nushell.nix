@@ -34,6 +34,8 @@
     grm = "git rebase master";
     # misc
     b = "broot -ghi";
+    # nix
+    nci = "nix_copy_inputs";
   };
 
   extraConfig = ''
@@ -95,6 +97,10 @@
     def gbdm [] {
       git pull --prune
       git branch -vl | lines | split column " " BranchName Hash Status --collapse-empty | where Status == '[gone]' | each { |it| git branch -D $it.BranchName }
+    }
+
+    def nix_copy_inputs [to: string] {
+      nix flake archive --json | from json | get inputs | transpose | each { |input| $input.column1.path | xargs nix copy --to $"ssh://($to)" }
     }
 
     # Define a function to fetch secrets using systemd-credentials

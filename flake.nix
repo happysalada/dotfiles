@@ -40,9 +40,13 @@
     # helix.inputs.nixpkgs.follows = "nixpkgs";
     # copilot-lsp-src.url = "github:github/copilot.vim";
     # copilot-lsp-src.flake = false;
-    document-search.url = "github:happysalada/document-search";
-    document-search.inputs.nixpkgs.follows = "nixpkgs";
-    document-search.inputs.flake-utils.follows = "flake-utils";
+    # document-search.url = "github:happysalada/document-search";
+    # document-search.inputs.nixpkgs.follows = "nixpkgs";
+    # document-search.inputs.flake-utils.follows = "flake-utils";
+
+    monorepo.url = "github:bitpeso/monorepo/nix_deploy";
+    monorepo.inputs.nixpkgs.follows = "nixpkgs";
+    monorepo.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = {
@@ -52,7 +56,7 @@
     home-manager,
     agenix,
     nixinate,
-    document-search,
+    monorepo,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
@@ -64,12 +68,12 @@
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/bee {inherit home-manager agenix document-search;};
+      modules = import ./machines/bee {inherit home-manager agenix;};
     };
 
     nixosConfigurations.hetz = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/hetz {inherit home-manager agenix;};
+      modules = import ./machines/hetz {inherit home-manager agenix monorepo;};
     };
 
     # This is highly advised, and will prevent many possible mistakes

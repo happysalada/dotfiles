@@ -43,4 +43,5 @@ with pkgs; [
   libqalculate
   igrep
   ast-grep
+  gh
 ]
