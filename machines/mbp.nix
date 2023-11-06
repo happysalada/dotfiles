@@ -98,8 +98,7 @@
           log-lines = 25
           min-free = 128000000 # 128 MB
           max-free = 1000000000 # 1 GB
-          # broken on darwin for now
-          # auto-optimise-store = true
+          auto-optimise-store = true
         '';
         configureBuildUsers = true;
         settings = {
