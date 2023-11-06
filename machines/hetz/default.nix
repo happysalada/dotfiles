@@ -166,6 +166,21 @@ in
             reverse_proxy 127.0.0.1:8687
           '';
         };
+        "preview.brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "bitval.brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "impulso.brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
       };
     };
 
