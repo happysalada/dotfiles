@@ -23,4 +23,5 @@ in
   "database.url.age".publicKeys = [ yt bee hetz ];
   "nix.conf.extra.age".publicKeys = [ yt bee hetz ];
   "brocop.env.production.age".publicKeys = [ yt bee hetz ];
+  "brocop_admin.env.production.age".publicKeys = [ yt bee hetz];
 }

@@ -27,17 +27,6 @@
     # deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
     # deploy-rs.inputs.utils.follows = "flake-utils";
 
-    # rust
-    crane.url = "github:ipetkov/crane";
-    crane.inputs.nixpkgs.follows = "nixpkgs";
-
-    # surrealdb.url = "github:surrealdb/surrealdb";
-    # surrealdb.inputs.nixpkgs.follows = "nixpkgs";
-    # surrealdb.inputs.crane.follows = "crane";
-    # surrealdb.inputs.flake-utils.follows = "flake-utils";
-
-    # helix.url = "github:AlexanderDickie/helix/copilot";
-    # helix.inputs.nixpkgs.follows = "nixpkgs";
     # copilot-lsp-src.url = "github:github/copilot.vim";
     # copilot-lsp-src.flake = false;
     # document-search.url = "github:happysalada/document-search";

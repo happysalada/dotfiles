@@ -6,6 +6,7 @@ in
   ({ pkgs, config, ... }: {
     imports = [
       monorepo.nixosModules.x86_64-linux.brocop
+      monorepo.nixosModules.x86_64-linux.brocop_admin
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
@@ -179,6 +180,41 @@ in
         "impulso.brocop.com" = {
           extraConfig = ''
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "acrux.brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "www.brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "inge180.brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "eaxygroup.brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "demo.brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "admin.brocop.com" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.brocop_admin.port}
           '';
         };
       };
