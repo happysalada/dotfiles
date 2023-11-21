@@ -22,6 +22,12 @@
           path *.png /images/* /css/* /js/* /fonts/*
         }
       }
+      (websockets) {
+        @websockets {
+        	header Connection *Upgrade*
+        	header Upgrade websocket
+        }
+      }
     '';
   };
 }

@@ -20,8 +20,9 @@ in
   "rustus.r2.secret.key.age".publicKeys = [ yt bee hetz ];
   "huggingface.token.age".publicKeys = [ yt bee ];
   "unstructured.api.key.age".publicKeys = [ yt bee ];
-  "database.url.age".publicKeys = [ yt bee hetz ];
+  "windmill.database.url.age".publicKeys = [ yt bee hetz ];
   "nix.conf.extra.age".publicKeys = [ yt bee hetz ];
   "brocop.env.production.age".publicKeys = [ yt bee hetz ];
   "brocop_admin.env.production.age".publicKeys = [ yt bee hetz];
+  "lead.env.production.age".publicKeys = [ yt bee hetz];
 }

@@ -33,9 +33,13 @@
     # document-search.inputs.nixpkgs.follows = "nixpkgs";
     # document-search.inputs.flake-utils.follows = "flake-utils";
 
-    monorepo.url = "github:bitpeso/monorepo/nix_deploy";
+    monorepo.url = "github:bitpeso/monorepo";
     monorepo.inputs.nixpkgs.follows = "nixpkgs";
     monorepo.inputs.flake-utils.follows = "flake-utils";
+
+    lead.url = "github:happysalada/12-lead";
+    lead.inputs.nixpkgs.follows = "nixpkgs";
+    lead.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = {
@@ -46,6 +50,7 @@
     agenix,
     nixinate,
     monorepo,
+    lead,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
@@ -62,7 +67,7 @@
 
     nixosConfigurations.hetz = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/hetz {inherit home-manager agenix monorepo;};
+      modules = import ./machines/hetz {inherit home-manager agenix monorepo lead;};
     };
 
     # This is highly advised, and will prevent many possible mistakes

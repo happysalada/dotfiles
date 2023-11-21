@@ -68,6 +68,12 @@
         auto-format = false;
         language-servers = [ "nixd" "nil" ];
       }
+      {
+        name = "python";
+        language-servers = [ "pylsp" "pyright" ];
+        formatter = { command = "black"; args = ["--quiet" "-"]; };
+        auto-format = true;
+      }
     ];
   };
 

@@ -116,8 +116,12 @@ in
         SystemMaxUse=1G
       '';
 
-      # hack to get the correct packake without having to mess up the modules
-      # surrealdb.package = surrealdb.packages.x86_64-linux.default;
+      # antivirus
+      clamav = {
+        daemon.enable = true;
+        updater.enable = true;
+      };
+
       caddy.virtualHosts = {
         "vaultwarden.megzari.com" = {
           extraConfig = ''

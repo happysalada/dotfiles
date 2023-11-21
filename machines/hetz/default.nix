@@ -1,4 +1,4 @@
-{ home-manager, agenix, monorepo }:
+{ home-manager, agenix, monorepo, lead }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -7,6 +7,7 @@ in
     imports = [
       monorepo.nixosModules.x86_64-linux.brocop
       monorepo.nixosModules.x86_64-linux.brocop_admin
+      lead.nixosModules.x86_64-linux.lead
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
@@ -23,8 +24,9 @@ in
       ../../modules/ntfy.nix
       ../../modules/restic.nix
       ../../modules/rustus.nix
-      # ../../modules/windmill.nix
+      ../../modules/windmill.nix
       ../../modules/monorepo.nix
+      ../../modules/lead.nix
     ];
 
     # Use GRUB2 as the boot loader.
@@ -116,6 +118,7 @@ in
       overlays = [
         # helix.overlays.default
         monorepo.overlays.x86_64-linux.default
+        lead.overlays.x86_64-linux.default
       ];
       config.allowUnfree = true;
     };
@@ -151,6 +154,12 @@ in
         SystemMaxUse=1G
       '';
 
+      # antivirus
+      clamav = {
+        daemon.enable = true;
+        updater.enable = true;
+      };
+
       caddy.virtualHosts = {
         "grafana.sassy.technology" = {
           extraConfig = ''
@@ -158,14 +167,13 @@ in
           '';
         };
         "surrealdb.sassy.technology" = {
-          extraConfig = ''
-            reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
-          '';
-        };
-        "vector.sassy.technology" = {
-          extraConfig = ''
-            reverse_proxy 127.0.0.1:8687
-          '';
+          extraConfig = let 
+            port = toString config.services.surrealdb.port;
+            in ''
+              import websockets
+              reverse_proxy 127.0.0.1:${port}
+              reverse_proxy @websockets 127.0.0.1:${port}
+            '';
         };
         "preview.brocop.com" = {
           extraConfig = ''
@@ -215,6 +223,11 @@ in
         "admin.brocop.com" = {
           extraConfig = ''
             reverse_proxy 127.0.0.1:${toString config.services.brocop_admin.port}
+          '';
+        };
+        "lead.sassy.technology" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:${toString config.services.lead.port}
           '';
         };
       };
