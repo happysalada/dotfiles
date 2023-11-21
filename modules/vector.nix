@@ -6,14 +6,14 @@
     enable = true;
     journaldAccess = true;
     settings = {
-      api.enabled = true; # defaults to port 8686
+      # api.enabled = true; # defaults to port 8686
       sources = {
         journald.type = "journald";
-        http_server = {
-          type = "http_server";
-          address = "127.0.0.1:8687";
-          # decoding.codec = "json";
-        };
+        # http_server = {
+        #   type = "http_server";
+        #   address = "127.0.0.1:8687";
+        #   # decoding.codec = "json";
+        # };
       };
 
       transforms ={
@@ -69,26 +69,29 @@
           '';
         };
 
-        http_server_format = {
-          type = "remap"; # required
-          inputs = ["http_server"]; # required                         
-          source = ''
-            del(.source_type)
-            del(.path)
-            msg, err = parse_json(.message)
-            if err == null {
-              del(.message)
-              . = merge!(., msg)
-            }
-          '';
-        };
+        # http_server_format = {
+        #   type = "remap"; # required
+        #   inputs = ["http_server"]; # required                         
+        #   source = ''
+        #     del(.source_type)
+        #     del(.path)
+        #     msg, err = parse_json(.message)
+        #     if err == null {
+        #       del(.message)
+        #       . = merge!(., msg)
+        #     }
+        #   '';
+        # };
       };
 
       sinks = {
 
         loki = {
           endpoint = "http://localhost:3100";
-          inputs = [ "journald_format" "http_server_format" ];
+          inputs = [
+            "journald_format"
+            # "http_server_format" 
+          ];
           type = "loki";
           encoding.codec = "json";
           out_of_order_action = "drop";
