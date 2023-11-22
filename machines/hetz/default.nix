@@ -157,13 +157,29 @@ in
       # antivirus
       clamav = {
         daemon.enable = true;
-        updater.enable = true;
+        fangfrisch.enable = true;
+        updater = {
+          enable = true;
+          settings = {
+            DatabaseCustomURL = [
+              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfo.hdb"
+              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfo.ign2"
+              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/javascript.ndb"
+              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/spam_marketing.ndb"
+              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfohtml.hdb"
+              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfoascii.hdb"
+              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfoandroid.hdb"
+              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfoold.hdb"
+              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfopdf.hdb"
+            ];
+          };
+        };
       };
 
       caddy.virtualHosts = {
         "grafana.sassy.technology" = {
           extraConfig = ''
-            reverse_proxy 127.0.0.1:3000
+            reverse_proxy 127.0.0.1:${toString config.services.grafana.settings.server.http_port}
           '';
         };
         "surrealdb.sassy.technology" = {
