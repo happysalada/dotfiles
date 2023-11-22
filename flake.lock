@@ -192,11 +192,11 @@
         "poetry2nix": "poetry2nix"
       },
       "locked": {
-        "lastModified": 1700578558,
-        "narHash": "sha256-TtdfJe5ZAEXXl4rcEC4TnsQwQTBcakgEvV7ntqdIU0I=",
+        "lastModified": 1700603184,
+        "narHash": "sha256-7PsCU+BoMq6Q1my28nhjy5l+oi9Z5256FZmFARLcqXA=",
         "owner": "happysalada",
         "repo": "12-lead",
-        "rev": "d800ee79608d105a0a8faaae53e372a2b6f2ae46",
+        "rev": "3ccf008faa737cea8ee560983ec28d91f2bd8f40",
         "type": "github"
       },
       "original": {
@@ -217,11 +217,11 @@
         "nuenv": "nuenv_2"
       },
       "locked": {
-        "lastModified": 1700509158,
-        "narHash": "sha256-gYWoBjD/bUiQcAlSmwhOK1tFdaYDQpIiHU7dqIiDJXI=",
+        "lastModified": 1700586508,
+        "narHash": "sha256-QeYHBfO5JUZ5nR/eyce/uEJ/8WyMcAKAm5Co2MV1oeo=",
         "owner": "bitpeso",
         "repo": "monorepo",
-        "rev": "370325a7cedde18bccdd39f6a0ccc56d2af943ac",
+        "rev": "ce1b5422bf9ef17376ee71dcf947f5988a15f7a7",
         "type": "github"
       },
       "original": {

@@ -6,6 +6,7 @@
     settings = {
       base-url = "http://ntfy.sassy.technology";
       behind-proxy = true;
+      auth-default-access = "deny-all";
     };
   };
 
