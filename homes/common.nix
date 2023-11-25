@@ -25,7 +25,12 @@
       };
       keybinds = {
         unbind = {
-          _args = [ "Ctrl b" "Ctrl n" "Ctrl p" "Ctrl g" "Ctrl h" "Ctrl q" ];
+          _args = [ "Ctrl n" "Ctrl p" "Ctrl g" "Ctrl h" "Ctrl q" ];
+        };
+        normal = {
+          unbind = {
+            _args = [ "Ctrl b" ];
+          };
         };
       };
       theme = "black";

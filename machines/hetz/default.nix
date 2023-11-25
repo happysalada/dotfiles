@@ -194,6 +194,7 @@ in
           extraConfig = let 
             port = toString config.services.surrealdb.port;
             in ''
+              import security_headers
               import websockets
               reverse_proxy 127.0.0.1:${port}
               reverse_proxy @websockets 127.0.0.1:${port}
