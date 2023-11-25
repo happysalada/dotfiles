@@ -34,7 +34,7 @@ with pkgs; [
   skim # search mode for atuin
   pueue
   # sniffnet # packet analysis
-  awscli2 # used to get logs out of r2
+  # awscli2 # used to get logs out of r2
   # wireguard-tools # for wireguard
   # trippy # network diagnostic tool
   # rustypaste # file sharing service
@@ -42,6 +42,6 @@ with pkgs; [
   # clipboard-jh # fails to build on macos
   libqalculate
   igrep
-  ast-grep
+  # ast-grep
   gh
 ]
