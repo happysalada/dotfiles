@@ -176,9 +176,17 @@ in
         };
       };
 
+      # aide.enable = true;
+
       caddy.virtualHosts = {
+        ":80" = {
+          extraConfig = ''
+            import security_headers
+          '';
+        };
         "grafana.sassy.technology" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.grafana.settings.server.http_port}
           '';
         };
@@ -193,55 +201,65 @@ in
         };
         "preview.brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
           '';
         };
         "bitval.brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
           '';
         };
         "impulso.brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
           '';
         };
         "brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
           '';
         };
         "acrux.brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
           '';
         };
         "www.brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
           '';
         };
         "inge180.brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
           '';
         };
         "eaxygroup.brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
           '';
         };
         "demo.brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
           '';
         };
         "admin.brocop.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.brocop_admin.port}
           '';
         };
-        "lead.sassy.technology" = {
+        "find-stock-broker.com" = {
           extraConfig = ''
             reverse_proxy 127.0.0.1:${toString config.services.lead.port}
           '';
