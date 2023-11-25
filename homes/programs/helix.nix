@@ -25,7 +25,7 @@
     language-server = with pkgs; with pkgs.nodePackages_latest; {
       typescript-language-server =  {
         command = "${typescript-language-server}/bin/typescript-language-server";
-        args = [ "--stdio" "--tsserver-path=''${typescript}/lib/node_modules/typescript/lib" ];
+        args = [ "--stdio" ];
       };
       svelteserver.command = "${svelte-language-server}/bin/svelteserver";
       tailwindcss-ls.command = "${tailwindcss-language-server}/bin/tailwindcss-language-server";
@@ -34,7 +34,7 @@
       };
       eslint = {
         command = "${eslint}/bin/eslint";
-        args = ["--stdio"];
+        args = ["--stdin"];
       };
       # copilot = {
       #   command = "${copilot-lsp}/copilot";
