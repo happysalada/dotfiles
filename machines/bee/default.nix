@@ -183,7 +183,7 @@ in
           "meilisearch.megzari.com"
           "uptime.megzari.com"
           "surrealdb.megzari.com"
-          "search.toagora.com"
+          # "windmill.megzari.com"
         ];
       };
 

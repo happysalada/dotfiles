@@ -22,7 +22,7 @@ with pkgs; [
   # zstd # fast compression
   # jq # working with json
   # btop # top with cpufreq
-  # sequoia # openpgp in rust
+  sequoia-sq # openpgp in rust
   # ruplacer # sed with visual feedback
   ouch # painless (de)compression
   solo2-cli # updating solokeys

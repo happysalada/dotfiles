@@ -6,6 +6,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # nixpkgs.url = "github:nixos/nixpkgs/bff259efb29a9fe61375d5b49bec69d6ebf2cd71";
     # nixpkgs.url = "github:happysalada/nixpkgs/windmill_init_module";
+    # nixpkgs.url = "github:happysalada/nixpkgs/aide_init_module";
     # nixpkgs.url = "github:nixos/nixpkgs";
 
     # Environment/system management

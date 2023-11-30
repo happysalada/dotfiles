@@ -92,6 +92,7 @@
       search_mode = "skim";
       show_preview = true;
       update_check = false;
+      enter_accept = true;
     };
   };
 

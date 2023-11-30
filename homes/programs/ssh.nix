@@ -6,7 +6,7 @@
   compression = true;
   matchBlocks = {
     "bee" = {
-      hostname = "142.170.43.99";
+      hostname = "91.168.82.199";
       # hostname = "192.168.2.10";
       user = "yt";
     };
