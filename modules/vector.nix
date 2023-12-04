@@ -57,7 +57,9 @@
             del(.source_type)
             lvl, err = parse_regex(.message, r'le?ve?l=(?P<lvl>\w+)') 
             if err == null {
-              .level = coalesce(lvl.lvl, "info")
+              .level = lvl.lvl
+            } else {
+              .level = "info"
             }
             msg, err = parse_regex(.message, r'me?ss?a?ge?=(?P<msg>.+)')
             if err == null {
@@ -75,6 +77,9 @@
                 # If JSON parsing fails, keep the original 'msg'
                 .message = msg.msg
               }
+            }
+            if !exists(._SYSTEMD_UNIT) {
+              ._SYSTEMD_UNIT = "agent"
             }
           '';
         };
