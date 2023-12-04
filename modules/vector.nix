@@ -51,6 +51,8 @@
             del(._RUNTIME_SCOPE)
             del(.__MONOTONIC_TIMESTAMP)
             del(.__REALTIME_TIMESTAMP)
+            del(.__SEQNUM)
+            del(.__SEQNUM_ID)
             del(.host)
             del(.source_type)
             lvl, err = parse_regex(.message, r'le?ve?l=(?P<lvl>\w+)') 

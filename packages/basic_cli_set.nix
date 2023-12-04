@@ -44,4 +44,7 @@ with pkgs; [
   igrep
   # ast-grep
   gh
+  # gpg stuff
+  gnupg
+  pinentry
 ]
