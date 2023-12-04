@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ ... }:
 
 {
   services.loki = {
@@ -6,6 +6,7 @@
     configuration = {
       auth_enabled = false;
       server.http_listen_port = 3100;
+      server.log_level = "warn";
       
       common = {
         path_prefix = "/var/lib/loki";

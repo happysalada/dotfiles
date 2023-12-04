@@ -57,16 +57,24 @@
             del(.source_type)
             lvl, err = parse_regex(.message, r'le?ve?l=(?P<lvl>\w+)') 
             if err == null {
-              .level = lvl.lvl
+              .level = coalesce(lvl.lvl, "info")
             }
             msg, err = parse_regex(.message, r'me?ss?a?ge?=(?P<msg>.+)')
             if err == null {
-              .message = msg.msg
-            }
-            msg, err = parse_json(.message)
-            if err == null {
-              del(.message)
-              . = merge!(., msg)
+              json_message, err = parse_json(.message)
+              if err == null {
+                # if 'msg' is an object merge it
+                if is_object(json_message) {
+                    del(.message)
+                    . = merge!(., json_message)
+                # If 'msg' is a string, just keep it as the message
+                } else if is_string(json_message) {
+                    .message = json_message
+                }
+              } else {
+                # If JSON parsing fails, keep the original 'msg'
+                .message = msg.msg
+              }
             }
           '';
         };
@@ -104,7 +112,6 @@
           labels = {
             level = "{{ level }}";
             systemd_unit = "{{ _SYSTEMD_UNIT }}";
-            external_service = "{{ external_service }}";
           };
         };
       };
