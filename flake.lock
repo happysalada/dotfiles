@@ -92,11 +92,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1694529238,
-        "narHash": "sha256-zsNZZGTGnMOf9YpHKJqMSsa0dXbfmxeoJ7xHlrt+xmY=",
+        "lastModified": 1701680307,
+        "narHash": "sha256-kAuep2h5ajznlPMD9rnQyffWG8EM/C73lejGofXvdM8=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "ff7b65b44d01cf9ba6a71320833626af21126384",
+        "rev": "4022d587cbbfd70fe950c1e2083a02621806a725",
         "type": "github"
       },
       "original": {
@@ -166,11 +166,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1701609479,
-        "narHash": "sha256-mcEnMz7XB3K57ZX16VXoEkswljSNGXdMuUu5+g8a8R8=",
+        "lastModified": 1701728041,
+        "narHash": "sha256-x0pyrI1vC8evVDxCxyO6olOyr4wlFg9+VS3C3p4xFYQ=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "e504e8d01f950776c3a3160ba38c5957a1b89e66",
+        "rev": "ac7216918cd65f3824ba7817dea8f22e61221eaf",
         "type": "github"
       },
       "original": {
@@ -217,11 +217,11 @@
         "nuenv": "nuenv_2"
       },
       "locked": {
-        "lastModified": 1701468704,
-        "narHash": "sha256-MFkGrjE/eLbfOjGgeN+6At7m6yq/3kIGsV2Pqe6z6Gw=",
+        "lastModified": 1701736834,
+        "narHash": "sha256-DIqQDiKCeRSSZcXQvk+M0Ky2Q/XEfTiX2FQhfGbaTvo=",
         "owner": "bitpeso",
         "repo": "monorepo",
-        "rev": "ca24727a4105a9dccf32e048ed3d78424b7015d0",
+        "rev": "024ee7547adfa4609a02e16e203daa23a073893a",
         "type": "github"
       },
       "original": {

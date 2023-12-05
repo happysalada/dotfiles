@@ -6,7 +6,7 @@
     enable = true;
     journaldAccess = true;
     settings = {
-      # api.enabled = true; # defaults to port 8686
+      api.enabled = true; # defaults to port 8686
       sources = {
         journald.type = "journald";
         # http_server = {
@@ -63,7 +63,7 @@
             }
             msg, err = parse_regex(.message, r'me?ss?a?ge?=(?P<msg>.+)')
             if err == null {
-              json_message, err = parse_json(.message)
+              json_message, err = parse_json(msg)
               if err == null {
                 # if 'msg' is an object merge it
                 if is_object(json_message) {
@@ -75,7 +75,7 @@
                 }
               } else {
                 # If JSON parsing fails, keep the original 'msg'
-                .message = msg.msg
+                .message = msg
               }
             }
             if !exists(._SYSTEMD_UNIT) {
