@@ -63,19 +63,17 @@
             }
             msg, err = parse_regex(.message, r'me?ss?a?ge?=(?P<msg>.+)')
             if err == null {
-              json_message, err = parse_json(msg)
-              if err == null {
-                # if 'msg' is an object merge it
-                if is_object(json_message) {
-                    del(.message)
-                    . = merge!(., json_message)
-                # If 'msg' is a string, just keep it as the message
-                } else if is_string(json_message) {
-                    .message = json_message
-                }
-              } else {
-                # If JSON parsing fails, keep the original 'msg'
-                .message = msg
+              .message = msg.msg
+            }
+            json_message, err = parse_json(.message)
+            if err == null {
+              # if 'msg' is an object merge it
+              if is_object(json_message) {
+                  del(.message)
+                  . = merge!(., json_message)
+              # If 'msg' is a string, just keep it as the message
+              } else if is_string(json_message) {
+                  .message = json_message
               }
             }
             if !exists(._SYSTEMD_UNIT) {

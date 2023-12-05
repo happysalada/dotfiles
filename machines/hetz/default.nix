@@ -51,7 +51,7 @@ in
         auto-optimise-store = true;
       };
       extraOptions = ''
-        experimental-features = nix-command flakes
+        experimental-features = nix-command flakes configurable-impure-env auto-allocate-uids
         keep-outputs = true
         keep-derivations = true
         builders-use-substitutes = true
