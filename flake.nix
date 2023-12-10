@@ -3,8 +3,8 @@
 
   inputs = {
     # Package sets
+    # nixpkgs.url = "github:nixos/nixpkgs";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    # nixpkgs.url = "github:nixos/nixpkgs/bff259efb29a9fe61375d5b49bec69d6ebf2cd71";
     # nixpkgs.url = "github:happysalada/nixpkgs/windmill_init_module";
     # nixpkgs.url = "github:happysalada/nixpkgs/aide_init_module";
     # nixpkgs.url = "github:nixos/nixpkgs";
@@ -41,6 +41,10 @@
     lead.url = "github:happysalada/12-lead";
     lead.inputs.nixpkgs.follows = "nixpkgs";
     lead.inputs.flake-utils.follows = "flake-utils";
+
+    designhub.url = "github:happysalada/designhub";
+    designhub.inputs.nixpkgs.follows = "nixpkgs";
+    designhub.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = {
@@ -52,6 +56,7 @@
     nixinate,
     monorepo,
     lead,
+    designhub,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
@@ -68,7 +73,7 @@
 
     nixosConfigurations.hetz = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/hetz {inherit home-manager agenix monorepo lead;};
+      modules = import ./machines/hetz {inherit home-manager agenix monorepo lead designhub;};
     };
 
     # This is highly advised, and will prevent many possible mistakes

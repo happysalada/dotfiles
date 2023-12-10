@@ -65,6 +65,10 @@
             if err == null {
               .message = msg.msg
             }
+            msg, err = strip_ansi_escape_codes(.message)
+            if err == null {
+              .message = msg
+            }
             json_message, err = parse_json(.message)
             if err == null {
               # if 'msg' is an object merge it

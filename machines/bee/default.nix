@@ -49,7 +49,15 @@ in
         auto-optimise-store = true;
       };
       extraOptions = ''
-        experimental-features = nix-command flakes
+        experimental-features = nix-command flakes configurable-impure-env auto-allocate-uids
+        keep-outputs = true
+        keep-derivations = true
+        builders-use-substitutes = true
+        connect-timeout = 5
+        log-lines = 25
+        min-free = 128000000 # 128 MB
+        max-free = 1000000000 # 1 GB
+        auto-optimise-store = true
       '';
 
       gc = {

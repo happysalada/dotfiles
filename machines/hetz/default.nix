@@ -1,4 +1,4 @@
-{ home-manager, agenix, monorepo, lead }:
+{ home-manager, agenix, monorepo, lead, designhub }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -8,6 +8,7 @@ in
       monorepo.nixosModules.x86_64-linux.brocop
       monorepo.nixosModules.x86_64-linux.brocop_admin
       lead.nixosModules.x86_64-linux.lead
+      designhub.nixosModules.x86_64-linux.designhub
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
@@ -27,6 +28,7 @@ in
       ../../modules/windmill.nix
       ../../modules/monorepo.nix
       ../../modules/lead.nix
+      ../../modules/designhub.nix
     ];
 
     # Use GRUB2 as the boot loader.
@@ -119,6 +121,7 @@ in
         # helix.overlays.default
         monorepo.overlays.x86_64-linux.default
         lead.overlays.x86_64-linux.default
+        designhub.overlays.x86_64-linux.default
       ];
       config.allowUnfree = true;
     };
@@ -158,6 +161,7 @@ in
       clamav = {
         daemon.enable = true;
         fangfrisch.enable = true;
+        # scanner.enable = true;
         updater = {
           enable = true;
           settings = {
@@ -199,6 +203,14 @@ in
               reverse_proxy 127.0.0.1:${port}
               reverse_proxy @websockets 127.0.0.1:${port}
             '';
+        };
+        "windmill.sassy.technology" = {
+          # when the lsp is packaged
+          # reverse_proxy /ws/* 127.0.0.1:${toString config.services.windmill.lspPort}
+          extraConfig = ''
+            import security_headers
+            reverse_proxy /* 127.0.0.1:${toString config.services.windmill.serverPort}
+          '';
         };
         "preview.brocop.com" = {
           extraConfig = ''
@@ -266,6 +278,12 @@ in
             reverse_proxy 127.0.0.1:${toString config.services.lead.port}
           '';
         };
+        "designhub.megzari.com" = {
+          extraConfig = ''
+            import security_headers
+            reverse_proxy 127.0.0.1:${toString config.services.designhub.port}
+          '';
+        };
       };
     };
 
@@ -283,7 +301,7 @@ in
     # compatible, in order to avoid breaking some software such as database
     # servers. You should change this only after NixOS release notes say you
     # should.
-    system.stateVersion = "23.11"; # Did you read the comment?
+    system.stateVersion = "24.05"; # Did you read the comment?
   })
   agenix.nixosModules.age
   home-manager.nixosModules.home-manager
@@ -301,7 +319,7 @@ in
         # You can update Home Manager without changing this value. See
         # the Home Manager release notes for a list of state version
         # changes in each release.
-        stateVersion = "23.05";
+        stateVersion = "23.11";
         # homeDirectory = /home/yt;
 
         # List packages installed in system profile. To search by name, run:
