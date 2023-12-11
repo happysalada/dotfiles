@@ -1,17 +1,11 @@
-{ home-manager, agenix }:
+{ home-manager, agenix, megzari_com }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
-  # document-search.nixosModules.x86_64-linux.default
-  {
-    environment.systemPackages = [
-      agenix.packages.x86_64-linux.default
-    ];
-
-  }
   ({ pkgs, config, ... }: {
     imports = [
+      megzari_com.nixosModules.x86_64-linux.megzari_com
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
@@ -32,6 +26,7 @@ in
       ../../modules/atuin.nix
       ../../modules/meilisearch.nix
       ../../modules/restic.nix
+      ../../modules/megzari_com.nix
     ];
 
 
@@ -71,7 +66,7 @@ in
 
     environment = {
       enableDebugInfo = true;
-      systemPackages = with pkgs; [ vim lsof git ];
+      systemPackages = with pkgs; [ vim lsof git agenix.packages.x86_64-linux.default ];
       shells = [ pkgs.nushellFull ];
     };
 
@@ -91,8 +86,11 @@ in
       "1.0.0.1"
     ];
 
-    nixpkgs.config = {
-      allowUnfree = true;
+    nixpkgs = {
+      overlays = [
+        megzari_com.overlays.x86_64-linux.default
+      ];
+      config.allowUnfree = true;
       # contentAddressedByDefault = true; # build fails for now
     };
 
@@ -131,51 +129,65 @@ in
       };
 
       caddy.virtualHosts = {
+        ":80" = {
+          extraConfig = ''
+            import security_headers
+          '';
+        };
+        "megzari.com" = {
+          extraConfig = ''
+            import security_headers
+            reverse_proxy 127.0.0.1:${toString config.services.megzari_com.port}
+          '';
+        };
         "vaultwarden.megzari.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}
           '';
         };
         "git.megzari.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.gitea.settings.server.HTTP_PORT}
           '';
         };
         "grafana.megzari.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:3000
           '';
         };
         "atuin.megzari.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy ${config.services.atuin.host}:${toString config.services.atuin.port}
           '';
         };
         "qdrant.megzari.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.qdrant.settings.service.http_port}
           '';
         };
         "meilisearch.megzari.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy ${config.services.meilisearch.listenAddress}:${toString config.services.meilisearch.listenPort}
           '';
         };
         "uptime.megzari.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy ${config.services.uptime-kuma.settings.HOST}:${config.services.uptime-kuma.settings.PORT}
           '';
         };
         "surrealdb.megzari.com" = {
           extraConfig = ''
+            import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
           '';
         };
-        # "search.toagora.com" = {
-        #   extraConfig = ''
-        #     reverse_proxy 127.0.0.1:${toString config.services.document-search.port}
-        #   '';
-        # };
       };
 
       cfdyndns = {
@@ -191,18 +203,11 @@ in
           "meilisearch.megzari.com"
           "uptime.megzari.com"
           "surrealdb.megzari.com"
-          # "windmill.megzari.com"
+          "megzari.com"
+          "windmill.megzari.com"
         ];
       };
 
-      # document-search = {
-      #   enable = true;
-      #   package = document-search.packages.x86_64-linux.default;
-      #   origin = "https://search.toagora.com";
-      #   huggingfaceApiTokenPath = config.age.secrets.HUGGINGFACE_API_TOKEN.path;
-      #   unstructuredApiKeyPath = config.age.secrets.UNSTRUCTURED_API_KEY.path;
-      #   collection = "agora_anonymised_3";
-      # };
     };
 
     age.secrets =  {

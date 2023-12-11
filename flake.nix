@@ -45,6 +45,10 @@
     designhub.url = "github:happysalada/designhub";
     designhub.inputs.nixpkgs.follows = "nixpkgs";
     designhub.inputs.flake-utils.follows = "flake-utils";
+
+    megzari_com.url = "github:happysalada/svelte.megzari.com";
+    megzari_com.inputs.nixpkgs.follows = "nixpkgs";
+    megzari_com.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = {
@@ -57,6 +61,7 @@
     monorepo,
     lead,
     designhub,
+    megzari_com,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
@@ -68,7 +73,7 @@
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = import ./machines/bee {inherit home-manager agenix;};
+      modules = import ./machines/bee {inherit home-manager agenix megzari_com;};
     };
 
     nixosConfigurations.hetz = nixpkgs.lib.nixosSystem {
