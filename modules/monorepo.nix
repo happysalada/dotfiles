@@ -26,4 +26,10 @@
       file = ../secrets/brocop_admin.env.production.age;
     };
   };
+
+  services.sweif = {
+    enable = true;
+    port = 3005;
+    environmentFile = config.age.secrets.BROCOP_ENV_FILE.path;
+  };
 }

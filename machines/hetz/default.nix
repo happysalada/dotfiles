@@ -7,6 +7,7 @@ in
     imports = [
       monorepo.nixosModules.x86_64-linux.brocop
       monorepo.nixosModules.x86_64-linux.brocop_admin
+      monorepo.nixosModules.x86_64-linux.sweif
       lead.nixosModules.x86_64-linux.lead
       designhub.nixosModules.x86_64-linux.designhub
       # Include the results of the hardware scan.
@@ -282,6 +283,12 @@ in
           extraConfig = ''
             import security_headers
             reverse_proxy 127.0.0.1:${toString config.services.designhub.port}
+          '';
+        };
+        "sweif.com" = {
+          extraConfig = ''
+            import security_headers
+            reverse_proxy 127.0.0.1:${toString config.services.sweif.port}
           '';
         };
       };
