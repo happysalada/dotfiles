@@ -84,13 +84,11 @@
       git gc --prune=now --aggressive
     }
 
+    # sudo version is to clean nix-darwin old generations
+    # non sudo is to clean home-manager
     def nixgc [] {
       sudo /Users/raphael/dotfiles/result/sw/bin/nix-collect-garbage -d
-      # test just removing that for now to see if the home-manager-version 1 keeps
-      # for file in (glob $'($env.HOME)/.local/state/nix/profiles/*') {
-      #   rm $file
-      # }
-      # nix store gc -v
+      nix-collect-garbage -d
     }
 
     # deletes the branches already merged upstream

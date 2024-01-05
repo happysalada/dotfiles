@@ -98,7 +98,7 @@
           log-lines = 25
           min-free = 128000000 # 128 MB
           max-free = 1000000000 # 1 GB
-          auto-optimise-store = true
+          # auto-optimise-store = true # doesn't work on macos for now
         '';
         configureBuildUsers = true;
         settings = {
@@ -221,7 +221,7 @@
       news.display = "silent";
       programs = import ../homes/common.nix { inherit pkgs config lib; } //
         {
-          # vscode = import ../homes/programs/vscodium.nix { inherit pkgs; };
+          vscode = import ../homes/programs/vscodium.nix { inherit pkgs; };
           git = import ../homes/programs/git.nix { inherit pkgs; };
         };
     });

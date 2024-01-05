@@ -37,10 +37,45 @@ in
     };
     boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 
+    environment = {
+      enableDebugInfo = true;
+      systemPackages = with pkgs; [ vim lsof git agenix.packages.x86_64-linux.default ollama ];
+      shells = [ pkgs.nushellFull ];
+    };
+
+    hardware.nvidia = {
+      # Modesetting is required.
+      modesetting.enable = true;
+
+      # Enable the Nvidia settings menu,
+    	# accessible via `nvidia-settings`.
+      nvidiaSettings = true;
+
+      # Optionally, you may need to select the appropriate driver version for your specific GPU.
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
+    };
+
+    networking.hostName = "bee";
+    networking.hostId = "00000001";
+
+    networking.enableIPv6 = true;
+    networking.nameservers = [
+      # Quad 9
+      "9.9.9.9"
+      "149.112.112.112"
+      # opendns
+      "208.67.222.222"
+      "208.67.220.220"
+      # cloudflare
+      "1.1.1.1"
+      "1.0.0.1"
+    ];
+
     nix = {
       package = pkgs.nixUnstable;
       settings = {
-        cores = 8;  
+        cores = 16;  
+        max-jobs = "auto";
         auto-optimise-store = true;
       };
       extraOptions = ''
@@ -61,36 +96,14 @@ in
       };
     };
 
-    # Set your time zone.
-    time.timeZone = "Etc/UTC";
-
-    environment = {
-      enableDebugInfo = true;
-      systemPackages = with pkgs; [ vim lsof git agenix.packages.x86_64-linux.default ];
-      shells = [ pkgs.nushellFull ];
-    };
-
-    networking.hostName = "bee";
-    networking.hostId = "00000001";
-
-    networking.enableIPv6 = true;
-    networking.nameservers = [
-      # Quad 9
-      "9.9.9.9"
-      "149.112.112.112"
-      # opendns
-      "208.67.222.222"
-      "208.67.220.220"
-      # cloudflare
-      "1.1.1.1"
-      "1.0.0.1"
-    ];
-
     nixpkgs = {
       overlays = [
         megzari_com.overlays.x86_64-linux.default
       ];
-      config.allowUnfree = true;
+      config = {
+        allowUnfree = true;
+        cudaSupport = true;
+      };
       # contentAddressedByDefault = true; # build fails for now
     };
 
@@ -114,6 +127,9 @@ in
     };
 
     services = {
+      # Load nvidia driver for Xorg and Wayland
+      xserver.videoDrivers = ["nvidia"];
+
       # TODO use a cronjob to backup and delete old logs
       # https://askubuntu.com/questions/1012912/systemd-logs-journalctl-are-too-large-and-slow/1012913#1012913
       journald.extraConfig = ''
@@ -238,6 +254,9 @@ in
     # servers. You should change this only after NixOS release notes say you
     # should.
     system.stateVersion = "23.11"; # Did you read the comment?
+
+    # Set your time zone.
+    time.timeZone = "Etc/UTC";
   })
   agenix.nixosModules.age
   home-manager.nixosModules.home-manager

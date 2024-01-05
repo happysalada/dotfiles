@@ -62,7 +62,7 @@
   };
 
   broot = {
-    enable = true;
+    enable = false; # compilation failure on darwin
     settings.verbs = [
       {
         invocation = "edit";

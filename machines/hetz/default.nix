@@ -50,7 +50,8 @@ in
     nix = {
       package = pkgs.nixUnstable;
       settings = {
-        cores = 6;  
+        cores = 12;  
+        max-jobs = "auto";
         auto-optimise-store = true;
       };
       extraOptions = ''

@@ -3,9 +3,8 @@
 
   inputs = {
     # Package sets
-    # nixpkgs.url = "github:nixos/nixpkgs";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    # nixpkgs.url = "github:happysalada/nixpkgs/windmill_init_module";
+    # nixpkgs.url = "github:happysalada/nixpkgs/llama_cpp_fix_cuda_support";
     # nixpkgs.url = "github:happysalada/nixpkgs/aide_init_module";
     # nixpkgs.url = "github:nixos/nixpkgs";
 

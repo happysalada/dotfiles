@@ -8,13 +8,11 @@
     tamasfe.even-better-toml
     bbenoist.nix
     matklad.rust-analyzer
-    jock.svg
+    # jock.svg
     editorconfig.editorconfig
-    # coenraads.bracket-pair-colorizer-2
     esbenp.prettier-vscode
     emmanuelbeziat.vscode-great-icons
     davidanson.vscode-markdownlint
-    b4dm4n.vscode-nixpkgs-fmt
     svelte.svelte-vscode
     bradlc.vscode-tailwindcss
     kahole.magit
@@ -22,11 +20,7 @@
     vspacecode.vspacecode
     vspacecode.whichkey
     # tiehuis.zig
-    # elixir-lsp.vscode-elixir-ls
-    timonwong.shellcheck
     github.copilot
-    # eugleo.magic-racket
-    # betterthantomorrow.calva
   ];
   keybindings = [
     {
@@ -166,6 +160,11 @@
     "git.confirmSync" = false;
     "git.autofetch" = false;
     "magit.code-path" = "codium";
+    # copilot
+    "github.copilot.enable" = {
+      "plaintext"= "true";
+      "markdown"= "true";
+    };
     # vim
     "vim.easymotion" = false;
     "vim.sneak" = true;
