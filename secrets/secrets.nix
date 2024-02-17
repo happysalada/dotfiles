@@ -25,4 +25,6 @@ in
   "brocop.env.production.age".publicKeys = [ yt bee hetz ];
   "brocop_admin.env.production.age".publicKeys = [ yt bee hetz ];
   "lead.env.production.age".publicKeys = [ yt bee hetz ];
+  "copilot.api.key.age".publicKeys = [ yt ];
+  "codeium.api.key.age".publicKeys = [ yt ];
 }

@@ -36,6 +36,14 @@
         command = "${eslint}/bin/eslint";
         args = ["--stdin"];
       };
+      copilot = {
+        command = "${helix-gpt}/bin/helix-gpt";
+        args = ["--handler" "copilot"];
+      };
+      codeium = {
+        command = "${helix-gpt}/bin/helix-gpt";
+        args = ["--handler" "codeium"];
+      };
       # copilot = {
       #   command = "${copilot-lsp}/copilot";
       #   language-id = "copilot";
@@ -46,31 +54,35 @@
     };
     language = [
       {
+        name = "rust";
+        language-servers = [ "copilot" "codeium" ];
+      }
+      {
         name = "javascript";
         formatter = { command = "prettier"; args = ["--parser" "typescript"]; };
-        language-servers = [ "typescript-language-server" "eslint" ];
+        language-servers = [ "typescript-language-server" "eslint" "copilot" "codeium" ];
         auto-format = true;
       }
       {
         name = "typescript";
         formatter = { command = "prettier"; args = ["--parser" "typescript"]; };
-        language-servers = [ "typescript-language-server" "eslint" ];
+        language-servers = [ "eslint" "copilot" "codeium" ];
         auto-format = true;
       }
       {
         name = "svelte";
         formatter = { command = "prettier"; args = [ "--plugin" "prettier-plugin-svelte" ]; };
-        language-servers = [ "tailwindcss-ls" "svelteserver" "eslint" ];
+        language-servers = [ "tailwindcss-ls" "eslint" "copilot" "codeium" ];
         auto-format = true;
       }
       {
         name = "nix";
         auto-format = false;
-        language-servers = [ "nixd" "nil" ];
+        language-servers = [ "nixd" "nil" "copilot" "codeium" ];
       }
       {
         name = "python";
-        language-servers = [ "pylsp" "pyright" ];
+        language-servers = [ "pylsp" "pyright" "copilot" "codeium" ];
         formatter = { command = "black"; args = ["--quiet" "-"]; };
         auto-format = true;
       }

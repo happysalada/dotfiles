@@ -1,4 +1,4 @@
-{ home-manager, agenix }:
+{ home-manager, agenix, rust-overlay }:
 [
   ({ pkgs, config, ... }:
     {
@@ -32,7 +32,7 @@
           AppleTemperatureUnit = "Celsius";
           AppleKeyboardUIMode = 3;
           ApplePressAndHoldEnabled = false;
-          InitialKeyRepeat = 8;
+          InitialKeyRepeat = 10;
           KeyRepeat = 1;
           _HIHideMenuBar = true;
           NSAutomaticWindowAnimationsEnabled = false;
@@ -112,6 +112,7 @@
 
       nixpkgs = {
         overlays = [
+          rust-overlay.overlays.default
           # helix.overlays.default
           # deploy-rs.overlay
           # (self: super: {
@@ -161,6 +162,8 @@
         {
           config.programs.nushell.environmentVariables = {
             OPENAI_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
+            COPILOT_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/COPILOT_API_KEY')";
+            CODEIUM_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/CODEIUM_API_KEY')";
             NIX_CONFIG = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/NIX_ACCESS_TOKENS')";
           };
         }
@@ -170,6 +173,12 @@
         secrets =  {
           OPENAI_API_KEY = {
             file = ../secrets/openai.key.age;
+          };
+          COPILOT_API_KEY = {
+            file = ../secrets/copilot.api.key.age;
+          };
+          CODEIUM_API_KEY = {
+            file = ../secrets/codeium.api.key.age;
           };
           NIX_ACCESS_TOKENS = {
             file = ../secrets/nix.conf.extra.age;
@@ -191,7 +200,7 @@
 
         # List packages installed in system profile. To search by name, run:
         # $ nix-env -qaP | grep wget
-        packages = [
+        packages = with pkgs; [
           # keyboard dactyl 
           # clojure
           # leiningen
@@ -206,6 +215,8 @@
 
           # machine specific
           agenix.packages.x86_64-darwin.default
+          pkgs.rust-bin.nightly.latest.default
+          helix-gpt
           # deploy-rs.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++

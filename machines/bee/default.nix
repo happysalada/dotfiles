@@ -12,7 +12,7 @@ in
       ../../modules/vector.nix
       ../../modules/postgresql.nix
       ../../modules/grafana
-      ../../modules/chrony.nix
+      ../../modules/ntpd-rs.nix
       ../../modules/loki.nix
       ../../modules/mimir.nix
       ../../modules/caddy.nix
@@ -27,6 +27,9 @@ in
       ../../modules/meilisearch.nix
       ../../modules/restic.nix
       ../../modules/megzari_com.nix
+      ../../modules/windmill.nix
+      ../../modules/rustus.nix
+      ../../modules/ntfy.nix
     ];
 
 

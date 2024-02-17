@@ -4,15 +4,13 @@
   inputs = {
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    # nixpkgs.url = "github:happysalada/nixpkgs/llama_cpp_fix_cuda_support";
-    # nixpkgs.url = "github:happysalada/nixpkgs/aide_init_module";
     # nixpkgs.url = "github:nixos/nixpkgs";
+    # nixpkgs.url = "github:happysalada/nixpkgs/clamav_updater_fix";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
-    # home-manager.url = "github:happysalada/home-manager/nushell_let_env";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # nix
@@ -48,6 +46,10 @@
     megzari_com.url = "github:happysalada/svelte.megzari.com";
     megzari_com.inputs.nixpkgs.follows = "nixpkgs";
     megzari_com.inputs.flake-utils.follows = "flake-utils";
+
+    # rust
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -61,13 +63,14 @@
     lead,
     designhub,
     megzari_com,
+    rust-overlay,
     ...
   }: {
     apps = nixinate.nixinate.x86_64-darwin self;
 
     darwinConfigurations.mbp = darwin.lib.darwinSystem {
       system = "x86_64-darwin";
-      modules = import ./machines/mbp.nix {inherit home-manager agenix; };
+      modules = import ./machines/mbp.nix {inherit home-manager agenix rust-overlay; };
     };
 
     nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
