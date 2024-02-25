@@ -217,6 +217,7 @@
           agenix.packages.x86_64-darwin.default
           pkgs.rust-bin.nightly.latest.default
           helix-gpt
+          # onionshare
           # deploy-rs.packages.x86_64-darwin.default
       ] ++
         (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++

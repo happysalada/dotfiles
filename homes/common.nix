@@ -97,4 +97,23 @@
   };
 
   gitui.enable = true;
+
+  yazi = {
+    enable = true;
+    enableNushellIntegration = true;
+    settings = {
+      manager = {
+        show_hidden = true;
+        show_symlink = true;
+        sort_dir_first = true;
+        sort_by = "size";
+        sort_reverse = true;
+        linemode = "size";
+      };
+    };
+  };
+
+  himalaya = {
+    enable = true;
+  };
 }
