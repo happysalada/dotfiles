@@ -1,4 +1,4 @@
-{ home-manager, agenix, monorepo, lead, designhub }:
+{ home-manager, agenix, monorepo }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -8,8 +8,6 @@ in
       monorepo.nixosModules.x86_64-linux.brocop
       monorepo.nixosModules.x86_64-linux.brocop_admin
       monorepo.nixosModules.x86_64-linux.sweif
-      lead.nixosModules.x86_64-linux.lead
-      designhub.nixosModules.x86_64-linux.designhub
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
@@ -27,9 +25,6 @@ in
       ../../modules/restic.nix
       ../../modules/rustus.nix
       ../../modules/windmill.nix
-      ../../modules/monorepo.nix
-      ../../modules/lead.nix
-      ../../modules/designhub.nix
     ];
 
     # Use GRUB2 as the boot loader.
@@ -122,8 +117,6 @@ in
       overlays = [
         # helix.overlays.default
         monorepo.overlays.x86_64-linux.default
-        lead.overlays.x86_64-linux.default
-        designhub.overlays.x86_64-linux.default
       ];
       config.allowUnfree = true;
     };

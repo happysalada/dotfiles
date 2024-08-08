@@ -1,13 +1,13 @@
 { pkgs, ... }:
 {
-  enable = true;
+  enable = false;
   package = pkgs.vscode;
   extensions = with pkgs.vscode-extensions; [
     vscodevim.vim
     serayuzgur.crates
     tamasfe.even-better-toml
     bbenoist.nix
-    matklad.rust-analyzer
+    rust-lang.rust-analyzer
     # jock.svg
     editorconfig.editorconfig
     esbenp.prettier-vscode

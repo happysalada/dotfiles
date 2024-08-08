@@ -27,4 +27,5 @@ in
   "lead.env.production.age".publicKeys = [ yt bee hetz ];
   "copilot.api.key.age".publicKeys = [ yt ];
   "codeium.api.key.age".publicKeys = [ yt ];
+  "anthropic.key.age".publicKeys = [ yt bee ];
 }

@@ -20,8 +20,7 @@
       };
 
       fonts = {
-        fontDir.enable = true;
-        fonts = import ../packages/fonts.nix { inherit pkgs; };
+        packages = import ../packages/fonts.nix { inherit pkgs; };
       };
 
       system.defaults = {
@@ -88,7 +87,7 @@
 
       nix = {
         useDaemon = true;
-        package = pkgs.nixUnstable;
+        package = pkgs.nixVersions.latest;
         extraOptions = ''
           experimental-features = nix-command flakes
           keep-outputs = true
@@ -141,7 +140,7 @@
       users = {
         users.raphael = {
           home = /Users/raphael;
-          shell = with pkgs; [ nushellFull ];
+          shell = pkgs.nushell;
         };
       };
 
@@ -165,6 +164,7 @@
             COPILOT_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/COPILOT_API_KEY')";
             CODEIUM_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/CODEIUM_API_KEY')";
             NIX_CONFIG = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/NIX_ACCESS_TOKENS')";
+            ANTHROPIC_API_KEY = "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/ANTHROPIC_API_KEY')";
           };
         }
       ];
@@ -182,6 +182,9 @@
           };
           NIX_ACCESS_TOKENS = {
             file = ../secrets/nix.conf.extra.age;
+          };
+          ANTHROPIC_API_KEY = {
+            file = ../secrets/anthropic.key.age;
           };
         };
       };
@@ -217,6 +220,11 @@
           agenix.packages.x86_64-darwin.default
           pkgs.rust-bin.nightly.latest.default
           helix-gpt
+          localsend
+          bun
+          # pixi # not building on osx 10.13
+          mise
+          nixfmt-rfc-style
           # onionshare
           # deploy-rs.packages.x86_64-darwin.default
       ] ++

@@ -3,7 +3,7 @@
 {
   services.brocop = {
     enable = true;
-    port = 3001;
+    port = 3002;
     environmentFile = config.age.secrets.BROCOP_ENV_FILE.path;
   };
 
@@ -16,7 +16,7 @@
 
   services.brocop_admin = {
     enable = true;
-    port = 3002;
+    port = 3003;
     environmentFile = config.age.secrets.BROCOP_ADMIN_ENV_FILE.path;
   };
 

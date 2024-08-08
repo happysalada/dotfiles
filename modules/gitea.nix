@@ -13,7 +13,7 @@
         ROOT_URL = "https://git.megzari.com";
         HTTP_PORT = 3030;
         HTTP_ADDR = "127.0.0.1";
-        DOMAIN = "git.sassy.technology";
+        DOMAIN = "git.megzari.com";
       };
       repository = {
         PREFERRED_LICENSES = "AGPL-3.0,GPL-3.0,GPL-2.0,LGPL-3.0,LGPL-2.1";
@@ -24,7 +24,7 @@
       mailer = {
         ENABLED = true;
         MAILER_TYPE = "sendmail";
-        FROM = "yt@sassy.technology";
+        FROM = "yt@megzari.com";
         SENDMAIL_PATH = "${pkgs.system-sendmail}/bin/sendmail";
         # SUBJECT = "%(APP_NAME)s";
         # HOST = "petabyte.dev:465";
@@ -46,7 +46,7 @@
         REGISTER_EMAIL_CONFIRM = true;
         ENABLE_NOTIFY_MAIL = true;
         ENABLE_CAPTCHA = true;
-        NO_REPLY_ADDRESS = "sassy.technology";
+        NO_REPLY_ADDRESS = "megzari.com";
         DISABLE_REGISTRATION = true;
       };
 

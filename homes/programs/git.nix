@@ -21,7 +21,17 @@
     core = {
       editor = "hx";
     };
+    commit.verbose = true;
     init = { defaultBranch = "master"; };
+
+    diff = {
+      colorMoved = true;
+      algorithm = "histogram";
+      submodule = "log";
+    };
+    
+    status.submoduleSummary = true;
+    submodule.recurse = true;
 
     # breaks cargo update function for some reason
     # find out how to do something about it someday
@@ -43,7 +53,10 @@
     rebase = {
       autoSquash = true;
       autoStash = true;
+      updateRefs = true;
     };
+
+    merge.conflicstyle = "zdiff3";
 
     credential.helper = "store";
   };

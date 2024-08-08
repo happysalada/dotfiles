@@ -4,10 +4,9 @@
   lib,
 }: {
   enable = true;
-  package = pkgs.nushellFull;
+  package = pkgs.nushell;
 
   environmentVariables = {
-    EDITOR = "hx";
     PATH = "($env.PATH | prepend '/run/current-system/sw/bin' | prepend '/Users/raphael/.nix-profile/bin' | str join ':')";
     # OPENAI_API_KEY = lib.mkIf pkgs.stdenv.isDarwin "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
     # no ssh keys created yet on the linux server
@@ -44,9 +43,8 @@
       show_banner: false
     });
 
-    register ${pkgs.nushellPlugins.query}/bin/nu_plugin_query
-    register ${pkgs.nushellPlugins.net}/bin/nu_plugin_net
-    register ${pkgs.nushellPlugins.regex}/bin/nu_plugin_regex
+    plugin add ${pkgs.nushellPlugins.query}/bin/nu_plugin_query
+    # plugin add ${pkgs.nushellPlugins.net}/bin/nu_plugin_net
 
     # maybe useful functions
     # use ${pkgs.nu_scripts}/share/nu_scripts/modules/formats/to-number-format.nu *
@@ -87,8 +85,11 @@
     # sudo version is to clean nix-darwin old generations
     # non sudo is to clean home-manager
     def nixgc [] {
-      sudo /Users/raphael/dotfiles/result/sw/bin/nix-collect-garbage -d
+      nix store gc --verbose
       nix-collect-garbage -d
+      # looks like sudo isn't required for now
+      # sudo nix store gc --verbose
+      # sudo nix-collect-garbage -d
     }
 
     # deletes the branches already merged upstream
@@ -329,7 +330,7 @@
       # buffer_editor: "emacs" # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.EDITOR and $env.VISUAL
       use_ansi_coloring: true
       edit_mode: emacs # emacs, vi
-      shell_integration: true # enables terminal markers and a workaround to arrow keys stop working issue
+      # shell_integration: true # enables terminal markers and a workaround to arrow keys stop working issue
       render_right_prompt_on_last_line: false # true or false to enable or disable right prompt to be rendered on last line of the prompt.
 
       hooks: {

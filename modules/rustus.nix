@@ -23,7 +23,7 @@
     };
   };
 
-  services.caddy.virtualHosts."rustus.sassy.technology" = {
+  services.caddy.virtualHosts."rustus.megzari.com" = {
     extraConfig = ''
       reverse_proxy 127.0.0.1:1081
     '';

@@ -1,4 +1,4 @@
-{ home-manager, agenix, megzari_com }:
+{ home-manager, agenix, megzari_com, monorepo }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -6,6 +6,9 @@ in
   ({ pkgs, config, ... }: {
     imports = [
       megzari_com.nixosModules.x86_64-linux.megzari_com
+      monorepo.nixosModules.x86_64-linux.sweif
+      monorepo.nixosModules.x86_64-linux.brocop
+      monorepo.nixosModules.x86_64-linux.brocop_admin
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
@@ -25,11 +28,12 @@ in
       ../../modules/uptime-kuma.nix
       ../../modules/atuin.nix
       ../../modules/meilisearch.nix
-      ../../modules/restic.nix
+      # ../../modules/rustic.nix
       ../../modules/megzari_com.nix
-      ../../modules/windmill.nix
+      # ../../modules/windmill.nix
       ../../modules/rustus.nix
       ../../modules/ntfy.nix
+      ../../modules/monorepo.nix
     ];
 
 
@@ -102,6 +106,7 @@ in
     nixpkgs = {
       overlays = [
         megzari_com.overlays.x86_64-linux.default
+        monorepo.overlays.x86_64-linux.default
       ];
       config = {
         allowUnfree = true;
@@ -207,6 +212,25 @@ in
             reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
           '';
         };
+        "sweif.com" = {
+          extraConfig = ''
+            import security_headers
+            reverse_proxy 127.0.0.1:${toString config.services.sweif.port}
+          '';
+        };
+
+        "brocop.com" = {
+          extraConfig = ''
+            import security_headers
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
+        "www.brocop.com" = {
+          extraConfig = ''
+            import security_headers
+            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+          '';
+        };
       };
 
       cfdyndns = {
@@ -224,6 +248,10 @@ in
           "surrealdb.megzari.com"
           "megzari.com"
           "windmill.megzari.com"
+          "rustus.megzari.com"
+          "ntfy.megzari.com"
+          "brocop.com"
+          "sweif.com"
         ];
       };
 
@@ -325,7 +353,7 @@ in
           #     torch = torchWithRocm;
           #   };
           # })
-          nvtop-amd # GPU usage
+          nvtopPackages.amd # GPU usage
           btop # top with cpu freq
         ] ++
         (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++

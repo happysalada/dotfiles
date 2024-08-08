@@ -6,6 +6,10 @@
   nushell = import ./programs/nushell.nix { inherit pkgs config lib; };
   neovim = import ./programs/neovim.nix { inherit pkgs; };
 
+  home-manager = {
+    enable = true;
+  };
+
   direnv = {
     enable = true;
     nix-direnv.enable = true;
@@ -113,7 +117,31 @@
     };
   };
 
-  himalaya = {
+  jujutsu = {
     enable = true;
+    settings = {
+      email = "raphael@megzari.com";
+      name = "happysalada";
+    };
+  };
+
+  # great tool to download videos
+  yt-dlp.enable = true;
+
+  carapace = {
+    enable = true;
+    enableNushellIntegration = true;
+  };
+
+  freetube = {
+    enable = true;
+  };
+  # himalaya = {
+  #   enable = true;
+  # };
+
+  keychain = {
+    enable = true;
+    enableNushellIntegration = true;
   };
 }

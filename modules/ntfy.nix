@@ -4,13 +4,13 @@
   services.ntfy-sh = {
     enable = true;
     settings = {
-      base-url = "http://ntfy.sassy.technology";
+      base-url = "http://ntfy.megzari.com";
       behind-proxy = true;
       auth-default-access = "deny-all";
     };
   };
 
-  services.caddy.virtualHosts."ntfy.sassy.technology" = {
+  services.caddy.virtualHosts."ntfy.megzari.com" = {
     # config found at https://docs.ntfy.sh/config/
     extraConfig = ''
       reverse_proxy ${config.services.ntfy-sh.settings.listen-http}

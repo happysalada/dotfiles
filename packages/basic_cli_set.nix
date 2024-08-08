@@ -29,8 +29,8 @@ with pkgs; [
   # sqlite
   # ffmpeg
   uutils-coreutils
-  shell_gpt
-  gptcommit
+  # shell_gpt
+  # gptcommit
   skim # search mode for atuin
   pueue
   # sniffnet # packet analysis
@@ -41,10 +41,10 @@ with pkgs; [
   killport # kill a service on a port
   # clipboard-jh # fails to build on macos
   libqalculate
-  igrep
+  # igrep
   # ast-grep
   gh
   # gpg stuff
   gnupg
-  pinentry
+  pinentry_mac
 ]
