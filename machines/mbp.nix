@@ -1,13 +1,18 @@
-{ home-manager, agenix, rust-overlay }:
+{
+  home-manager,
+  agenix,
+  rust-overlay,
+  nixpkgs,
+}:
 [
-  ({ pkgs, config, ... }:
+  (
+    { pkgs, config, ... }:
     {
       imports = [
         agenix.darwinModules.age
       ];
       environment = {
         variables = {
-          EDITOR = "hx";
           LANG = "en_US.UTF-8";
         };
       };
