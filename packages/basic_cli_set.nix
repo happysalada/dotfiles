@@ -1,6 +1,6 @@
 { pkgs }:
-with pkgs; [
-  # exa # better ls
+with pkgs;
+[
   ripgrep # better grep
   tealdeer # terser man
   fd # improved find
@@ -45,6 +45,6 @@ with pkgs; [
   # ast-grep
   gh
   # gpg stuff
-  gnupg
   pinentry_mac
+  bat
 ]

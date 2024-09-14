@@ -1,5 +1,6 @@
 { pkgs }:
-with pkgs; [
+with pkgs;
+[
   nix-index
   editorconfig-checker
   nix-prefetch
@@ -9,5 +10,6 @@ with pkgs; [
   nix-output-monitor
   nix-init
   nix-melt
+  nixfmt-rfc-style
   # colmena
 ]

@@ -5,27 +5,104 @@ let
   hetz = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIByQBosyis0iJG5F4Dt72DOR9xtlL4wM/q1lbMA6cu+F root@hetzner-AX41-UEFI-ZFS-NVME";
 in
 {
-  "vaultwarden.env.age".publicKeys = [ yt bee ];
-  "surreal.username.age".publicKeys = [ yt bee yt_at_bee hetz ];
-  "surreal.password.age".publicKeys = [ yt bee yt_at_bee hetz ];
-  "openai.key.age".publicKeys = [ yt bee yt_at_bee ];
-  "github_access_token.age".publicKeys = [ yt yt_at_bee ];
-  "canlii_api.key.age".publicKeys = [ yt bee ];
-  "cloudflare.api.token.age".publicKeys = [ yt bee ];
-  "sassy.technology.cloudflare.zone.id.age".publicKeys = [ yt bee ];
-  "megzari.com.cloudflare.zone.id.age".publicKeys = [ yt bee ];
-  "restic.backup.password.age".publicKeys = [ yt bee hetz ];
-  "restic.s3.credentials.age".publicKeys = [ yt bee hetz ];
-  "rustus.r2.access.key.age".publicKeys = [ yt bee hetz ];
-  "rustus.r2.secret.key.age".publicKeys = [ yt bee hetz ];
-  "huggingface.token.age".publicKeys = [ yt bee ];
-  "unstructured.api.key.age".publicKeys = [ yt bee ];
-  "windmill.database.url.age".publicKeys = [ yt bee hetz ];
-  "nix.conf.extra.age".publicKeys = [ yt bee hetz ];
-  "brocop.env.production.age".publicKeys = [ yt bee hetz ];
-  "brocop_admin.env.production.age".publicKeys = [ yt bee hetz ];
-  "lead.env.production.age".publicKeys = [ yt bee hetz ];
+  "vaultwarden.env.age".publicKeys = [
+    yt
+    bee
+  ];
+  "surreal.username.age".publicKeys = [
+    yt
+    bee
+    yt_at_bee
+    hetz
+  ];
+  "surreal.password.age".publicKeys = [
+    yt
+    bee
+    yt_at_bee
+    hetz
+  ];
+  "openai.key.age".publicKeys = [
+    yt
+    bee
+    yt_at_bee
+  ];
+  "github_access_token.age".publicKeys = [
+    yt
+    yt_at_bee
+  ];
+  "canlii_api.key.age".publicKeys = [
+    yt
+    bee
+  ];
+  "cloudflare.api.token.age".publicKeys = [
+    yt
+    bee
+  ];
+  "sassy.technology.cloudflare.zone.id.age".publicKeys = [
+    yt
+    bee
+  ];
+  "megzari.com.cloudflare.zone.id.age".publicKeys = [
+    yt
+    bee
+  ];
+  "restic.backup.password.age".publicKeys = [
+    yt
+    bee
+    hetz
+  ];
+  "restic.s3.credentials.age".publicKeys = [
+    yt
+    bee
+    hetz
+  ];
+  "rustus.r2.access.key.age".publicKeys = [
+    yt
+    bee
+    hetz
+  ];
+  "rustus.r2.secret.key.age".publicKeys = [
+    yt
+    bee
+    hetz
+  ];
+  "huggingface.token.age".publicKeys = [
+    yt
+    bee
+  ];
+  "unstructured.api.key.age".publicKeys = [
+    yt
+    bee
+  ];
+  "windmill.database.url.age".publicKeys = [
+    yt
+    bee
+    hetz
+  ];
+  "nix.conf.extra.age".publicKeys = [
+    yt
+    bee
+    hetz
+  ];
+  "brocop.env.production.age".publicKeys = [
+    yt
+    bee
+    hetz
+  ];
+  "brocop_admin.env.production.age".publicKeys = [
+    yt
+    bee
+    hetz
+  ];
+  "lead.env.production.age".publicKeys = [
+    yt
+    bee
+    hetz
+  ];
   "copilot.api.key.age".publicKeys = [ yt ];
   "codeium.api.key.age".publicKeys = [ yt ];
-  "anthropic.key.age".publicKeys = [ yt bee ];
+  "anthropic.key.age".publicKeys = [
+    yt
+    bee
+  ];
 }

@@ -2,12 +2,22 @@
   pkgs,
   config,
   lib,
-}: {
+}:
+{
   enable = true;
   package = pkgs.nushell;
 
+  envFile.text = ''
+    $env.PATH = (
+      $env.PATH
+      | split row (char esep)
+      | prepend '/run/current-system/sw/bin'
+      | prepend '/Users/macintoshhd/.nix-profile/bin'
+      | prepend '/Users/macintoshhd/.local/bin'
+    )
+    $env.EDITOR = "hx"
+  '';
   environmentVariables = {
-    PATH = "($env.PATH | prepend '/run/current-system/sw/bin' | prepend '/Users/raphael/.nix-profile/bin' | str join ':')";
     # OPENAI_API_KEY = lib.mkIf pkgs.stdenv.isDarwin "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
     # no ssh keys created yet on the linux server
     # "(open $'($env.XDG_RUNTIME_DIR)/agenix/OPENAI_API_KEY')"
@@ -35,6 +45,11 @@
     b = "broot -ghi";
     # nix
     nci = "nix_copy_inputs";
+    # himalaya
+    h = "himalaya";
+    hmr = "himalaya message read";
+    hmd = "himalaya message delete";
+    has = "himalaya account sync";
   };
 
   extraConfig = ''
@@ -124,6 +139,10 @@
         $results | to json
     }
 
+    let mise_path = $nu.default-config-dir | path join mise.nu
+    ^mise activate nu | save $mise_path --force
+
+    use mise.nu
   '';
 
   configFile.text = ''

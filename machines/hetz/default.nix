@@ -1,13 +1,13 @@
-{ home-manager, agenix, monorepo }:
+{ home-manager, agenix }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
 [
   ({ pkgs, config, ... }: {
     imports = [
-      monorepo.nixosModules.x86_64-linux.brocop
-      monorepo.nixosModules.x86_64-linux.brocop_admin
-      monorepo.nixosModules.x86_64-linux.sweif
+      # monorepo.nixosModules.x86_64-linux.brocop
+      # monorepo.nixosModules.x86_64-linux.brocop_admin
+      # monorepo.nixosModules.x86_64-linux.sweif
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
@@ -116,7 +116,7 @@ in
     nixpkgs = {
       overlays = [
         # helix.overlays.default
-        monorepo.overlays.x86_64-linux.default
+        # monorepo.overlays.x86_64-linux.default
       ];
       config.allowUnfree = true;
     };

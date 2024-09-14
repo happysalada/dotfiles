@@ -10,10 +10,18 @@
     font.normal.family = "FiraCode Nerd Font";
     font.bold.family = "FiraCode Nerd Font";
     font.italic.family = "FiraCode Nerd Font";
-    font.size = 24;
+    font.size = 28;
     keyboard.bindings = [
-      { key = "V"; mods = "Command"; action = "Paste"; }
-      { key = "C"; mods = "Command"; action = "Copy"; }
+      {
+        key = "V";
+        mods = "Command";
+        action = "Paste";
+      }
+      {
+        key = "C";
+        mods = "Command";
+        action = "Copy";
+      }
       # { key = "Left"; chars = "\\x1b[D"; mode = "~AppCursor"; }
       # { key = "Left"; chars = "\\x1bOD"; mode = "AppCursor"; }
       # { key = "Right"; chars = "\\x1b[C"; mode = "~AppCursor"; }

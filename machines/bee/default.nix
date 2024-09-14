@@ -1,4 +1,4 @@
-{ home-manager, agenix, megzari_com, monorepo }:
+{ home-manager, agenix, megzari_com }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -6,9 +6,9 @@ in
   ({ pkgs, config, ... }: {
     imports = [
       megzari_com.nixosModules.x86_64-linux.megzari_com
-      monorepo.nixosModules.x86_64-linux.sweif
-      monorepo.nixosModules.x86_64-linux.brocop
-      monorepo.nixosModules.x86_64-linux.brocop_admin
+      # monorepo.nixosModules.x86_64-linux.sweif
+      # monorepo.nixosModules.x86_64-linux.brocop
+      # monorepo.nixosModules.x86_64-linux.brocop_admin
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
@@ -33,7 +33,7 @@ in
       # ../../modules/windmill.nix
       ../../modules/rustus.nix
       ../../modules/ntfy.nix
-      ../../modules/monorepo.nix
+      # ../../modules/monorepo.nix
     ];
 
 
@@ -106,7 +106,7 @@ in
     nixpkgs = {
       overlays = [
         megzari_com.overlays.x86_64-linux.default
-        monorepo.overlays.x86_64-linux.default
+        # monorepo.overlays.x86_64-linux.default
       ];
       config = {
         allowUnfree = true;

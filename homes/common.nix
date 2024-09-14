@@ -1,4 +1,8 @@
-{ pkgs, config, lib }:
+{
+  pkgs,
+  config,
+  lib,
+}:
 {
   alacritty = import ./programs/alacritty.nix;
   ssh = import ./programs/ssh.nix;
@@ -23,13 +27,19 @@
       default_shell = "nu";
       default_layout = "compact";
       ui = {
-          pane_frames = {
-              hide_session_name = true;
-          };
+        pane_frames = {
+          hide_session_name = true;
+        };
       };
       keybinds = {
         unbind = {
-          _args = [ "Ctrl n" "Ctrl p" "Ctrl g" "Ctrl h" "Ctrl q" ];
+          _args = [
+            "Ctrl n"
+            "Ctrl p"
+            "Ctrl g"
+            "Ctrl h"
+            "Ctrl q"
+          ];
         };
         normal = {
           unbind = {
@@ -39,19 +49,63 @@
       };
       theme = "black";
       themes = {
-          black = {
-              fg = [169 177 214];
-              bg = [49 46 129];
-              black = [0 0 0];
-              red = [249 51 87];
-              green = [5 150 105];
-              yellow = [224 175 104];
-              blue = [122 162 247];
-              magenta = [187 154 247];
-              cyan = [42 195 222];
-              white = [192 202 245];
-              orange = [255 158 100];
-          };
+        black = {
+          fg = [
+            169
+            177
+            214
+          ];
+          bg = [
+            49
+            46
+            129
+          ];
+          black = [
+            0
+            0
+            0
+          ];
+          red = [
+            249
+            51
+            87
+          ];
+          green = [
+            5
+            150
+            105
+          ];
+          yellow = [
+            224
+            175
+            104
+          ];
+          blue = [
+            122
+            162
+            247
+          ];
+          magenta = [
+            187
+            154
+            247
+          ];
+          cyan = [
+            42
+            195
+            222
+          ];
+          white = [
+            192
+            202
+            245
+          ];
+          orange = [
+            255
+            158
+            100
+          ];
+        };
       };
     };
   };
@@ -136,12 +190,42 @@
   freetube = {
     enable = true;
   };
-  # himalaya = {
-  #   enable = true;
-  # };
+
+  himalaya = {
+    enable = true;
+  };
 
   keychain = {
     enable = true;
     enableNushellIntegration = true;
   };
+
+  mise = {
+    enable = true;
+    globalConfig = {
+      tools = {
+        "go:github.com/danielmiessler/fabric" = "latest";
+      };
+      settings = {
+        experimental = true;
+        pipx_uvx = true;
+      };
+    };
+  };
+
+  go.enable = true; # used mostly to install other things
+
+  gpg.enable = true;
+
+  # bitwarden cli client
+  rbw = {
+    enable = true;
+    settings = {
+      email = "raphael@megzari.com";
+      lock_timeout = 120;
+      pinentry = pkgs.pinentry_mac;
+      base_url = "https://vaultwarden.megzari.com";
+    };
+  };
+
 }
