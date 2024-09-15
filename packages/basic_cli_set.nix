@@ -44,7 +44,5 @@ with pkgs;
   # igrep
   # ast-grep
   gh
-  # gpg stuff
-  pinentry_mac
   bat
 ]

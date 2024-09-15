@@ -223,7 +223,7 @@
     settings = {
       email = "raphael@megzari.com";
       lock_timeout = 120;
-      pinentry = pkgs.pinentry_mac;
+      pinentry = if pkgs.stdenv.isDarwin then pkgs.pinentry_mac else pkgs.pinentry;
       base_url = "https://vaultwarden.megzari.com";
     };
   };
