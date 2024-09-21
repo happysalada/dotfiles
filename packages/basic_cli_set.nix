@@ -41,7 +41,7 @@ with pkgs;
   killport # kill a service on a port
   # clipboard-jh # fails to build on macos
   libqalculate
-  # igrep
+  igrep
   # ast-grep
   gh
   bat

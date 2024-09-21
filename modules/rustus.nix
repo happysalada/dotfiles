@@ -14,7 +14,7 @@
     };
   };
 
-  age.secrets =  {
+  age.secrets = {
     R2_ACCESS_KEY = {
       file = ../secrets/rustus.r2.access.key.age;
     };

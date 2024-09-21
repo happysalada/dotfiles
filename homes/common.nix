@@ -205,6 +205,7 @@
     globalConfig = {
       tools = {
         "go:github.com/danielmiessler/fabric" = "latest";
+        "go:github.com/danielmiessler/yt" = "latest";
       };
       settings = {
         experimental = true;

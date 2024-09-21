@@ -36,13 +36,13 @@
         };
         svelteserver.command = "${svelte-language-server}/bin/svelteserver";
         tailwindcss-ls.command = "${tailwindcss-language-server}/bin/tailwindcss-language-server";
-        # nixd = {
-        #   command = "${nixd}/bin/nixd";
-        # };
-        # eslint = {
-        #   command = "${eslint}/bin/eslint";
-        #   args = [ "--stdin" ];
-        # };
+        nixd = {
+          command = "${nixd}/bin/nixd";
+        };
+        eslint = {
+          command = "${eslint}/bin/eslint";
+          args = [ "--stdin" ];
+        };
         copilot = {
           command = "${helix-gpt}/bin/helix-gpt";
           args = [
@@ -57,11 +57,6 @@
             "codeium"
           ];
         };
-        # copilot = {
-        #   command = "${copilot-lsp}/copilot";
-        #   language-id = "copilot";
-        #   args = ["--stdio"];
-        # };
         nil.command = "${nil}/bin/nil";
         rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
       };
@@ -131,7 +126,7 @@
           args = [ "--verify" ];
         };
         language-servers = [
-          # "nixd"
+          "nixd"
           "nil"
           "copilot"
           "codeium"

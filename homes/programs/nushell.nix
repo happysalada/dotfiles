@@ -16,6 +16,7 @@
       | prepend '/Users/macintoshhd/.local/bin'
     )
     $env.EDITOR = "hx"
+    $env.NIXPKGS_ALLOW_UNFREE = 1
   '';
   environmentVariables = {
     # OPENAI_API_KEY = lib.mkIf pkgs.stdenv.isDarwin "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";

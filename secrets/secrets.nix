@@ -105,4 +105,9 @@ in
     yt
     bee
   ];
+
+  "youtube.key.age".publicKeys = [
+    yt
+    bee
+  ];
 }
