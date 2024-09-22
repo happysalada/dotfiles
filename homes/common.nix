@@ -198,6 +198,7 @@
   keychain = {
     enable = true;
     enableNushellIntegration = true;
+    keys = [ "id_ed25519" ];
   };
 
   mise = {
