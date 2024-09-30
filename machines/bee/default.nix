@@ -18,7 +18,7 @@ in
         # Include the results of the hardware scan.
         ./hardware-configuration.nix
         ../../modules/fail2ban.nix
-        # ../../modules/vector.nix
+        ../../modules/vector.nix
         ../../modules/postgresql.nix
         ../../modules/grafana
         ../../modules/ntpd-rs.nix
@@ -40,7 +40,7 @@ in
         # ../../modules/rustus.nix
         ../../modules/ntfy.nix
         # ../../modules/monorepo.nix
-        ../../modules/home-assistant.nix
+        ../../modules/home_assistant.nix
       ];
 
       boot.loader.systemd-boot.enable = true;
@@ -48,7 +48,6 @@ in
         canTouchEfiVariables = true;
         # efiSysMountPoint = "/boot/EFI";
       };
-      boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 
       environment = {
         enableDebugInfo = true;
@@ -57,7 +56,6 @@ in
           lsof
           git
           agenix.packages.x86_64-linux.default
-          ollama
         ];
         shells = [ pkgs.nushell ];
       };
@@ -74,21 +72,52 @@ in
       #   package = config.boot.kernelPackages.nvidiaPackages.stable;
       # };
 
-      networking.hostName = "bee";
-      networking.hostId = "00000001";
+      networking = {
+        hostName = "bee";
+        hostId = "00000001";
 
-      networking.enableIPv6 = true;
-      networking.nameservers = [
-        # Quad 9
-        "9.9.9.9"
-        "149.112.112.112"
-        # opendns
-        "208.67.222.222"
-        "208.67.220.220"
-        # cloudflare
-        "1.1.1.1"
-        "1.0.0.1"
-      ];
+        enableIPv6 = true;
+        nameservers = [
+          # Quad 9
+          "9.9.9.9"
+          "149.112.112.112"
+          # opendns
+          "208.67.222.222"
+          "208.67.220.220"
+          # cloudflare
+          "1.1.1.1"
+          "1.0.0.1"
+        ];
+        networkmanager = {
+          enable = true;
+          ensureProfiles = {
+            environmentFiles = [
+              config.age.secrets.nm-secrets.path
+            ];
+            profiles = {
+              birnam = {
+                connection = {
+                  id = "BELL969";
+                  type = "wifi";
+                };
+                ipv4.method = "auto";
+                ipv6 = {
+                  addr-gen-mode = "stable-privacy";
+                  method = "auto";
+                };
+                wifi = {
+                  mode = "infrastructure";
+                  ssid = "BELL969";
+                };
+                wifi-security = {
+                  key-mgmt = "wpa-psk";
+                  psk = "$BIRNAM_PSK";
+                };
+              };
+            };
+          };
+        };
+      };
 
       nix = {
         package = pkgs.nixVersions.latest;
@@ -122,7 +151,7 @@ in
         ];
         config = {
           allowUnfree = true;
-          cudaSupport = true;
+          # cudaSupport = true;
         };
         # contentAddressedByDefault = true; # build fails for now
       };
@@ -224,10 +253,10 @@ in
               reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
             '';
           };
-          "home-assistant.megzari.com" = {
+          "hass.megzari.com" = {
             extraConfig = ''
               import security_headers
-              reverse_proxy 127.0.0.1:${toString config.services.home-assistant.config.http.server_port}
+              reverse_proxy [::1]:${toString config.services.home-assistant.config.http.server_port}
             '';
           };
           # "sweif.com" = {
@@ -285,6 +314,9 @@ in
         UNSTRUCTURED_API_KEY = {
           file = ../../secrets/unstructured.api.key.age;
         };
+        nm-secrets = {
+          file = ../../secrets/nm.secrets.age;
+        };
       };
 
       # mosh uses a random port between 60000 and 61000 so no bueno behind the router
@@ -326,11 +358,8 @@ in
           {
             # agenix home manager module doesn't seem to work with my current setup somehow.
             config.programs.nushell.envFile.text = ''
-              #   OPENAI_API_KEY = "(open $'($env.XDG_RUNTIME_DIR)/agenix/OPENAI_API_KEY')";
-              #   GITHUB_ACCESS_TOKEN = "(open $'($env.XDG_RUNTIME_DIR)/agenix/GITHUB_ACCESS_TOKEN')";
-              #   SURREAL_USERNAME = "(open $'($env.XDG_RUNTIME_DIR)/agenix/SURREAL_USERNAME')";
-              #   SURREAL_PASSWORD = "(open $'($env.XDG_RUNTIME_DIR)/agenix/SURREAL_PASSWORD')";
-                $env.GITHUB_TOKEN = "(open $'($env.XDG_RUNTIME_DIR)/agenix/GITHUB_TOKEN')"
+              $env.OPENAI_API_KEY = (open $'($env.XDG_RUNTIME_DIR)/agenix/OPENAI_API_KEY');
+              $env.GITHUB_TOKEN = (open $'($env.XDG_RUNTIME_DIR)/agenix/GITHUB_TOKEN');
             '';
           }
         ];
@@ -340,7 +369,7 @@ in
             OPENAI_API_KEY = {
               file = ../../secrets/openai.key.age;
             };
-            GITHUB_ACCESS_TOKEN = {
+            GITHUB_TOKEN = {
               file = ../../secrets/github_access_token.age;
             };
           };

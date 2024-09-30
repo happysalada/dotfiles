@@ -110,4 +110,9 @@ in
     yt
     bee
   ];
+
+  "nm.secrets.age".publicKeys = [
+    yt
+    bee
+  ];
 }
