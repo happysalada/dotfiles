@@ -1,6 +1,14 @@
 { ... }:
 
 {
+  services.caddy.virtualHosts = {
+    "grafana.megzari.com" = {
+      extraConfig = ''
+        import security_headers
+        reverse_proxy 127.0.0.1:3000
+      '';
+    };
+  };
   services.grafana = {
     enable = true;
 

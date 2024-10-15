@@ -59,8 +59,7 @@
       show_banner: false
     });
 
-    plugin add ${pkgs.nushellPlugins.query}/bin/nu_plugin_query
-    # plugin add ${pkgs.nushellPlugins.net}/bin/nu_plugin_net
+    plugin add ${pkgs.nushellPlugins.net}/bin/nu_plugin_net
 
     # maybe useful functions
     # use ${pkgs.nu_scripts}/share/nu_scripts/modules/formats/to-number-format.nu *
@@ -75,6 +74,9 @@
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/nix/nix-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/tealdeer/tldr-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/zellij/zellij-completions.nu *
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/rg/rg-completions.nu *
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/rye/rye-completions.nu *
+    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/ssh/ssh-completions.nu *
 
     def gcb [name: string] {
       git checkout -b $name
@@ -344,7 +346,6 @@
         vi_normal: underscore # block, underscore, line  (underscore is the default)
       }
       color_config: $dark_theme   # if you want a light theme, replace `$dark_theme` to `$light_theme`
-      use_grid_icons: true
       footer_mode: "25" # always, never, number_of_rows, auto
       float_precision: 2 # the precision for displaying floats in tables
       # buffer_editor: "emacs" # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.EDITOR and $env.VISUAL

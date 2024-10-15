@@ -115,4 +115,8 @@ in
     yt
     bee
   ];
+  "searx.env.file.age".publicKeys = [
+    yt
+    bee
+  ];
 }

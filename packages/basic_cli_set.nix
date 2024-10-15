@@ -45,4 +45,5 @@ with pkgs;
   # ast-grep
   gh
   bat
+  termscp
 ]

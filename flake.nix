@@ -61,7 +61,6 @@
             home-manager
             agenix
             rust-overlay
-            nixpkgs
             ;
         };
       };

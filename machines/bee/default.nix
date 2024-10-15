@@ -41,6 +41,8 @@ in
         ../../modules/ntfy.nix
         # ../../modules/monorepo.nix
         ../../modules/home_assistant.nix
+        ../../modules/adguardhome.nix
+        ../../modules/searx.nix
       ];
 
       boot.loader.systemd-boot.enable = true;
@@ -48,6 +50,11 @@ in
         canTouchEfiVariables = true;
         # efiSysMountPoint = "/boot/EFI";
       };
+
+      systemd.targets.sleep.enable = false;
+      systemd.targets.suspend.enable = false;
+      systemd.targets.hibernate.enable = false;
+      systemd.targets.hybrid-sleep.enable = false;
 
       environment = {
         enableDebugInfo = true;
@@ -59,6 +66,11 @@ in
         ];
         shells = [ pkgs.nushell ];
       };
+
+      # Increase the maximum send and the receive buffer size to roughly 7.5 MB
+      # For adguardhome
+      boot.kernel.sysctl."net.core.rmem_max" = 7500000;
+      boot.kernel.sysctl."net.core.wmem_max" = 7500000;
 
       # hardware.nvidia = {
       #   # Modesetting is required.
@@ -193,22 +205,12 @@ in
           updater.enable = true;
         };
 
+        smartd.enable = true;
+
         caddy.virtualHosts = {
           ":80" = {
             extraConfig = ''
               import security_headers
-            '';
-          };
-          "megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy 127.0.0.1:${toString config.services.megzari_com.port}
-            '';
-          };
-          "vaultwarden.megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy 127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}
             '';
           };
           "git.megzari.com" = {
@@ -217,73 +219,25 @@ in
               reverse_proxy 127.0.0.1:${toString config.services.gitea.settings.server.HTTP_PORT}
             '';
           };
-          "grafana.megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy 127.0.0.1:3000
-            '';
-          };
-          "atuin.megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy ${config.services.atuin.host}:${toString config.services.atuin.port}
-            '';
-          };
-          "qdrant.megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy 127.0.0.1:${toString config.services.qdrant.settings.service.http_port}
-            '';
-          };
-          "meilisearch.megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy ${config.services.meilisearch.listenAddress}:${toString config.services.meilisearch.listenPort}
-            '';
-          };
           "uptime.megzari.com" = {
             extraConfig = ''
               import security_headers
               reverse_proxy ${config.services.uptime-kuma.settings.HOST}:${config.services.uptime-kuma.settings.PORT}
             '';
           };
-          "surrealdb.megzari.com" = {
+          "owu.megzari.com" = {
             extraConfig = ''
               import security_headers
-              reverse_proxy 127.0.0.1:${toString config.services.surrealdb.port}
+              reverse_proxy 127.0.0.1:${toString config.services.open-webui.port}
             '';
           };
-          "hass.megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy [::1]:${toString config.services.home-assistant.config.http.server_port}
-            '';
-          };
-          # "sweif.com" = {
-          #   extraConfig = ''
-          #     import security_headers
-          #     reverse_proxy 127.0.0.1:${toString config.services.sweif.port}
-          #   '';
-          # };
-
-          # "brocop.com" = {
-          #   extraConfig = ''
-          #     import security_headers
-          #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          #   '';
-          # };
-          # "www.brocop.com" = {
-          #   extraConfig = ''
-          #     import security_headers
-          #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          #   '';
-          # };
         };
 
-        cfdyndns = {
+        cloudflare-dyndns = {
           enable = true;
           apiTokenFile = config.age.secrets.CLOUDFLARE_API_TOKEN.path;
-          records = [
+          deleteMissing = true;
+          domains = [
             "vaultwarden.megzari.com"
             "git.megzari.com"
             "gitea.megzari.com"
@@ -297,9 +251,31 @@ in
             "windmill.megzari.com"
             # "rustus.megzari.com"
             "ntfy.megzari.com"
-            # "brocop.com"
-            # "sweif.com"
+            "hass.megzari.com"
+            "adgh.megzari.com"
+            "owu.megzari.com"
           ];
+        };
+
+        ollama = {
+          enable = true;
+          loadModels = [
+            "steamdj/llama3.1-cpu-only"
+          ];
+          acceleration = "rocm";
+        };
+
+        # opencv is broken for now
+        open-webui = {
+          enable = true;
+          environment = {
+            ANONYMIZED_TELEMETRY = "False";
+            DO_NOT_TRACK = "True";
+            SCARF_NO_ANALYTICS = "True";
+            OLLAMA_API_BASE_URL = "http://127.0.0.1:11434";
+            # Disable authentication
+            WEBUI_AUTH = "False";
+          };
         };
 
       };
@@ -413,6 +389,7 @@ in
               # })
               nvtopPackages.amd # GPU usage
               btop # top with cpu freq
+              smartmontools
             ]
             ++ (import ../../packages/basic_cli_set.nix { inherit pkgs; })
             ++ (import ../../packages/dev/rust.nix { inherit pkgs; })
