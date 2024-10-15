@@ -254,6 +254,7 @@ in
             "hass.megzari.com"
             "adgh.megzari.com"
             "owu.megzari.com"
+            "searx.megzari.com"
           ];
         };
 
