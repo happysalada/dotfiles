@@ -16,7 +16,7 @@ with pkgs;
   # choose # better cut & awk
   # hyperfine # benchmarking tool
   # xh # http client
-  mosh # better ssh
+  # mosh # better ssh
   # file # get informations about files
   # moreutils # sponge
   # zstd # fast compression

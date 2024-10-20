@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  enable = false;
+  enable = true;
   package = pkgs.vscode;
   extensions = with pkgs.vscode-extensions; [
     vscodevim.vim
@@ -8,6 +8,7 @@
     tamasfe.even-better-toml
     bbenoist.nix
     rust-lang.rust-analyzer
+    vadimcn.vscode-lldb
     # jock.svg
     editorconfig.editorconfig
     esbenp.prettier-vscode
@@ -162,8 +163,8 @@
     "magit.code-path" = "codium";
     # copilot
     "github.copilot.enable" = {
-      "plaintext"= "true";
-      "markdown"= "true";
+      "plaintext" = "true";
+      "markdown" = "true";
     };
     # vim
     "vim.easymotion" = false;
@@ -306,14 +307,20 @@
             };
           }
           {
-            "scope" = [ "entity.name.type.rust" "entity.name.type.class" ];
+            "scope" = [
+              "entity.name.type.rust"
+              "entity.name.type.class"
+            ];
             "settings" = {
               "fontStyle" = "bold";
               "foreground" = "#f8f8f2ff";
             };
           }
           {
-            "scope" = [ "storage.class.std.rust" "entity.other.inherited-class" ];
+            "scope" = [
+              "storage.class.std.rust"
+              "entity.other.inherited-class"
+            ];
             "settings" = {
               "fontStyle" = "italic bold";
               "foreground" = "#f8f8f2ff";
@@ -344,7 +351,10 @@
             };
           }
           {
-            "scope" = [ "meta.object-literal.key" "variable.object.property.tsx" ];
+            "scope" = [
+              "meta.object-literal.key"
+              "variable.object.property.tsx"
+            ];
             "settings" = {
               "fontStyle" = "italic";
             };
