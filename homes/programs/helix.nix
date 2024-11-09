@@ -26,40 +26,40 @@
 
   languages = {
     # the language servers fail on _latest
-    language-server =
-      with pkgs;
-      with pkgs.nodePackages_latest;
-      {
-        typescript-language-server = {
-          command = "${typescript-language-server}/bin/typescript-language-server";
-          args = [ "--stdio" ];
-        };
-        svelteserver.command = "${svelte-language-server}/bin/svelteserver";
-        tailwindcss-ls.command = "${tailwindcss-language-server}/bin/tailwindcss-language-server";
-        nixd = {
-          command = "${nixd}/bin/nixd";
-        };
-        eslint = {
-          command = "${eslint}/bin/eslint";
-          args = [ "--stdin" ];
-        };
-        copilot = {
-          command = "${helix-gpt}/bin/helix-gpt";
-          args = [
-            "--handler"
-            "copilot"
-          ];
-        };
-        codeium = {
-          command = "${helix-gpt}/bin/helix-gpt";
-          args = [
-            "--handler"
-            "codeium"
-          ];
-        };
-        nil.command = "${nil}/bin/nil";
-        rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
+
+    language-server = with pkgs; {
+      typescript-language-server = {
+        command = "${typescript-language-server}/bin/typescript-language-server";
+        args = [ "--stdio" ];
       };
+      svelteserver.command = "${svelte-language-server}/bin/svelteserver";
+      tailwindcss-ls.command = "${tailwindcss-language-server}/bin/tailwindcss-language-server";
+      nixd = {
+        command = "${nixd}/bin/nixd";
+      };
+      eslint = {
+        command = "${eslint}/bin/eslint";
+        args = [ "--stdin" ];
+      };
+      copilot = {
+        command = "${helix-gpt}/bin/helix-gpt";
+        args = [
+          "--handler"
+          "copilot"
+        ];
+      };
+      codeium = {
+        command = "${helix-gpt}/bin/helix-gpt";
+        args = [
+          "--handler"
+          "codeium"
+        ];
+      };
+      nil.command = "${nil}/bin/nil";
+      rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
+      ruff.command = "${ruff}/bin/ruff";
+      pylsp.command = "${python312Packages.python-lsp-server}/bin/pylsp";
+    };
     language = [
       {
         name = "rust";
@@ -136,16 +136,12 @@
         name = "python";
         language-servers = [
           "pylsp"
-          "pyright"
+          "ruff"
           "copilot"
           "codeium"
         ];
         formatter = {
-          command = "black";
-          args = [
-            "--quiet"
-            "-"
-          ];
+          command = "ruff";
         };
         auto-format = true;
       }

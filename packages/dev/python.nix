@@ -1,7 +1,7 @@
 { pkgs }:
 with pkgs;
 [
-  pixi
-  bun
-  buck2
+  pipx
+  uv
+  ruff
 ]

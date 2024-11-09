@@ -119,4 +119,8 @@ in
     yt
     bee
   ];
+  "tavily.key.age".publicKeys = [
+    yt
+    bee
+  ];
 }

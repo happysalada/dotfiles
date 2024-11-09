@@ -75,7 +75,6 @@
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/tealdeer/tldr-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/zellij/zellij-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/rg/rg-completions.nu *
-    use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/rye/rye-completions.nu *
     use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/ssh/ssh-completions.nu *
 
     def gcb [name: string] {

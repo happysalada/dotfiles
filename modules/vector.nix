@@ -16,10 +16,10 @@
         # };
       };
 
-      transforms ={
+      transforms = {
         journald_format = {
           type = "remap"; # required
-          inputs = ["journald"]; # required                         
+          inputs = [ "journald" ]; # required
           source = ''
             del(.PRIORITY)
             del(.SYSLOG_FACILITY)
