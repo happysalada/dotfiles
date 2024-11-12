@@ -7,7 +7,7 @@
   matchBlocks = {
     "bee" = {
       # hostname = "174.94.78.215";
-      hostname = "70.30.159.142";
+      hostname = "76.69.187.31";
       user = "yt";
     };
     "hetz" = {

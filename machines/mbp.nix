@@ -253,8 +253,6 @@
               localsend
               # onionshare
               # deploy-rs.packages.x86_64-darwin.default
-              python3
-              aider-chat
               pinentry_mac # gpg stuff
             ]
             ++ (import ../packages/basic_cli_set.nix { inherit pkgs; })
