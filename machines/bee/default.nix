@@ -261,9 +261,12 @@ in
         ollama = {
           enable = true;
           loadModels = [
-            "steamdj/llama3.1-cpu-only"
+            "mistral-nemo"
           ];
           acceleration = "rocm";
+          environmentVariables = {
+            OLLAMA_FLASH_ATTENTION = "1";
+          };
         };
 
         # opencv is broken for now
