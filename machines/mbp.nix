@@ -254,6 +254,8 @@
               # onionshare
               # deploy-rs.packages.x86_64-darwin.default
               pinentry_mac # gpg stuff
+              docker_27
+              docker-compose
             ]
             ++ (import ../packages/basic_cli_set.nix { inherit pkgs; })
             ++ (import ../packages/package_managers.nix { inherit pkgs; })

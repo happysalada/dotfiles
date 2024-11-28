@@ -16,6 +16,7 @@
         display-signature-help-docs = true;
       };
       jump-label-alphabet = "ntesiroalphduf,cyw.x";
+      insert-final-newline = false;
     };
     keys.normal = {
       space.space = "file_picker";

@@ -1,4 +1,5 @@
 { pkgs }:
-with pkgs; [
-  fira-code-nerdfont
+with pkgs;
+[
+  nerd-fonts.fira-code
 ]
