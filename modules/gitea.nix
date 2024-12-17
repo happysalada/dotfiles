@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
   services.gitea = {
@@ -18,7 +18,7 @@
       repository = {
         PREFERRED_LICENSES = "AGPL-3.0,GPL-3.0,GPL-2.0,LGPL-3.0,LGPL-2.1";
       };
-      
+
       session.COOKIE_SECURE = true;
 
       mailer = {
@@ -60,14 +60,29 @@
 
   systemd.services.gitea.serviceConfig.ExecStartPre = [
     "${pkgs.coreutils}/bin/mkdir -p /var/lib/gitea/custom/public/assets/css"
-    "${pkgs.coreutils}/bin/ln -sfT ${pkgs.runCommand "gitea-public" {
-      buildInputs = with pkgs; [ rsync ];
-    } ''
-      rsync -a ${pkgs.fetchgit {
-        url = "https://github.com/iamdoubz/Gitea-Pitch-Black";
-        rev = "38a10947254e46a0a3c1fb90c617d913d6fe63b9";
-        sha256 = "sha256-iIygxSrI6FLdNJIZl44daMOlnP9CSOVFcTZNAsGW9f4=";
-      }}/theme-pitchblack.css $out/
-    ''}/theme-pitchblack.css /var/lib/gitea/custom/public/assets/css/theme-pitchblack.css"
+    "${pkgs.coreutils}/bin/ln -sfT ${
+      pkgs.runCommand "gitea-public"
+        {
+          buildInputs = with pkgs; [ rsync ];
+        }
+        ''
+          rsync -a ${
+            pkgs.fetchgit {
+              url = "https://github.com/iamdoubz/Gitea-Pitch-Black";
+              rev = "38a10947254e46a0a3c1fb90c617d913d6fe63b9";
+              sha256 = "sha256-iIygxSrI6FLdNJIZl44daMOlnP9CSOVFcTZNAsGW9f4=";
+            }
+          }/theme-pitchblack.css $out/
+        ''
+    }/theme-pitchblack.css /var/lib/gitea/custom/public/assets/css/theme-pitchblack.css"
   ];
+
+  services.caddy.virtualHosts = {
+    "git.megzari.com" = {
+      extraConfig = ''
+        import security_headers
+        reverse_proxy 127.0.0.1:${toString config.services.gitea.settings.server.HTTP_PORT}
+      '';
+    };
+  };
 }

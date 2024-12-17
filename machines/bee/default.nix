@@ -33,16 +33,19 @@ in
         ../../modules/qdrant.nix
         ../../modules/uptime-kuma.nix
         ../../modules/atuin.nix
-        # ../../modules/meilisearch.nix
+        ../../modules/meilisearch.nix
         # ../../modules/rustic.nix
         ../../modules/megzari_com.nix
-        # ../../modules/windmill.nix
+        ../../modules/windmill.nix
         # ../../modules/rustus.nix
         ../../modules/ntfy.nix
         # ../../modules/monorepo.nix
         ../../modules/home_assistant.nix
         ../../modules/adguardhome.nix
         ../../modules/searx.nix
+        ../../modules/open-webui.nix
+        ../../modules/cloudflare-dyndns.nix
+        ../../modules/ollama.nix
       ];
 
       boot.loader.systemd-boot.enable = true;
@@ -137,6 +140,13 @@ in
           cores = 16;
           max-jobs = "auto";
           auto-optimise-store = true;
+
+          substituters = [
+            "https://nix-community.cachix.org"
+          ];
+          trusted-public-keys = [
+            "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+          ];
         };
         extraOptions = ''
           experimental-features = nix-command flakes configurable-impure-env auto-allocate-uids
@@ -164,6 +174,10 @@ in
         config = {
           allowUnfree = true;
           # cudaSupport = true;
+        };
+        flake = {
+          setFlakeRegistry = true;
+          setNixPath = true;
         };
         # contentAddressedByDefault = true; # build fails for now
       };
@@ -207,81 +221,15 @@ in
 
         smartd.enable = true;
 
+        bpftune.enable = true;
+
         caddy.virtualHosts = {
           ":80" = {
             extraConfig = ''
               import security_headers
             '';
           };
-          "git.megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy 127.0.0.1:${toString config.services.gitea.settings.server.HTTP_PORT}
-            '';
-          };
-          "uptime.megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy ${config.services.uptime-kuma.settings.HOST}:${config.services.uptime-kuma.settings.PORT}
-            '';
-          };
-          "owu.megzari.com" = {
-            extraConfig = ''
-              import security_headers
-              reverse_proxy 127.0.0.1:${toString config.services.open-webui.port}
-            '';
-          };
         };
-
-        cloudflare-dyndns = {
-          enable = true;
-          apiTokenFile = config.age.secrets.CLOUDFLARE_API_TOKEN.path;
-          deleteMissing = true;
-          domains = [
-            "vaultwarden.megzari.com"
-            "git.megzari.com"
-            "gitea.megzari.com"
-            "grafana.megzari.com"
-            "atuin.megzari.com"
-            "qdrant.megzari.com"
-            "meilisearch.megzari.com"
-            "uptime.megzari.com"
-            "surrealdb.megzari.com"
-            "megzari.com"
-            "windmill.megzari.com"
-            # "rustus.megzari.com"
-            "ntfy.megzari.com"
-            "hass.megzari.com"
-            "adgh.megzari.com"
-            "owu.megzari.com"
-            "searx.megzari.com"
-          ];
-        };
-
-        ollama = {
-          enable = true;
-          loadModels = [
-            "mistral-nemo"
-          ];
-          acceleration = "rocm";
-          environmentVariables = {
-            OLLAMA_FLASH_ATTENTION = "1";
-          };
-        };
-
-        # opencv is broken for now
-        open-webui = {
-          enable = true;
-          environment = {
-            ANONYMIZED_TELEMETRY = "False";
-            DO_NOT_TRACK = "True";
-            SCARF_NO_ANALYTICS = "True";
-            OLLAMA_API_BASE_URL = "http://127.0.0.1:11434";
-            # Disable authentication
-            WEBUI_AUTH = "False";
-          };
-        };
-
       };
 
       age.secrets = {

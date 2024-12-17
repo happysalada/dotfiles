@@ -12,4 +12,5 @@ with pkgs;
   nix-melt
   nixfmt-rfc-style
   # colmena
+  compose2nix
 ]
