@@ -8,7 +8,7 @@
     tamasfe.even-better-toml
     bbenoist.nix
     rust-lang.rust-analyzer
-    vadimcn.vscode-lldb
+    # vadimcn.vscode-lldb
     # jock.svg
     editorconfig.editorconfig
     esbenp.prettier-vscode
@@ -37,7 +37,8 @@
     {
       "key" = "tab";
       "command" = "extension.vim_tab";
-      "when" = "editorFocus && vim.active && !inDebugRepl && vim.mode != 'Insert' && editorLangId != 'magit'";
+      "when" =
+        "editorFocus && vim.active && !inDebugRepl && vim.mode != 'Insert' && editorLangId != 'magit'";
     }
     {
       "key" = "tab";
@@ -47,7 +48,8 @@
     {
       "key" = "x";
       "command" = "magit.discard-at-point";
-      "when" = "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/";
+      "when" =
+        "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/";
     }
     {
       "key" = "k";
@@ -56,7 +58,8 @@
     {
       "key" = "-";
       "command" = "magit.reverse-at-point";
-      "when" = "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/";
+      "when" =
+        "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/";
     }
     {
       "key" = "v";
@@ -65,7 +68,8 @@
     {
       "key" = "shift+-";
       "command" = "magit.reverting";
-      "when" = "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/";
+      "when" =
+        "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/";
     }
     {
       "key" = "shift+v";
@@ -74,7 +78,8 @@
     {
       "key" = "shift+o";
       "command" = "magit.resetting";
-      "when" = "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/";
+      "when" =
+        "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/";
     }
     {
       "key" = "shift+x";

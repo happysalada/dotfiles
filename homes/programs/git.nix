@@ -1,8 +1,12 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   enable = true;
   userEmail = "raphael@megzari.com";
   userName = "happysalada";
-  ignores = [ "*~" ".DS_Store" ];
+  ignores = [
+    "*~"
+    ".DS_Store"
+  ];
   package = pkgs.gitAndTools.gitFull;
   # this doesn't change anything in gitui
   # difftastic = {
@@ -22,14 +26,16 @@
       editor = "hx";
     };
     commit.verbose = true;
-    init = { defaultBranch = "master"; };
+    init = {
+      defaultBranch = "master";
+    };
 
     diff = {
       colorMoved = true;
       algorithm = "histogram";
       submodule = "log";
     };
-    
+
     status.submoduleSummary = true;
     submodule.recurse = true;
 
@@ -38,9 +44,13 @@
     # https://github.com/rust-lang/cargo/issues/3381
     # causing problems on servers as well
     # causing problems without on my local to push
-    url = { 
-      "git@github.com:happysalada" = { insteadOf = "https://github.com/happysalada"; };
-      "ssh://gitea@gitea.sassy.technology" = { insteadOf = "file:///var/lib/gitea/repositories"; };
+    url = {
+      "git@github.com:happysalada" = {
+        insteadOf = "https://github.com/happysalada";
+      };
+      "ssh://gitea@gitea.sassy.technology" = {
+        insteadOf = "file:///var/lib/gitea/repositories";
+      };
     };
 
     push = {
