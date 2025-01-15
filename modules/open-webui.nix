@@ -21,7 +21,7 @@
       RAG_TOP_K = "10";
       RAG_EMBEDDING_ENGINE = "ollama";
       RAG_EMBEDDING_MODEL = "bge-m3";
-      RAG_RERANKING_MODEL = "paraphrase-multilingual";
+      RAG_RERANKING_MODEL = "linux6200/bge-reranker-v2-m3";
       CHUNK_SIZE = "8000"; # default 1500
       ENABLE_RAG_HYBRID_SEARCH = "True";
 
