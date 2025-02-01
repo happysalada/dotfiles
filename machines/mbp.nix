@@ -183,14 +183,15 @@
           agenix.homeManagerModules.age
           {
             config.programs.nushell.envFile.text = ''
-              $env.OPENAI_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY');
-              $env.COPILOT_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/COPILOT_API_KEY');
-              $env.CODEIUM_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/CODEIUM_API_KEY');
-              $env.NIX_CONFIG = (open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/NIX_ACCESS_TOKENS');
-              $env.ANTHROPIC_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/ANTHROPIC_API_KEY');
-              $env.GITHUB_TOKEN = (open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/GITHUB_TOKEN');
-              $env.YOUTUBE_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/YOUTUBE_API_KEY');
-              $env.TAVILY_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/TAVILY_API_KEY');
+              $env.OPENAI_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/OPENAI_API_KEY');
+              $env.COPILOT_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/COPILOT_API_KEY');
+              $env.CODEIUM_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/CODEIUM_API_KEY');
+              $env.NIX_CONFIG = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/NIX_ACCESS_TOKENS');
+              $env.ANTHROPIC_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/ANTHROPIC_API_KEY');
+              $env.GITHUB_TOKEN = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/GITHUB_TOKEN');
+              $env.YOUTUBE_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/YOUTUBE_API_KEY');
+              $env.TAVILY_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/TAVILY_API_KEY');
+              $env.DEEPSEEK_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/DEEPSEEK_API_KEY');
             '';
           }
         ];
@@ -220,6 +221,9 @@
             };
             TAVILY_API_KEY = {
               file = ../secrets/tavily.key.age;
+            };
+            DEEPSEEK_API_KEY = {
+              file = ../secrets/deepseek.api.key.age;
             };
           };
         };

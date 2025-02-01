@@ -123,4 +123,9 @@ in
     yt
     bee
   ];
+  "deepseek.api.key.age".publicKeys = [
+    yt
+    bee
+    yt_at_bee
+  ];
 }

@@ -5,7 +5,7 @@
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # nixpkgs.url = "github:nixos/nixpkgs";
-    # nixpkgs.url = "github:happysalada/nixpkgs/rustic_add_systemd_files";
+    # nixpkgs.url = "github:happysalada/nixpkgs/faster_whisper_fix";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";

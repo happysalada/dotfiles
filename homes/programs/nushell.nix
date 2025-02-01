@@ -103,9 +103,9 @@
     def nixgc [] {
       nix store gc --verbose
       nix-collect-garbage -d
-      # looks like sudo isn't required for now
-      # sudo nix store gc --verbose
-      # sudo nix-collect-garbage -d
+      # Sudo is required too
+      sudo nix store gc --verbose
+      sudo nix-collect-garbage -d
     }
 
     # deletes the branches already merged upstream
