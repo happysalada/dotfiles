@@ -120,6 +120,7 @@
       };
 
       nixpkgs = {
+        hostPlatform = "x86_64-darwin";
         overlays = [
           rust-overlay.overlays.default
           # helix.overlays.default
