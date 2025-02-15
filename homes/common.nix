@@ -188,12 +188,16 @@
   };
 
   freetube = {
-    enable = true;
+    # enable = true;
   };
 
-  himalaya = {
+  neomutt = {
     enable = true;
+    vimKeys = true;
+    # sidebar.enable = true;
   };
+  vdirsyncer.enable = true; # contacts + calendar sync
+  mbsync.enable = true; # main sync
 
   keychain = {
     enable = true;
@@ -205,7 +209,7 @@
     enable = true;
     globalConfig = {
       tools = {
-        "go:github.com/danielmiessler/fabric" = "latest";
+        "ubi:tigerbeetle/tigerbeetle" = "latest";
       };
       settings = {
         experimental = true;

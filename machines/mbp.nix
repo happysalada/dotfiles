@@ -90,7 +90,6 @@
       };
 
       nix = {
-        useDaemon = true;
         package = pkgs.nixVersions.latest;
         extraOptions = ''
           experimental-features = nix-command flakes
@@ -102,7 +101,6 @@
           min-free = 128000000 # 128 MB
           max-free = 1000000000 # 1 GB
         '';
-        configureBuildUsers = true;
         settings = {
           max-jobs = "auto";
           cores = 4;
@@ -160,7 +158,6 @@
       };
 
       services = {
-        nix-daemon.enable = true;
         # smartd = { enable = true; }; # unavailable on macos
         # avahi.enable = true; # unavailable on macos
       };
