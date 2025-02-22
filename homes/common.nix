@@ -232,5 +232,4 @@
       base_url = "https://vaultwarden.megzari.com";
     };
   };
-
 }
