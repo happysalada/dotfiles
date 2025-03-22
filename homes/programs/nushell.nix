@@ -58,6 +58,22 @@
       show_banner: false
     });
 
+    # add libstd++.so:6 to env to make some python stuff work
+    # Out of the box
+
+    # Get the store path of gcc.lib
+    let gcc_lib = ^nix eval --raw nixpkgs#gcc.cc.lib
+
+    # Construct the library directory path
+    let lib_dir = $"($gcc_lib)/lib"
+
+    # Set LD_LIBRARY_PATH, preserving any existing value
+    if "LD_LIBRARY_PATH" in $env {
+        $env.LD_LIBRARY_PATH = $"($lib_dir):($env.LD_LIBRARY_PATH)"
+    } else {
+        $env.LD_LIBRARY_PATH = $lib_dir
+    }
+
     # plugin add ${pkgs.nushellPlugins.net}/bin/nu_plugin_net
 
     # maybe useful functions

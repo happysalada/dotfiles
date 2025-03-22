@@ -23,6 +23,7 @@
       "adgh.megzari.com"
       "owu.megzari.com"
       "searx.megzari.com"
+      "prefect.megzari.com"
     ];
   };
 }

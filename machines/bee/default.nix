@@ -46,6 +46,7 @@ in
         ../../modules/open-webui.nix
         ../../modules/cloudflare-dyndns.nix
         ../../modules/ollama.nix
+        ../../modules/prefect.nix
       ];
 
       boot.loader.systemd-boot.enable = true;
@@ -66,6 +67,7 @@ in
           lsof
           git
           agenix.packages.x86_64-linux.default
+          prefect
         ];
         shells = [ pkgs.nushell ];
       };
@@ -345,8 +347,10 @@ in
             ]
             ++ (import ../../packages/basic_cli_set.nix { inherit pkgs; })
             ++ (import ../../packages/dev/rust.nix { inherit pkgs; })
+            ++ (import ../../packages/dev/python.nix { inherit pkgs; })
             ++ (import ../../packages/dev/js.nix { inherit pkgs; })
-            ++ (import ../../packages/dev/nix.nix { inherit pkgs; });
+            ++ (import ../../packages/dev/nix.nix { inherit pkgs; })
+            ++ (import ../../packages/dev/ebook.nix { inherit pkgs; });
         };
         news.display = "silent";
         programs = import ../../homes/common.nix { inherit pkgs config lib; };

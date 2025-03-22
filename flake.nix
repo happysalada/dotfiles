@@ -5,7 +5,7 @@
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # nixpkgs.url = "github:nixos/nixpkgs";
-    # nixpkgs.url = "github:happysalada/nixpkgs/faster_whisper_fix";
+    # nixpkgs.url = "github:happysalada/nixpkgs/prefect_init_module";
 
     # Environment/system management
     darwin.url = "github:lnl7/nix-darwin";

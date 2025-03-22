@@ -21,6 +21,16 @@
         };
       };
 
+      storage_config = {
+        tsdb_shipper = {
+          active_index_directory = "/var/lib/loki/index";
+          cache_location = "/var/lib/loki/cache";
+        };
+        filesystem = {
+          directory = "/var/lib/loki/chunks";
+        };
+      };
+
       schema_config = {
         configs = [
           {
@@ -36,6 +46,7 @@
         ];
       };
       compactor = {
+        working_directory = "/var/lib/loki/compactor";
         retention_enabled = true;
         delete_request_store = "filesystem";
       };
