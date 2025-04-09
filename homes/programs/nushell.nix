@@ -361,9 +361,9 @@
       color_config: $dark_theme   # if you want a light theme, replace `$dark_theme` to `$light_theme`
       footer_mode: "auto" # always, never, number_of_rows, auto
       float_precision: 2 # the precision for displaying floats in tables
-      # buffer_editor: "emacs" # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.EDITOR and $env.VISUAL
+      buffer_editor: "hx" # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.EDITOR and $env.VISUAL
       use_ansi_coloring: true
-      edit_mode: emacs # emacs, vi
+      edit_mode: vi # emacs, vi
       # shell_integration: true # enables terminal markers and a workaround to arrow keys stop working issue
       render_right_prompt_on_last_line: false # true or false to enable or disable right prompt to be rendered on last line of the prompt.
 
@@ -529,21 +529,21 @@
           name: history_menu
           modifier: control
           keycode: char_r
-          mode: emacs
+          mode: vi_normal
           event: { send: menu name: history_menu }
         }
         {
           name: next_page
           modifier: control
           keycode: char_x
-          mode: emacs
+          mode: vi_normal
           event: { send: menupagenext }
         }
         {
           name: undo_or_previous_page
           modifier: control
           keycode: char_z
-          mode: emacs
+          mode: vi_normal
           event: {
             until: [
               { send: menupageprevious }
@@ -555,7 +555,7 @@
           name: yank
           modifier: control
           keycode: char_y
-          mode: emacs
+          mode: vi_normal
           event: {
             until: [
               {edit: pastecutbufferafter}

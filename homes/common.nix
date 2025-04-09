@@ -210,6 +210,7 @@
     globalConfig = {
       tools = {
         "ubi:tigerbeetle/tigerbeetle" = "latest";
+        # "pipx:OpenBB-finance/OpenBB#subdirectory=cli" = "latest";
       };
       settings = {
         experimental = true;

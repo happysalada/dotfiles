@@ -1,14 +1,17 @@
-{ ... }:
+{ config, ... }:
 
 {
   services.prefect = {
     enable = true;
     database = "sqlite";
-    workerPools = [ "default" ];
-    uiApiUrl = "https://prefect.megzari.com/api";
-    uiServeBase = "/";
-    uiUrl = "https://prefect.megzari.com";
+    workerPools.default = {
+      installPolicy = "if-not-present";
+    };
+    baseUrl = "https://prefect.megzari.com";
   };
+
+  systemd.services.prefect-worker-default.environment.systemPackages =
+    config.services.prefect.package;
 
   services.caddy.virtualHosts = {
     "prefect.megzari.com" = {

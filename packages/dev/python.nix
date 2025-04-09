@@ -5,5 +5,5 @@ with pkgs;
   uv
   ruff
   python3
-  aider-chat.withPlaywright
+  aider-chat-full
 ]

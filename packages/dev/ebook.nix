@@ -7,4 +7,6 @@ with pkgs;
   nodejs
   mecab
   sox
+  wget
+  gcc
 ]

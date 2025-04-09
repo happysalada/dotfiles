@@ -19,7 +19,8 @@
     "windmill.megzari.com" = {
       extraConfig = ''
         import security_headers
-        reverse_proxy 127.0.0.1:${toString config.services.windmill.serverPort}
+        reverse_proxy /ws/* 127.0.0.1:${toString config.services.windmill.lspPort}
+        reverse_proxy /* 127.0.0.1:${toString config.services.windmill.serverPort}
       '';
     };
   };

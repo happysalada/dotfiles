@@ -2,12 +2,12 @@
 {
   enable = true;
   package = pkgs.vscode;
-  extensions = with pkgs.vscode-extensions; [
+  profiles.default.extensions = with pkgs.vscode-extensions; [
     vscodevim.vim
     serayuzgur.crates
     tamasfe.even-better-toml
     bbenoist.nix
-    rust-lang.rust-analyzer
+    # rust-lang.rust-analyzer
     # vadimcn.vscode-lldb
     # jock.svg
     editorconfig.editorconfig
@@ -23,7 +23,7 @@
     # tiehuis.zig
     github.copilot
   ];
-  keybindings = [
+  profiles.default.keybindings = [
     {
       "key" = "space";
       "command" = "vspacecode.space";
@@ -148,7 +148,7 @@
       "when" = "inFileBrowser";
     }
   ];
-  userSettings = {
+  profiles.default.userSettings = {
     "files.autoSave" = "onFocusChange";
     "update.mode" = "none"; # updates are done by nix
     "explorer.confirmDelete" = false;
