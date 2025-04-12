@@ -297,16 +297,16 @@
         accounts = {
           email.accounts =
             let
-              gmail_settings = {
-                imap = {
-                  host = "imap.gmail.com";
-                  port = 993;
-                };
-                smtp = {
-                  host = "smtp.gmail.com";
-                  port = 465;
-                };
-              };
+              # gmail_settings = {
+              #   imap = {
+              #     host = "imap.gmail.com";
+              #     port = 993;
+              #   };
+              #   smtp = {
+              #     host = "smtp.gmail.com";
+              #     port = 465;
+              #   };
+              # };
               mailbox_org_settings = {
                 imap = {
                   host = "imap.mailbox.org";
@@ -387,7 +387,6 @@
                   enable = true;
                 };
                 local = {
-                  type = "singlefile";
                   encoding = "UTF-8";
                 };
                 remote = {
