@@ -233,4 +233,23 @@
       base_url = "https://vaultwarden.megzari.com";
     };
   };
+
+  television = {
+    enable = true;
+    settings = {
+      tick_rate = 50;
+      ui = {
+        use_nerd_font_icons = true;
+        ui_scale = 120;
+        show_preview_panel = true;
+        show_help_bar = true;
+      };
+      keybindings = {
+        quit = [
+          "esc"
+          "ctrl-c"
+        ];
+      };
+    };
+  };
 }

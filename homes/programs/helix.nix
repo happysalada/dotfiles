@@ -58,8 +58,10 @@
       };
       nil.command = "${nil}/bin/nil";
       rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
-      ruff.command = "${ruff}/bin/ruff";
-      pylsp.command = "${python312Packages.python-lsp-server}/bin/pylsp";
+      ruff = {
+        command = "${ruff}/bin/ruff";
+        args = [ "server" ];
+      };
     };
     language = [
       {
@@ -136,14 +138,10 @@
       {
         name = "python";
         language-servers = [
-          "pylsp"
           "ruff"
           "copilot"
           "codeium"
         ];
-        formatter = {
-          command = "ruff";
-        };
         auto-format = true;
       }
     ];
@@ -315,7 +313,6 @@
         bg = "base00";
         underline = {
           color = "base09";
-          style = "none";
         };
       };
       "ui.bufferline.background" = {

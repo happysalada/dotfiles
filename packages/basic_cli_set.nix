@@ -20,7 +20,7 @@ with pkgs;
   # file # get informations about files
   # moreutils # sponge
   # zstd # fast compression
-  # jq # working with json
+  jaq # jq built in rust
   # btop # top with cpufreq
   # sequoia-sq # openpgp in rust
   # ruplacer # sed with visual feedback
@@ -40,10 +40,11 @@ with pkgs;
   # rustypaste # file sharing service
   killport # kill a service on a port
   # clipboard-jh # fails to build on macos
-  libqalculate
   igrep
   # ast-grep
   gh
   bat
   termscp
+  numbat # over libqalculate
+  qsv # data wrangling
 ]

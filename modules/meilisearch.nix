@@ -2,6 +2,7 @@
 {
   services.meilisearch = {
     enable = true;
+    dumplessUpgrade = true;
   };
 
   services.caddy.virtualHosts = {
