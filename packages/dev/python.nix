@@ -6,4 +6,5 @@ with pkgs;
   python3
   # aider-chat-full
   prefect
+  pyright
 ]

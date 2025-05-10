@@ -138,6 +138,7 @@
       {
         name = "python";
         language-servers = [
+          "pyright"
           "ruff"
           "copilot"
           "codeium"
