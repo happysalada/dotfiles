@@ -344,6 +344,7 @@ in
               nvtopPackages.amd # GPU usage
               btop # top with cpu freq
               smartmontools
+              intentrace # better strace
             ]
             ++ (import ../../packages/basic_cli_set.nix { inherit pkgs; })
             ++ (import ../../packages/dev/rust.nix { inherit pkgs; })

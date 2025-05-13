@@ -47,4 +47,6 @@ with pkgs;
   termscp
   numbat # over libqalculate
   qsv # data wrangling
+  ripgrep-all # ripgrep for pdf and all docs
+  # intentrace # clearer strace # not available on macos
 ]
