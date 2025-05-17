@@ -235,7 +235,7 @@
           # You can update Home Manager without changing this value. See
           # the Home Manager release notes for a list of state version
           # changes in each release.
-          stateVersion = "23.05";
+          stateVersion = "25.05";
           homeDirectory = /Users/macintoshhd;
 
           # List packages installed in system profile. To search by name, run:
@@ -257,7 +257,7 @@
 
               # machine specific
               agenix.packages.x86_64-darwin.default
-              pkgs.rust-bin.nightly.latest.default
+              pkgs.rust-bin.stable.latest.default
               helix-gpt
               localsend
               # onionshare
