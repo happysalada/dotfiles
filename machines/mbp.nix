@@ -27,43 +27,46 @@
         packages = import ../packages/fonts.nix { inherit pkgs; };
       };
 
-      system.defaults = {
-        NSGlobalDomain = {
-          AppleMeasurementUnits = "Centimeters";
-          AppleMetricUnits = 1;
-          AppleShowScrollBars = "Automatic";
-          AppleTemperatureUnit = "Celsius";
-          AppleKeyboardUIMode = 3;
-          ApplePressAndHoldEnabled = false;
-          InitialKeyRepeat = 10;
-          KeyRepeat = 1;
-          _HIHideMenuBar = true;
-          NSAutomaticWindowAnimationsEnabled = false;
-        };
+      system = {
+        primaryUser = "macintoshhd";
+        defaults = {
+          NSGlobalDomain = {
+            AppleMeasurementUnits = "Centimeters";
+            AppleMetricUnits = 1;
+            AppleShowScrollBars = "Automatic";
+            AppleTemperatureUnit = "Celsius";
+            AppleKeyboardUIMode = 3;
+            ApplePressAndHoldEnabled = false;
+            InitialKeyRepeat = 10;
+            KeyRepeat = 1;
+            _HIHideMenuBar = true;
+            NSAutomaticWindowAnimationsEnabled = false;
+          };
 
-        dock = {
-          autohide = true;
-          mru-spaces = false;
-          tilesize = 512;
-          expose-animation-duration = 0.1;
-          autohide-time-modifier = 0.1;
-        };
+          dock = {
+            autohide = true;
+            mru-spaces = false;
+            tilesize = 512;
+            expose-animation-duration = 0.1;
+            autohide-time-modifier = 0.1;
+          };
 
-        finder = {
-          AppleShowAllExtensions = true;
-          QuitMenuItem = true;
-          FXEnableExtensionChangeWarning = false;
-        };
+          finder = {
+            AppleShowAllExtensions = true;
+            QuitMenuItem = true;
+            FXEnableExtensionChangeWarning = false;
+          };
 
-        trackpad = {
-          Clicking = true;
-          TrackpadThreeFingerDrag = true;
-          TrackpadRightClick = true;
-        };
+          trackpad = {
+            Clicking = true;
+            TrackpadThreeFingerDrag = true;
+            TrackpadRightClick = true;
+          };
 
-        # Login and lock screen
-        loginwindow = {
-          GuestEnabled = false;
+          # Login and lock screen
+          loginwindow = {
+            GuestEnabled = false;
+          };
         };
       };
 
