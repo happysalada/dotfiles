@@ -16,6 +16,10 @@
     )
     $env.EDITOR = "hx"
     $env.NIXPKGS_ALLOW_UNFREE = 1
+    $env.LANG = "en_US.UTF-8";
+    # Fix numpy runs and various python packages
+    # depending on libstdc++.so:6
+    $env.LD_LIBRARY_PATH = "${pkgs.gcc.cc.lib}/lib"
   '';
   environmentVariables = {
     # OPENAI_API_KEY = lib.mkIf pkgs.stdenv.isDarwin "(open $'(getconf DARWIN_USER_TEMP_DIR)/agenix/OPENAI_API_KEY')";
@@ -57,22 +61,6 @@
       edit_mode: vi
       show_banner: false
     });
-
-    # add libstd++.so:6 to env to make some python stuff work
-    # Out of the box
-
-    # Get the store path of gcc.lib
-    # let gcc_lib = ^nix eval --raw nixpkgs#gcc.cc.lib
-
-    # Construct the library directory path
-    # let lib_dir = $"($gcc_lib)/lib"
-
-    # Set LD_LIBRARY_PATH, preserving any existing value
-    # if "LD_LIBRARY_PATH" in $env {
-    #     $env.LD_LIBRARY_PATH = $"($lib_dir):($env.LD_LIBRARY_PATH)"
-    # } else {
-    #     $env.LD_LIBRARY_PATH = $lib_dir
-    # }
 
     # plugin add ${pkgs.nushellPlugins.net}/bin/nu_plugin_net
 
@@ -156,10 +144,10 @@
         $results | to json
     }
 
-    let mise_path = $nu.default-config-dir | path join mise.nu
-    ^mise activate nu | save $mise_path --force
+    # let mise_path = $nu.default-config-dir | path join mise.nu
+    # ^mise activate nu | save $mise_path --force
 
-    use mise.nu
+    # use mise.nu
   '';
 
   configFile.text = ''

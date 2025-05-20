@@ -10,11 +10,6 @@
       imports = [
         agenix.darwinModules.age
       ];
-      environment = {
-        variables = {
-          LANG = "en_US.UTF-8";
-        };
-      };
 
       programs = {
         gnupg.agent = {
