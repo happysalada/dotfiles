@@ -179,6 +179,15 @@
           agenix.homeManagerModules.age
           {
             config.programs.nushell.envFile.text = ''
+              # Fix path on darwin
+              $env.PATH = (
+                $env.PATH
+                | split row (char esep)
+                | prepend '/run/current-system/sw/bin'
+                | prepend '/Users/macintoshhd/.nix-profile/bin'
+                | prepend '/Users/macintoshhd/.local/bin'
+              )
+
               $env.OPENAI_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/OPENAI_API_KEY');
               $env.COPILOT_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/COPILOT_API_KEY');
               $env.CODEIUM_API_KEY = (open $'(getconf DARWIN_USER_TEMP_DIR)agenix/CODEIUM_API_KEY');

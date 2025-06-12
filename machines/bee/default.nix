@@ -264,7 +264,7 @@ in
       # compatible, in order to avoid breaking some software such as database
       # servers. You should change this only after NixOS release notes say you
       # should.
-      system.stateVersion = "23.11"; # Did you read the comment?
+      system.stateVersion = "25.11"; # Did you read the comment?
 
       # Set your time zone.
       time.timeZone = "Etc/UTC";
@@ -314,7 +314,7 @@ in
           # You can update Home Manager without changing this value. See
           # the Home Manager release notes for a list of state version
           # changes in each release.
-          stateVersion = "22.05";
+          stateVersion = "25.05";
           # homeDirectory = /home/yt;
 
           # List packages installed in system profile. To search by name, run:

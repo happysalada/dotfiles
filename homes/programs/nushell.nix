@@ -7,13 +7,6 @@
   package = pkgs.nushell;
 
   envFile.text = ''
-    $env.PATH = (
-      $env.PATH
-      | split row (char esep)
-      | prepend '/run/current-system/sw/bin'
-      | prepend '/Users/macintoshhd/.nix-profile/bin'
-      | prepend '/Users/macintoshhd/.local/bin'
-    )
     $env.EDITOR = "hx"
     $env.NIXPKGS_ALLOW_UNFREE = 1
     $env.LANG = "en_US.UTF-8";
