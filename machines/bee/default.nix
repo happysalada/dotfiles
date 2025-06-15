@@ -142,6 +142,7 @@ in
           cores = 16;
           max-jobs = "auto";
           auto-optimise-store = true;
+          download-buffer-size = 104857600; # 100 Mb
 
           substituters = [
             "https://nix-community.cachix.org"
