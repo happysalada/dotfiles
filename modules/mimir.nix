@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ ... }:
 
 {
   services.mimir = {
@@ -27,7 +27,6 @@
           };
         };
       };
-
 
       ingester = {
         ring = {
@@ -65,9 +64,9 @@
           instance_addr = "127.0.0.1";
         };
       };
-      
+
       memberlist = {
-        bind_addr = ["127.0.0.1"];
+        bind_addr = [ "127.0.0.1" ];
       };
     };
   };

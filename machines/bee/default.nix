@@ -47,6 +47,7 @@ in
         ../../modules/cloudflare-dyndns.nix
         ../../modules/ollama.nix
         ../../modules/prefect.nix
+        ../../modules/paperless.nix
       ];
 
       boot.loader.systemd-boot.enable = true;
@@ -244,6 +245,9 @@ in
         };
         UNSTRUCTURED_API_KEY = {
           file = ../../secrets/unstructured.api.key.age;
+        };
+        PAPERLESS_PASSWORD = {
+          file = ../../secrets/paperless.password.age;
         };
         nm-secrets = {
           file = ../../secrets/nm.secrets.age;

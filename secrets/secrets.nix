@@ -128,4 +128,8 @@ in
     bee
     yt_at_bee
   ];
+  "paperless.password.age".publicKeys = [
+    bee
+    yt_at_bee
+  ];
 }

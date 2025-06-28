@@ -49,5 +49,5 @@ with pkgs;
   qsv # data wrangling
   ripgrep-all # ripgrep for pdf and all docs
   # intentrace # clearer strace # not available on macos
-  epy # ebook cli reader
+  # epy # ebook cli reader
 ]

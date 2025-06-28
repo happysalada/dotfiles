@@ -24,6 +24,7 @@
       "owu.megzari.com"
       "searx.megzari.com"
       "prefect.megzari.com"
+      "paperless.megzari.com"
     ];
   };
 }

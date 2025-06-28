@@ -42,13 +42,13 @@
         command = "${eslint}/bin/eslint";
         args = [ "--stdin" ];
       };
-      copilot = {
-        command = "${helix-gpt}/bin/helix-gpt";
-        args = [
-          "--handler"
-          "copilot"
-        ];
-      };
+      # copilot = {
+      #   command = "${helix-gpt}/bin/helix-gpt";
+      #   args = [
+      #     "--handler"
+      #     "copilot"
+      #   ];
+      # };
       codeium = {
         command = "${helix-gpt}/bin/helix-gpt";
         args = [
@@ -67,7 +67,7 @@
       {
         name = "rust";
         language-servers = [
-          "copilot"
+          # "copilot"
           "codeium"
         ];
       }
@@ -83,7 +83,7 @@
         language-servers = [
           "typescript-language-server"
           "eslint"
-          "copilot"
+          # "copilot"
           "codeium"
         ];
         auto-format = true;
@@ -99,7 +99,7 @@
         };
         language-servers = [
           "eslint"
-          "copilot"
+          # "copilot"
           "codeium"
         ];
         auto-format = true;
@@ -116,7 +116,7 @@
         language-servers = [
           "tailwindcss-ls"
           "eslint"
-          "copilot"
+          # "copilot"
           "codeium"
         ];
         auto-format = true;
@@ -131,7 +131,7 @@
         language-servers = [
           "nixd"
           "nil"
-          "copilot"
+          # "copilot"
           "codeium"
         ];
       }
@@ -140,7 +140,7 @@
         language-servers = [
           "pyright"
           "ruff"
-          "copilot"
+          # "copilot"
           "codeium"
         ];
         auto-format = true;
