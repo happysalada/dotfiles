@@ -32,6 +32,7 @@
   services.caddy.virtualHosts = {
     "owu.megzari.com" = {
       extraConfig = ''
+        encode gzip
         import security_headers
         reverse_proxy 127.0.0.1:${toString config.services.open-webui.port}
       '';

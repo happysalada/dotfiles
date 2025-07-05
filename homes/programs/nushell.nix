@@ -55,7 +55,7 @@
       show_banner: false
     });
 
-    # plugin add ${pkgs.nushellPlugins.net}/bin/nu_plugin_net
+    # plugin add {pkgs.nushellPlugins.net}/bin/nu_plugin_net
 
     # maybe useful functions
     # use ${pkgs.nu_scripts}/share/nu_scripts/modules/formats/to-number-format.nu *

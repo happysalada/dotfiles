@@ -19,9 +19,11 @@
         PAPERLESS_ENABLE_NLTK = true;
       };
     };
+    gotenberg.port = 3032;
     caddy.virtualHosts = {
       "paperless.megzari.com" = {
         extraConfig = ''
+          encode gzip
           import security_headers
           reverse_proxy ${config.services.paperless.address}:${toString config.services.paperless.port}
         '';

@@ -48,6 +48,7 @@ in
         ../../modules/ollama.nix
         ../../modules/prefect.nix
         ../../modules/paperless.nix
+        ../../modules/invidious.nix
       ];
 
       boot.loader.systemd-boot.enable = true;

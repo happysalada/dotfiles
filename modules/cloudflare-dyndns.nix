@@ -25,6 +25,7 @@
       "searx.megzari.com"
       "prefect.megzari.com"
       "paperless.megzari.com"
+      "invidious.megzari.com"
     ];
   };
 }
