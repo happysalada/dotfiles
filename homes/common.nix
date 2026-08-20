@@ -146,6 +146,11 @@
     # the clobber entirely. Reproduced on stock nushell 0.115.0 + atuin
     # 18.19.0; this is upstream atuin, not home-manager.
     flags = [ "--disable-up-arrow" ];
+
+    # daemon-fuzzy does its matching in the daemon. It also decouples history
+    # writes from shell latency. home-manager sets up the systemd user
+    # service + socket and flips settings.daemon.enabled for us.
+    daemon.enable = true;
     enable = true;
     enableBashIntegration = true;
     enableNushellIntegration = true;
@@ -153,7 +158,9 @@
       auto_sync = true;
       sync_frequency = "5m";
       sync_address = "https://atuin.megzari.com";
-      search_mode = "skim";
+      # `skim` was removed upstream. atuin points you at daemon-fuzzy as the
+      # closest equivalent; it needs the daemon (enabled below).
+      search_mode = "daemon-fuzzy";
       show_preview = true;
       update_check = false;
       enter_accept = true;

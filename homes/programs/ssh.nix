@@ -10,11 +10,17 @@
       # HostName = "174.94.78.215";
       HostName = "69.157.23.176";
       User = "yt";
+      # only forward to hosts I control - see the note on Host * below
+      ForwardAgent = true;
+      ForwardX11 = "yes";
     };
 
     hetz = {
       HostName = "116.202.222.51";
       User = "yt";
+      # only forward to hosts I control - see the note on Host * below
+      ForwardAgent = true;
+      ForwardX11 = "yes";
     };
 
     # ssh takes the *first* value it sees for each option, so the catch-all has
@@ -39,8 +45,6 @@
       StrictHostKeyChecking = "accept-new";
       HashKnownHosts = true;
 
-      # run gui programs on local
-      ForwardX11 = "yes";
 
       # Ciphers/MACs/KexAlgorithms/HostKeyAlgorithms are deliberately NOT set.
       # The hand-rolled lists that used to live here still permitted ssh-rsa
@@ -49,9 +53,12 @@
 
       PubkeyAuthentication = "yes";
       PasswordAuthentication = "no";
+      # NOT set here: ForwardAgent / ForwardX11. On Host * they applied to
+      # every server, letting any of them use your agent to authenticate as
+      # you elsewhere - and making github refuse the X11 request on every
+      # clone ("X11 forwarding request failed"). Scoped to bee/hetz instead.
       AddKeysToAgent = "yes";
       IdentityFile = "~/.ssh/id_ed25519";
-      ForwardAgent = true; # enables use of local ssh agent (e.g. for github)
     };
   };
 }
