@@ -4,8 +4,7 @@
   lib,
 }:
 {
-  alacritty = import ./programs/alacritty.nix;
-  ssh = import ./programs/ssh.nix;
+  ssh = import ./programs/ssh.nix { inherit lib; };
   helix = import ./programs/helix.nix { inherit pkgs; };
   nushell = import ./programs/nushell.nix { inherit pkgs config lib; };
   neovim = import ./programs/neovim.nix { inherit pkgs; };
@@ -120,7 +119,7 @@
   };
 
   broot = {
-    enable = false; # compilation failure on darwin
+    enable = true;
     settings.verbs = [
       {
         invocation = "edit";
@@ -140,6 +139,13 @@
   };
 
   atuin = {
+    # atuin's `init nu` emits its ctrl-r and up-arrow keybindings as two
+    # separate `$env.config = ($env.config | upsert keybindings ...)`
+    # statements, and the second silently discards the first - leaving ctrl-r
+    # on nushell's builtin history_menu. Emitting only one statement avoids
+    # the clobber entirely. Reproduced on stock nushell 0.115.0 + atuin
+    # 18.19.0; this is upstream atuin, not home-manager.
+    flags = [ "--disable-up-arrow" ];
     enable = true;
     enableBashIntegration = true;
     enableNushellIntegration = true;
@@ -156,20 +162,7 @@
 
   gitui.enable = true;
 
-  yazi = {
-    enable = true;
-    enableNushellIntegration = true;
-    settings = {
-      manager = {
-        show_hidden = true;
-        show_symlink = true;
-        sort_dir_first = true;
-        sort_by = "size";
-        sort_reverse = true;
-        linemode = "size";
-      };
-    };
-  };
+  yazi = import ./programs/yazi.nix { inherit pkgs; };
 
   jujutsu = {
     enable = true;
@@ -214,7 +207,8 @@
       };
       settings = {
         experimental = true;
-        pipx_uvx = true;
+        # renamed upstream from the flat `pipx_uvx` key
+        pipx.uvx = true;
       };
     };
   };
@@ -229,27 +223,9 @@
     settings = {
       email = "raphael@megzari.com";
       lock_timeout = 120;
-      pinentry = if pkgs.stdenv.isDarwin then pkgs.pinentry_mac else pkgs.pinentry;
+      pinentry = pkgs.pinentry-gnome3;
       base_url = "https://vaultwarden.megzari.com";
     };
   };
 
-  television = {
-    enable = true;
-    settings = {
-      tick_rate = 50;
-      ui = {
-        use_nerd_font_icons = true;
-        ui_scale = 120;
-        show_preview_panel = true;
-        show_help_bar = true;
-      };
-      keybindings = {
-        quit = [
-          "esc"
-          "ctrl-c"
-        ];
-      };
-    };
-  };
 }

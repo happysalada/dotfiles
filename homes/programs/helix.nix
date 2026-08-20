@@ -29,6 +29,29 @@
     # the language servers fail on _latest
 
     language-server = with pkgs; {
+      # offline grammar/spell checker - no network, no api key
+      harper-ls = {
+        command = "${harper}/bin/harper-ls";
+        args = [ "--stdio" ];
+        config.harper-ls = {
+          dialect = "American";
+          # only lint the english in comments/strings, not identifiers
+          isolateEnglish = true;
+          # keep it out of the way of real diagnostics
+          diagnosticSeverity = "hint";
+          userDictPath = "~/.config/harper-ls/dictionary.txt";
+          linters = {
+            spell_check = true;
+            repeated_words = true;
+            unclosed_quotes = true;
+            sentence_capitalization = false;
+            spelled_numbers = false;
+            long_sentences = false;
+            boring_words = false;
+          };
+          markdown.ignore_link_title = true;
+        };
+      };
       typescript-language-server = {
         command = "${typescript-language-server}/bin/typescript-language-server";
         args = [ "--stdio" ];
@@ -42,20 +65,6 @@
         command = "${eslint}/bin/eslint";
         args = [ "--stdin" ];
       };
-      # copilot = {
-      #   command = "${helix-gpt}/bin/helix-gpt";
-      #   args = [
-      #     "--handler"
-      #     "copilot"
-      #   ];
-      # };
-      codeium = {
-        command = "${helix-gpt}/bin/helix-gpt";
-        args = [
-          "--handler"
-          "codeium"
-        ];
-      };
       nil.command = "${nil}/bin/nil";
       rust-analyzer.command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
       ruff = {
@@ -65,11 +74,24 @@
     };
     language = [
       {
-        name = "rust";
+        name = "markdown";
         language-servers = [
-          # "copilot"
-          "codeium"
+          "marksman"
+          "harper-ls"
         ];
+        auto-format = false;
+      }
+      {
+        name = "git-commit";
+        language-servers = [ "harper-ls" ];
+      }
+      {
+        name = "text";
+        # `text` is not one of helix's built-in languages, so it needs a
+        # complete definition - a partial one fails with `missing field scope`
+        scope = "text.plain";
+        file-types = [ "txt" ];
+        language-servers = [ "harper-ls" ];
       }
       {
         name = "javascript";
@@ -83,8 +105,6 @@
         language-servers = [
           "typescript-language-server"
           "eslint"
-          # "copilot"
-          "codeium"
         ];
         auto-format = true;
       }
@@ -98,9 +118,8 @@
           ];
         };
         language-servers = [
+          "typescript-language-server"
           "eslint"
-          # "copilot"
-          "codeium"
         ];
         auto-format = true;
       }
@@ -114,10 +133,9 @@
           ];
         };
         language-servers = [
+          "svelteserver"
           "tailwindcss-ls"
           "eslint"
-          # "copilot"
-          "codeium"
         ];
         auto-format = true;
       }
@@ -131,8 +149,6 @@
         language-servers = [
           "nixd"
           "nil"
-          # "copilot"
-          "codeium"
         ];
       }
       {
@@ -140,8 +156,6 @@
         language-servers = [
           "pyright"
           "ruff"
-          # "copilot"
-          "codeium"
         ];
         auto-format = true;
       }

@@ -10,7 +10,7 @@ with pkgs;
   nix-output-monitor
   nix-init
   nix-melt
-  nixfmt-rfc-style
+  nixfmt
   # colmena
   compose2nix
 ]
