@@ -119,8 +119,6 @@ in
     gsi = "git stash --include-untracked";
     gsp = "git stash pop";
     gsa = "git stage --all";
-    gfu = "git fetch upstream";
-    gmu = "git merge upstream/master master";
     gu = "git reset --soft HEAD~1";
     grh = "git reset --hard";
     grm = "git rebase master";
@@ -260,6 +258,20 @@ in
       shape_string_interpolation: cyan_bold
       shape_table: blue_bold
       shape_variable: purple
+    }
+
+    # fetch a single branch from upstream. A bare `git fetch upstream` on a
+    # repo like nixpkgs drags down every branch and tag for no benefit.
+    def gfu [branch: string = "master"] {
+      git fetch upstream $branch
+    }
+
+    # fast-forward the current branch onto upstream. --ff-only refuses loudly
+    # instead of quietly creating a merge commit if you have local commits -
+    # which is what you want when syncing a fork's master.
+    def gmu [branch: string = "master"] {
+      git fetch upstream $branch
+      git merge --ff-only $"upstream/($branch)"
     }
 
     def gcb [name: string] {
