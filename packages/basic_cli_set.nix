@@ -31,7 +31,6 @@ with pkgs;
   skim # search mode for atuin
   fzf # zoxide's `zi` interactive picker shells out to fzf specifically
   pueue
-  # sniffnet # packet analysis
   # awscli2 # used to get logs out of r2
   # rustypaste # file sharing service
   killport # kill a service on a port

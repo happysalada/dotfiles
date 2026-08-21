@@ -176,7 +176,10 @@
 
       fonts.packages = import ../../packages/fonts.nix { inherit pkgs; };
 
-      programs.firefox.enable = true;
+      # firefox is configured per-user in homes/programs/firefox.nix.
+      # Epiphany (GNOME Web, webkitgtk) is excluded: GNOME registers it as the
+      # https handler and claude.ai rejects it as an unsupported browser.
+      environment.gnome.excludePackages = [ pkgs.epiphany ];
       programs.dconf.enable = true;
 
       # lets unpatched dynamically-linked binaries (python wheels, mise-installed
@@ -273,6 +276,13 @@
   home-manager.nixosModules.home-manager
   {
     home-manager.useGlobalPkgs = true;
+    # Install user packages into /etc/profiles/per-user/yt (managed by NixOS)
+    # rather than ~/.nix-profile. Conventional when running home-manager as a
+    # NixOS module, and it keeps HM out of the profile that `nix profile`
+    # owns. Note: does NOT help gnome-shell notice newly added .desktop
+    # entries - that still needs a re-login, since this path gets swapped
+    # wholesale on activation too.
+    home-manager.useUserPackages = true;
     home-manager.users.yt = (
       {
         pkgs,
@@ -280,6 +290,10 @@
         lib,
         ...
       }:
+      let
+        # dconf needs a type for an empty array; a bare [] is ambiguous
+        noKey = lib.hm.gvariant.mkEmptyArray lib.hm.gvariant.type.string;
+      in
       {
         home = {
           username = "yt";
@@ -315,6 +329,26 @@
 
         fonts.fontconfig.enable = true;
 
+        # Pinning the default browser declaratively. Left OFF for now: owning
+        # ~/.config/mimeapps.list makes it a read-only store symlink, so no app
+        # can register a handler at runtime any more - claude-code writes to
+        # this file to register claude-cli:// for claude.ai deep links.
+        #
+        # Not strictly needed while epiphany is excluded: firefox is then the
+        # only registered https handler, so GNOME picks it anyway. Re-enable
+        # if the default ever drifts.
+        #
+        # xdg.mimeApps = {
+        #   enable = true;
+        #   defaultApplications = {
+        #     "text/html" = "firefox.desktop";
+        #     "x-scheme-handler/http" = "firefox.desktop";
+        #     "x-scheme-handler/https" = "firefox.desktop";
+        #     "x-scheme-handler/about" = "firefox.desktop";
+        #     "x-scheme-handler/unknown" = "firefox.desktop";
+        #     "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
+        #   };
+        # };
 
         # super+t -> new ghostty window
         dconf.settings = {
@@ -328,6 +362,29 @@
             command = "${pkgs.ghostty}/bin/ghostty";
             binding = "<Super>t";
           };
+
+          # super+left/right moves the window to the workspace on that side and
+          # follows it there. GNOME binds those to mutter's toggle-tiled-*,
+          # which only snaps the window to half of the *current* workspace, so
+          # clear those first - a key bound in two schemas fires neither
+          # reliably.
+          #
+          # Workspaces are dynamic, so "right" off the end creates a new one.
+          "org/gnome/mutter/keybindings" = {
+            toggle-tiled-left = noKey;
+            toggle-tiled-right = noKey;
+          };
+          "org/gnome/desktop/wm/keybindings" = {
+            # keeping the stock super+shift+pgup/pgdn as a second binding
+            move-to-workspace-left = [
+              "<Super>Left"
+              "<Super><Shift>Page_Up"
+            ];
+            move-to-workspace-right = [
+              "<Super>Right"
+              "<Super><Shift>Page_Down"
+            ];
+          };
         };
 
         programs =
@@ -335,6 +392,7 @@
           // (import ../../homes/programs/git.nix { inherit pkgs; })
           // {
           ghostty = import ../../homes/programs/ghostty.nix { inherit pkgs; };
+          firefox = import ../../homes/programs/firefox.nix { inherit pkgs; };
 
         };
       }

@@ -5,6 +5,10 @@ with pkgs;
   clipboard-jh # `cb`, clipboard manager
   intentrace # clearer strace
   trippy # network diagnostic tool
+  rustnet # per-connection/per-process network monitor TUI
+  # GUI (ships a .desktop, ~124MiB closure) - deliberately here rather than
+  # in basic_cli_set.nix, which bee and hetz also import
+  sniffnet # packet analysis
   mosh # better ssh
   wireguard-tools
 

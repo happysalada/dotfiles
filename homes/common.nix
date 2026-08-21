@@ -231,7 +231,9 @@
       email = "raphael@megzari.com";
       lock_timeout = 120;
       pinentry = pkgs.pinentry-gnome3;
-      base_url = "https://vaultwarden.megzari.com";
+      # self-hosted vaultwarden is down; omitting base_url falls back to the
+      # official bitwarden server. Restore this line when it is back up.
+      # base_url = "https://vaultwarden.megzari.com";
     };
   };
 
