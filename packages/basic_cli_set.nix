@@ -19,6 +19,7 @@ with pkgs;
   # moreutils # sponge
   # zstd # fast compression
   jaq # jq built in rust
+  ast-grep # `sg`, structural/AST search+rewrite where ripgrep's regex runs out
   # btop # top with cpufreq
   # sequoia-sq # openpgp in rust
   # ruplacer # sed with visual feedback
