@@ -3,6 +3,7 @@ with pkgs;
 [
   # linux-only tools, kept out of the shared basic_cli_set
   clipboard-jh # `cb`, clipboard manager
+  libnotify # `notify-send`; -A makes the notification clickable (see ~/.claude/hooks)
   intentrace # clearer strace
   trippy # network diagnostic tool
   rustnet # per-connection/per-process network monitor TUI

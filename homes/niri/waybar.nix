@@ -75,7 +75,10 @@
     cpu = {
       format = "󰻠 {usage}%";
       interval = 5;
-      on-click = "${pkgs.ghostty}/bin/ghostty -e ${pkgs.btop}/bin/btop";
+      # bottom, not btop: it is already in basic_cli_set.nix and nushell.nix
+      # carries its completions, so btop was a second process viewer earning
+      # its keep only from this one click.
+      on-click = "${pkgs.ghostty}/bin/ghostty -e ${pkgs.bottom}/bin/btm";
     };
 
     temperature = {

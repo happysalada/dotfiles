@@ -25,10 +25,9 @@ in
       (ext "sponsorBlocker@ajay.app" "sponsorblock")
       (ext "addon@darkreader.org" "darkreader")
 
-      # Tridactyl (vim keys in the browser) is deliberately NOT force-installed:
-      # it grabs keypresses globally and fights claude.ai's composer. If you
-      # want it, add it and put claude.ai in its blacklist:
-      #   (ext "tridactyl.vim@cmcaine.co.uk" "tridactyl-vim")
+      # vim keys in the browser. It grabs keypresses globally, which fights
+      # claude.ai's composer - tridactylrc.nix drops it into ignore mode there.
+      (ext "tridactyl.vim@cmcaine.co.uk" "tridactyl-vim")
     ];
 
     DisableTelemetry = true;
@@ -69,6 +68,12 @@ in
       Locked = false;
     };
   };
+
+  # Tridactyl cannot read ~/.config/tridactyl/tridactylrc on its own - the
+  # extension has no filesystem access and shells out to this helper for it.
+  # Without it Tridactyl still works, but only from config set interactively,
+  # and homes/programs/tridactylrc.nix is never applied.
+  nativeMessagingHosts = [ pkgs.tridactyl-native ];
 
   profiles.yt = {
     id = 0;

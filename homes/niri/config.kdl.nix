@@ -10,6 +10,7 @@ let
   player = "${pkgs.playerctl}/bin/playerctl";
   lock = "${pkgs.swaylock}/bin/swaylock";
   cliphist = "${pkgs.cliphist}/bin/cliphist";
+  makoctl = "${pkgs.mako}/bin/makoctl";
   wlcopy = "${pkgs.wl-clipboard}/bin/wl-copy";
 in
 ''
@@ -36,6 +37,13 @@ in
           natural-scroll
           scroll-method "two-finger"
           accel-profile "adaptive"
+          // macOS-style secondary click. `tap` + the default
+          // tap-button-map already make a *two-finger tap* a right click;
+          // clickfinger extends the same rule to physically pressing the
+          // pad down (two fingers = right, three = middle) instead of
+          // libinput's default bottom-right-corner "button areas".
+          tap-button-map "left-right-middle"
+          click-method "clickfinger"
       }
 
       mouse {
@@ -51,13 +59,17 @@ in
   // ---------------------------------------------------------------------
   // output
   //
-  // Internal panel is 2560x1600. scale 1.0 matches what GNOME is doing today
-  // (there is no ~/.config/monitors.xml, so GNOME is unscaled) and what the
-  // ghostty font-size is tuned for. Bump to 1.5 if you want everything larger;
-  // niri handles fractional scaling natively.
+  // Internal panel is 2560x1600 on 380x240mm, i.e. 171 PPI. At scale 1.0
+  // (what GNOME was doing) everything renders at ~56% of its intended
+  // physical size. 1.5 gives a 1706x1066 logical desktop at ~84% of standard
+  // apparent size, which still leaves a half-width column wide enough for
+  // ~100 columns of ghostty. Going further costs window space: at 2.0 a
+  // half-screen terminal drops under 80 columns, so bump
+  // default-column-width too if you ever do. niri scales fractionally
+  // natively; only XWayland clients go soft.
   // ---------------------------------------------------------------------
   output "eDP-1" {
-      scale 1.0
+      scale 1.5
       transform "normal"
       position x=0 y=0
       // mode is left unset so niri picks the panel's highest refresh rate
@@ -197,7 +209,12 @@ in
       Mod+F { maximize-column; }
       Mod+Shift+F { fullscreen-window; }
       Mod+C { center-column; }
-      Mod+W { toggle-column-tabbed-display; }
+      // Mod+W was `toggle-column-tabbed-display` (windows in a column become
+      // tabs, one visible at a time). Unbound on purpose - it is easy to hit
+      // by accident and the single-window case looks almost identical to
+      // normal, so it reads as "my window vanished" rather than as a mode.
+      // `niri msg action set-column-display normal` unsticks a column that
+      // did get tabbed; there is no global switch to turn the feature off.
       Mod+Shift+Space { toggle-window-floating; }
       Mod+Shift+T { switch-focus-between-floating-and-tiling; }
 
@@ -206,8 +223,6 @@ in
       Mod+Right { focus-column-right; }
       Mod+H     { focus-column-left; }
       Mod+L     { focus-column-right; }
-      Mod+Up    { focus-window-up; }
-      Mod+Down  { focus-window-down; }
       Mod+K     { focus-window-up; }
       Mod+J     { focus-window-down; }
       Mod+Home  { focus-column-first; }
@@ -222,6 +237,13 @@ in
       Mod+Ctrl+Down  { move-window-down; }
       Mod+Ctrl+Home  { move-column-to-first; }
       Mod+Ctrl+End   { move-column-to-last; }
+
+      // Mod+Shift+arrow is "move the column somewhere": left/right slide it
+      // along this workspace's strip, up/down throw it to the workspace above
+      // or below (those two live in the workspace section further down).
+      // Aliases for the Mod+Ctrl binds above, which stay as they were.
+      Mod+Shift+Left  { move-column-left; }
+      Mod+Shift+Right { move-column-right; }
 
       // ---- columns: pull a window in, push one out ----
       Mod+BracketLeft  { consume-or-expel-window-left; }
@@ -238,10 +260,14 @@ in
       Mod+Shift+Equal { set-window-height "+10%"; }
 
       // ---- workspaces are a *vertical* stack, unlike gnome's horizontal one ----
+      Mod+Up             { focus-workspace-up; }
+      Mod+Down           { focus-workspace-down; }
       Mod+Page_Up        { focus-workspace-up; }
       Mod+Page_Down      { focus-workspace-down; }
       Mod+U              { focus-workspace-up; }
       Mod+I              { focus-workspace-down; }
+      Mod+Shift+Up       { move-column-to-workspace-up; }
+      Mod+Shift+Down     { move-column-to-workspace-down; }
       Mod+Shift+Page_Up  { move-column-to-workspace-up; }
       Mod+Shift+Page_Down { move-column-to-workspace-down; }
       Mod+Shift+U        { move-column-to-workspace-up; }
@@ -272,6 +298,14 @@ in
       Mod+WheelScrollUp        cooldown-ms=150 { focus-workspace-up; }
       Mod+WheelScrollRight     { focus-column-right; }
       Mod+WheelScrollLeft      { focus-column-left; }
+
+      // ---- notifications ----
+      // `makoctl invoke` fires the default action on the most recent
+      // notification. The claude Stop hook (~/.claude/hooks) attaches a Focus
+      // action, so this jumps straight to the window + zellij pane that
+      // finished - no mouse, no hunting for which pane it was.
+      Mod+N       { spawn "${makoctl}" "invoke"; }
+      Mod+Shift+N { spawn "${makoctl}" "dismiss"; }
 
       // ---- screenshots ----
       Print            { screenshot; }

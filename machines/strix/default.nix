@@ -346,7 +346,7 @@
           packages =
             with pkgs;
             [
-              btop
+              # process viewer is `bottom` (btm), from basic_cli_set.nix below
               nvtopPackages.full # intel + nvidia
               smartmontools
               pciutils
@@ -386,6 +386,13 @@
         #     "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
         #   };
         # };
+
+        # Tridactyl's rc file. Not a home-manager module, so it is wired by
+        # hand; `programs.firefox.nativeMessagingHosts` in firefox.nix is what
+        # actually lets the extension read it.
+        xdg.configFile."tridactyl/tridactylrc".text = import ../../homes/programs/tridactylrc.nix {
+          inherit pkgs;
+        };
 
         # super+t -> new ghostty window
         dconf.settings = {
