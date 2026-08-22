@@ -4,16 +4,17 @@
   services.windmill = {
     enable = true;
     baseUrl = "https://windmill.megzari.com";
-    database.urlPath = config.age.secrets.WINDMILL_DATABASE_URL_FILE.path;
+    # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+    # database.urlPath = config.age.secrets.WINDMILL_DATABASE_URL_FILE.path;
     logLevel = "debug";
   };
 
-  # only used at creation
-  age.secrets = {
-    WINDMILL_DATABASE_URL_FILE = {
-      file = ../secrets/windmill.database.url.age;
-    };
-  };
+  # # only used at creation
+  # age.secrets = {
+  #   WINDMILL_DATABASE_URL_FILE = {
+  #     file = ../secrets/windmill.database.url.age;
+  #   };
+  # };
 
   services.caddy.virtualHosts = {
     "windmill.megzari.com" = {

@@ -29,12 +29,13 @@
       SMTP_USERNAME = "apikey";
       SMTP_AUTH_MECHANISM = "Login";
     };
-    environmentFile = config.age.secrets.VAULTWARDEN_ENV.path;
+    # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+    # environmentFile = config.age.secrets.VAULTWARDEN_ENV.path;
   };
-  age.secrets = {
-    VAULTWARDEN_ENV = {
-      file = ../secrets/vaultwarden.env.age;
-    };
-  };
+  # age.secrets = {
+  #   VAULTWARDEN_ENV = {
+  #     file = ../secrets/vaultwarden.env.age;
+  #   };
+  # };
 
 }

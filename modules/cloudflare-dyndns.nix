@@ -3,7 +3,8 @@
 {
   services.cloudflare-dyndns = {
     enable = true;
-    apiTokenFile = config.age.secrets.CLOUDFLARE_API_TOKEN.path;
+    # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+    # apiTokenFile = config.age.secrets.CLOUDFLARE_API_TOKEN.path;
     deleteMissing = true;
     domains = [
       "vaultwarden.megzari.com"

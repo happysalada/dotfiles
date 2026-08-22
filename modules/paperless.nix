@@ -3,7 +3,8 @@
   services = {
     paperless = {
       enable = true;
-      passwordFile = config.age.secrets.PAPERLESS_PASSWORD.path;
+      # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+      # passwordFile = config.age.secrets.PAPERLESS_PASSWORD.path;
       database.createLocally = true;
       configureTika = true;
       settings = {

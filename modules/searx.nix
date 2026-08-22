@@ -3,7 +3,8 @@
 {
   services.searx = {
     enable = true;
-    environmentFile = config.age.secrets.SEARX_ENV_FILE.path;
+    # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+    # environmentFile = config.age.secrets.SEARX_ENV_FILE.path;
     redisCreateLocally = true;
     settings = {
       use_default_settings = true;
@@ -158,11 +159,11 @@
     };
   };
 
-  age.secrets = {
-    SEARX_ENV_FILE = {
-      file = ../secrets/searx.env.file.age;
-    };
-  };
+  # age.secrets = {
+  #   SEARX_ENV_FILE = {
+  #     file = ../secrets/searx.env.file.age;
+  #   };
+  # };
 
   services.caddy.virtualHosts = {
     "searx.megzari.com" = {

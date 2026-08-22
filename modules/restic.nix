@@ -8,8 +8,9 @@ let
       OnCalendar = "daily";
       Persistent = true;
     };
-    passwordFile = config.age.secrets.BACKUP_PASSWORD.path;
-    environmentFile = config.age.secrets.S3_CREDENTIALS.path;
+    # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+    # passwordFile = config.age.secrets.BACKUP_PASSWORD.path;
+    # environmentFile = config.age.secrets.S3_CREDENTIALS.path;
     pruneOpts = [
       "--keep-daily 30"
       "--keep-weekly 52"
@@ -50,12 +51,12 @@ in
     };
   };
 
-  age.secrets =  {
-    BACKUP_PASSWORD = {
-      file = ../secrets/restic.backup.password.age;
-    };
-    S3_CREDENTIALS = {
-      file = ../secrets/restic.s3.credentials.age;
-    };
-  };
+  # age.secrets =  {
+  #   BACKUP_PASSWORD = {
+  #     file = ../secrets/restic.backup.password.age;
+  #   };
+  #   S3_CREDENTIALS = {
+  #     file = ../secrets/restic.s3.credentials.age;
+  #   };
+  # };
 }

@@ -105,11 +105,19 @@ in
       "browser.aboutConfig.showWarning" = false;
 
       # ---------------------------------------------------------------
-      # tabs: vertical sidebar + native groups (both native as of FF 154),
-      # and restore the previous session on startup
+      # tabs: Sidebery owns the tab list.
+      #
+      # `sidebar.revamp` stays on - that is the sidebar rail Sidebery is
+      # pinned into. `verticalTabs` is off because it is the *native* vertical
+      # tab strip, and running it next to Sidebery means two tab lists
+      # competing for the same job. Turning it off brings the horizontal strip
+      # back, which the userChrome below collapses.
+      #
+      # Native tab groups are left enabled: they are independent of Sidebery's
+      # panels and cost nothing if unused.
       # ---------------------------------------------------------------
       "sidebar.revamp" = true;
-      "sidebar.verticalTabs" = true;
+      "sidebar.verticalTabs" = false;
       "browser.tabs.groups.enabled" = true;
       "browser.startup.page" = 3; # 3 = restore previous session
       "browser.sessionstore.resume_from_crash" = true;
@@ -164,6 +172,19 @@ in
 
       .tab-background[selected] {
         background-color: #161616 !important;
+      }
+
+      /* Sidebery is the tab list, so collapse the native horizontal strip.
+       *
+       * This hides the tabs but deliberately keeps #TabsToolbar itself, so the
+       * titlebar buttonbox and the window drag area survive - on this GNOME/
+       * niri setup Firefox draws its own decorations, and collapsing the whole
+       * toolbar takes the close button with it. The cost is one slim empty
+       * row; to reclaim it, hide #TabsToolbar outright AND set
+       * `browser.tabs.inTitlebar = 0` so the compositor draws a real titlebar.
+       */
+      #tabbrowser-tabs {
+        visibility: collapse !important;
       }
     '';
 

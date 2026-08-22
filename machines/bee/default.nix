@@ -110,9 +110,10 @@ in
         networkmanager = {
           enable = true;
           ensureProfiles = {
-            environmentFiles = [
-              config.age.secrets.nm-secrets.path
-            ];
+            # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+            # environmentFiles = [
+            #   config.age.secrets.nm-secrets.path
+            # ];
             profiles = {
               birnam = {
                 connection = {
@@ -237,23 +238,24 @@ in
         };
       };
 
-      age.secrets = {
-        CLOUDFLARE_API_TOKEN = {
-          file = ../../secrets/cloudflare.api.token.age;
-        };
-        HUGGINGFACE_API_TOKEN = {
-          file = ../../secrets/huggingface.token.age;
-        };
-        UNSTRUCTURED_API_KEY = {
-          file = ../../secrets/unstructured.api.key.age;
-        };
-        PAPERLESS_PASSWORD = {
-          file = ../../secrets/paperless.password.age;
-        };
-        nm-secrets = {
-          file = ../../secrets/nm.secrets.age;
-        };
-      };
+      # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+      # age.secrets = {
+      #   CLOUDFLARE_API_TOKEN = {
+      #     file = ../../secrets/cloudflare.api.token.age;
+      #   };
+      #   HUGGINGFACE_API_TOKEN = {
+      #     file = ../../secrets/huggingface.token.age;
+      #   };
+      #   UNSTRUCTURED_API_KEY = {
+      #     file = ../../secrets/unstructured.api.key.age;
+      #   };
+      #   PAPERLESS_PASSWORD = {
+      #     file = ../../secrets/paperless.password.age;
+      #   };
+      #   nm-secrets = {
+      #     file = ../../secrets/nm.secrets.age;
+      #   };
+      # };
 
       # mosh uses a random port between 60000 and 61000 so no bueno behind the router
       # programs.mosh.enable = true;
@@ -291,25 +293,27 @@ in
       {
         imports = [
           agenix.homeManagerModules.age
-          {
-            # agenix home manager module doesn't seem to work with my current setup somehow.
-            config.programs.nushell.envFile.text = ''
-              $env.OPENAI_API_KEY = (open $'($env.XDG_RUNTIME_DIR)/agenix/OPENAI_API_KEY');
-              $env.GITHUB_TOKEN = (open $'($env.XDG_RUNTIME_DIR)/agenix/GITHUB_TOKEN');
-            '';
-          }
+          # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+          # {
+          #   # agenix home manager module doesn't seem to work with my current setup somehow.
+          #   config.programs.nushell.envFile.text = ''
+          #     $env.OPENAI_API_KEY = (open $'($env.XDG_RUNTIME_DIR)/agenix/OPENAI_API_KEY');
+          #     $env.GITHUB_TOKEN = (open $'($env.XDG_RUNTIME_DIR)/agenix/GITHUB_TOKEN');
+          #   '';
+          # }
         ];
-        age = {
-          identityPaths = [ "/home/yt/.ssh/id_ed25519" ];
-          secrets = {
-            OPENAI_API_KEY = {
-              file = ../../secrets/openai.key.age;
-            };
-            GITHUB_TOKEN = {
-              file = ../../secrets/github_access_token.age;
-            };
-          };
-        };
+        # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+        # age = {
+        #   identityPaths = [ "/home/yt/.ssh/id_ed25519" ];
+        #   secrets = {
+        #     OPENAI_API_KEY = {
+        #       file = ../../secrets/openai.key.age;
+        #     };
+        #     GITHUB_TOKEN = {
+        #       file = ../../secrets/github_access_token.age;
+        #     };
+        #   };
+        # };
         home = {
           username = "yt";
           # This value determines the Home Manager release that your

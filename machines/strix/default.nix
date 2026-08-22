@@ -30,6 +30,20 @@
       boot = {
         loader.systemd-boot.enable = true;
         loader.efi.canTouchEfiVariables = true;
+
+        # The stock menu flashes past too fast to pick anything. This is also
+        # what you need in order to reach the `battery-saver` specialisation,
+        # which only exists as a boot entry.
+        loader.timeout = 10;
+
+        # Cap how many generations get an entry written to /boot. Note this
+        # limits the *menu*, not the store: `nix-collect-garbage` still decides
+        # which generations survive, and /boot is only ever rewritten during a
+        # `nixos-rebuild boot|switch`. Each generation also gets a second entry
+        # for the battery-saver specialisation, so the menu holds roughly twice
+        # this number of lines.
+        loader.systemd-boot.configurationLimit = 10;
+
         kernelPackages = pkgs.linuxPackages_latest;
       };
 
@@ -133,6 +147,27 @@
       };
       services.displayManager.gdm.enable = true;
       services.desktopManager.gnome.enable = true;
+
+      # ---------------------------------------------------------------------
+      # niri: a scrollable-tiling wayland compositor, and the session GDM logs
+      # into by default. GNOME stays installed as the fallback - pick it from
+      # the gear menu at the login screen if something is broken under niri.
+      #
+      # The nixpkgs module handles the session file, the portals
+      # (xdg-desktop-portal-gnome, needed for screen sharing) and gnome-keyring.
+      # Everything user-facing - config.kdl, bar, launcher, notifications, idle
+      # - lives in homes/niri/.
+      # ---------------------------------------------------------------------
+      programs.niri.enable = true;
+
+      # programs.niri already sets this with mkDefault; stated explicitly so the
+      # choice is recorded here rather than inherited from the module.
+      services.displayManager.defaultSession = "niri";
+
+      # swaylock authenticates through PAM and there is no NixOS module for it.
+      # Without this stanza it rejects every password and the only way out of
+      # the lock screen is a VT switch.
+      security.pam.services.swaylock = { };
 
       services.printing.enable = true;
 
@@ -295,6 +330,8 @@
         noKey = lib.hm.gvariant.mkEmptyArray lib.hm.gvariant.type.string;
       in
       {
+        imports = [ ../../homes/niri ];
+
         home = {
           username = "yt";
           # fresh home, no prior state to migrate, so track the current release.
@@ -361,6 +398,23 @@
             name = "Ghostty";
             command = "${pkgs.ghostty}/bin/ghostty";
             binding = "<Super>t";
+          };
+
+          # Key repeat: GNOME ships 500ms before the first repeat and 30ms
+          # between them (~33/s). Both are sluggish for helix/vim-style
+          # movement. `delay` is the hold time before repeating starts and
+          # `repeat-interval` is the gap between repeats, both in ms - so
+          # smaller is faster for each.
+          #
+          # niri does not read dconf; homes/niri/config.kdl.nix carries the
+          # matching values for that session (as a rate in Hz: 20ms = 50/s).
+          #
+          # Both are uint32 in the schema; a bare nix int serialises as int32
+          # and dconf silently refuses to load it.
+          "org/gnome/desktop/peripherals/keyboard" = {
+            delay = lib.hm.gvariant.mkUint32 200;
+            repeat-interval = lib.hm.gvariant.mkUint32 20;
+            repeat = true;
           };
 
           # super+left/right moves the window to the workspace on that side and

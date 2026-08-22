@@ -3,10 +3,11 @@
 {
   services.mediaSummary = {
     enable = true;
-    gcloudSecretPath = config.age.secrets.GCLOUD_SECRET.path;
-    openaiKeyPath = config.age.secrets.OPENAI_KEY.path;
-    surrealdbUsernamePath = config.age.secrets.SURREALDB_USERNAME.path;
-    surrealdbPasswordPath = config.age.secrets.SURREALDB_PASSWORD.path;
+    # secrets removed; see git history for the original. re-add when the new deploy recreates them.
+    # gcloudSecretPath = config.age.secrets.GCLOUD_SECRET.path;
+    # openaiKeyPath = config.age.secrets.OPENAI_KEY.path;
+    # surrealdbUsernamePath = config.age.secrets.SURREALDB_USERNAME.path;
+    # surrealdbPasswordPath = config.age.secrets.SURREALDB_PASSWORD.path;
     surrealdbSeed = ''
       DEFINE TABLE media SCHEMALESS  
       PERMISSIONS
@@ -33,11 +34,11 @@
     };
   };
 
-  age.secrets =  {
-    GCLOUD_SECRET = {
-      file = ../secrets/gcloud_secrets.env.age;
-    };
-  };
+  # age.secrets =  {
+  #   GCLOUD_SECRET = {
+  #     file = ../secrets/gcloud_secrets.env.age;
+  #   };
+  # };
 
   services.caddy.virtualHosts."summary.sassy.technology" = {
     extraConfig = ''
