@@ -318,6 +318,12 @@
     # entries - that still needs a re-login, since this path gets swapped
     # wholesale on activation too.
     home-manager.useUserPackages = true;
+
+    # programs.claude-code takes ownership of ~/.claude/CLAUDE.md and
+    # ~/.claude/settings.json, which already exist as plain files. Without a
+    # backup extension, activation aborts rather than clobbering them; with it,
+    # the originals are moved to *.hm-bak on the first rebuild.
+    home-manager.backupFileExtension = "hm-bak";
     home-manager.users.yt = (
       {
         pkgs,
@@ -330,7 +336,13 @@
         noKey = lib.hm.gvariant.mkEmptyArray lib.hm.gvariant.type.string;
       in
       {
-        imports = [ ../../homes/niri ];
+        imports = [
+          ../../homes/niri
+          # Shared MCP registry first - claude-code and opencode both read it.
+          ../../homes/programs/ai-mcp.nix
+          ../../homes/programs/claude-code.nix
+          ../../homes/programs/opencode.nix
+        ];
 
         home = {
           username = "yt";
