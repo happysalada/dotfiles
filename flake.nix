@@ -47,7 +47,14 @@
 
       nixosConfigurations.strix = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = import ./machines/strix { inherit home-manager agenix nixos-hardware; };
+        modules = import ./machines/strix {
+          inherit
+            home-manager
+            agenix
+            nixos-hardware
+            rust-overlay
+            ;
+        };
       };
 
       nixosConfigurations.bee = nixpkgs.lib.nixosSystem {

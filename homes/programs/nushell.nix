@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 let
   # NOTE: these are `use`d, which happens at PARSE time. A path that doesn't
   # exist aborts the whole of config.nu - which silently takes starship,
@@ -28,6 +33,16 @@ let
   useLines = builtins.concatStringsSep "\n" (
     map (c: "use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/${c} *") completions
   );
+
+  # home-manager's own nushell integration regenerates this at every shell
+  # start; building it once here keeps that off the startup path. Same package
+  # the module installs.
+  intelliShellInit = pkgs.runCommand "intelli-shell-init.nu" { } ''
+    # `init` insists on creating its data dir before printing anything, and
+    # $HOME is not writable in the sandbox.
+    export HOME="$PWD"
+    ${config.programs.intelli-shell.package}/bin/intelli-shell init nushell > $out
+  '';
 in
 {
   enable = true;
@@ -52,6 +67,12 @@ in
 
   envFile.text = ''
     $env.NIXPKGS_ALLOW_UNFREE = 1
+
+    # `crw search` from the shell. Without it crw falls back to its built-in
+    # guess of 127.0.0.1:8080 and reports "could not connect to the backend".
+    # This is the CLI's own spelling; the crw serve unit in
+    # homes/programs/crw.nix takes the same value as CRW_SEARCH__SEARCH_BACKEND_URL.
+    $env.CRW_SEARCH_BACKEND_URL = "http://127.0.0.1:8888"
   '';
 
   # Assigned leaf-by-leaf onto $env.config, so nushell's own defaults for
@@ -192,6 +213,19 @@ in
       }
     ])
 
+    ${lib.optionalString config.programs.intelli-shell.enable ''
+      # Must be set before the source below, which reads it. Left unset,
+      # intelli-shell binds ESC to "select all, delete" in vi_insert - with
+      # edit_mode = "vi" that turns leaving insert mode into wiping the line.
+      $env.INTELLI_SKIP_ESC_BIND = "1"
+
+      # ctrl-space -> search stored commands and tldr examples, ctrl-b to
+      # bookmark one, ctrl-l to fill in variables, ctrl-x to fix a failed
+      # command. Appends its own keybindings, so it composes with the block
+      # above and with atuin's ctrl-r further down.
+      source ${intelliShellInit}
+    ''}
+
     # https://www.nushell.sh/book/coloring_and_theming.html
     $env.config.color_config = {
       separator: white
@@ -308,6 +342,12 @@ in
     def gbdm [] {
       git pull --prune
       git branch -vl | lines | split column " " BranchName Hash Status --collapse-empty | where Status == '[gone]' | each { |it| git branch -D $it.BranchName }
+    }
+
+    # build every machine config at once instead of one nixos-rebuild at a time.
+    # `path:` reads the working tree, so untracked files are still visible.
+    def nfb [dir: string = ".", ...rest] {
+      nix-fast-build -f $"path:($dir | path expand)#nixosConfigurations" --no-link --select 'cfgs: builtins.mapAttrs (_: c: c.config.system.build.toplevel) cfgs' ...$rest
     }
 
     def nix_copy_inputs [to: string] {

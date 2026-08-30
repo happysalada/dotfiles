@@ -13,7 +13,9 @@ in
       ../../modules/fail2ban.nix
       ../../modules/vector.nix
       ../../modules/postgresql.nix
-      ../../modules/grafana
+      # Parked: NixOS 26.05 dropped the default for
+      # services.grafana.settings.security.secret_key and now asserts on it.
+      # ../../modules/grafana
       ../../modules/chrony.nix
       ../../modules/loki.nix
       ../../modules/mimir.nix
@@ -22,8 +24,12 @@ in
       ../../modules/ssh.nix
       ../../modules/surrealdb.nix
       ../../modules/ntfy.nix
-      ../../modules/restic.nix
-      ../../modules/rustus.nix
+      # Parked with the rest of the secrets: restic asserts unless passwordFile
+      # or environmentFile is set, and secrets/ no longer carries the .age files.
+      # ../../modules/restic.nix
+      # Parked for the same reason: s3_access_key_file / s3_secret_key_file have
+      # no value without the R2 secrets.
+      # ../../modules/rustus.nix
       ../../modules/windmill.nix
     ];
 
@@ -43,7 +49,7 @@ in
     boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 
     nix = {
-      package = pkgs.nixUnstable;
+      package = pkgs.nixVersions.latest;
       settings = {
         cores = 12;  
         max-jobs = "auto";
@@ -73,7 +79,7 @@ in
     environment = {
       enableDebugInfo = true;
       systemPackages = with pkgs; [ vim lsof git agenix.packages.x86_64-linux.default ];
-      shells = [ pkgs.nushellFull ];
+      shells = [ pkgs.nushell ];
     };
 
     fonts.packages = import ../../packages/fonts.nix { inherit pkgs; };
@@ -135,7 +141,7 @@ in
           # mkpasswd -m sha-512
           hashedPassword = "$6$AtFC2R2J$SO/WAdF0jthAKEfbSiWWYFz0sQudi3U9WuIehWk7jx9c9.QYUFjXt4NLWEPDOajnzjAN829v2jqvLWKfJz5N.0";
           openssh.authorizedKeys.keys = [ raphaelSshKey ];
-          shell = pkgs.nushellFull;
+          shell = pkgs.nushell;
         };
       };
     };
@@ -183,12 +189,13 @@ in
             import security_headers
           '';
         };
-        "grafana.sassy.technology" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.grafana.settings.server.http_port}
-          '';
-        };
+        # Dead while the grafana module above is parked.
+        # "grafana.sassy.technology" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.grafana.settings.server.http_port}
+        #   '';
+        # };
         "surrealdb.sassy.technology" = {
           extraConfig = let 
             port = toString config.services.surrealdb.port;
@@ -207,84 +214,88 @@ in
             reverse_proxy /* 127.0.0.1:${toString config.services.windmill.serverPort}
           '';
         };
-        "preview.brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          '';
-        };
-        "bitval.brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          '';
-        };
-        "impulso.brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          '';
-        };
-        "brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          '';
-        };
-        "acrux.brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          '';
-        };
-        "www.brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          '';
-        };
-        "inge180.brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          '';
-        };
-        "eaxygroup.brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          '';
-        };
-        "demo.brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
-          '';
-        };
-        "admin.brocop.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.brocop_admin.port}
-          '';
-        };
-        "find-stock-broker.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.lead.port}
-          '';
-        };
-        "designhub.megzari.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.designhub.port}
-          '';
-        };
-        "sweif.com" = {
-          extraConfig = ''
-            import security_headers
-            reverse_proxy 127.0.0.1:${toString config.services.sweif.port}
-          '';
-        };
+        # Parked with the monorepo input: the modules defining these five
+        # services are commented out above, so config.services.<x>.port does
+        # not resolve. Uncomment alongside the imports, not before.
+        #
+        # "preview.brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+        #   '';
+        # };
+        # "bitval.brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+        #   '';
+        # };
+        # "impulso.brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+        #   '';
+        # };
+        # "brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+        #   '';
+        # };
+        # "acrux.brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+        #   '';
+        # };
+        # "www.brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+        #   '';
+        # };
+        # "inge180.brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+        #   '';
+        # };
+        # "eaxygroup.brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+        #   '';
+        # };
+        # "demo.brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop.port}
+        #   '';
+        # };
+        # "admin.brocop.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.brocop_admin.port}
+        #   '';
+        # };
+        # "find-stock-broker.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.lead.port}
+        #   '';
+        # };
+        # "designhub.megzari.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.designhub.port}
+        #   '';
+        # };
+        # "sweif.com" = {
+        #   extraConfig = ''
+        #     import security_headers
+        #     reverse_proxy 127.0.0.1:${toString config.services.sweif.port}
+        #   '';
+        # };
       };
     };
 

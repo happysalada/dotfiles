@@ -2,6 +2,7 @@
   home-manager,
   agenix,
   nixos-hardware,
+  rust-overlay,
 }:
 [
   (
@@ -9,6 +10,13 @@
     {
       imports = [
         ./hardware-configuration.nix
+
+        # loopback-only SearXNG: firefox's default engine, and the search
+        # backend `crw search` / the `crw_search` MCP tool proxy to.
+        ../../modules/searx-local.nix
+
+        # local LLM server on 127.0.0.1:11434, on the 4090 - see below.
+        ../../modules/ollama.nix
 
         # --- nixos-hardware -------------------------------------------------
         # there's no g834 profile upstream, so this is the g533zw profile
@@ -45,6 +53,13 @@
         loader.systemd-boot.configurationLimit = 10;
 
         kernelPackages = pkgs.linuxPackages_latest;
+
+        # Every agent session starts its own fff-mcp, and each one recursively
+        # watches its whole checkout - roughly 38k directories for nixpkgs. A
+        # few concurrent sessions ate the entire 512k the desktop module
+        # defaults to, and inotify reports that as ENOSPC ("No space left on
+        # device") in whatever tool asks for the next watch.
+        kernel.sysctl."fs.inotify.max_user_watches" = 1048576;
       };
 
       # ---------------------------------------------------------------------
@@ -80,6 +95,27 @@
       };
       # adds a "battery-saver" boot entry that disables the dgpu outright
       hardware.nvidia.primeBatterySaverSpecialisation = true;
+
+      # ---------------------------------------------------------------------
+      # ollama
+      #
+      # The cuda build is what puts it on the 4090; `services.ollama.package`
+      # is the only thing that selects a backend since `acceleration` was
+      # removed upstream.
+      #
+      # It does NOT need the `nvidia-offload` wrapper - that only redirects
+      # GLX/Vulkan. Creating a cuda context is itself enough to pull the dgpu
+      # back out of its finegrained runtime suspend, which is also why the gpu
+      # stays awake for as long as a model is resident (OLLAMA_KEEP_ALIVE,
+      # 5 minutes by default). Under the battery-saver specialisation the dgpu
+      # is gone, and ollama quietly falls back to CPU.
+      # ---------------------------------------------------------------------
+      services.ollama = {
+        package = pkgs.ollama-cuda;
+        # ~7GB of the 16GB of VRAM; add more with `ollama pull`, or here to
+        # have them fetched on rebuild.
+        loadModels = [ "mistral-nemo" ];
+      };
 
       # ---------------------------------------------------------------------
       # asus: rgb off + battery charge limit
@@ -243,10 +279,13 @@
           substituters = [
             "https://cache.nixos.org"
             "https://nix-community.cachix.org"
+            # Hydra never builds unfree, so cache.nixos.org has no cuda.
+            "https://cuda-maintainers.cachix.org"
           ];
           trusted-public-keys = [
             "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
             "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+            "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
           ];
         };
         extraOptions = ''
@@ -267,6 +306,11 @@
       nixpkgs = {
         config.allowUnfree = true;
         overlays = [
+          # puts `rust-bin` in scope for packages/dev/rust-toolchain.nix.
+          # Everything it provides is fetched from static.rust-lang.org rather
+          # than built, so this costs a download, not a compile.
+          rust-overlay.overlays.default
+
           (final: prev: {
             pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
               (pyFinal: pyPrev: {
@@ -342,6 +386,13 @@
           ../../homes/programs/ai-mcp.nix
           ../../homes/programs/claude-code.nix
           ../../homes/programs/opencode.nix
+          # Registers its own MCP server next to the units it talks to.
+          ../../homes/programs/crw.nix
+          # ~/.symposium/config.toml, so `cargo agents init` never has to run.
+          ../../homes/programs/symposium.nix
+          # ctrl-space command search. Seeds its own store, so it is a module
+          # rather than a programs entry.
+          ../../homes/programs/intelli-shell
         ];
 
         home = {
@@ -369,6 +420,10 @@
             ++ (import ../../packages/linux_cli_set.nix { inherit pkgs; })
             ++ (import ../../packages/package_managers.nix { inherit pkgs; })
             ++ (import ../../packages/dev/rust.nix { inherit pkgs; })
+            # rustc/cargo/clippy/rustfmt/rust-analyzer at stable latest, plus the
+            # cargo subcommands worth having on PATH. Workstation only - it needs
+            # the rust-overlay overlay applied above.
+            ++ (import ../../packages/dev/rust-toolchain.nix { inherit pkgs; })
             ++ (import ../../packages/dev/python.nix { inherit pkgs; })
             ++ (import ../../packages/dev/js.nix { inherit pkgs; })
             ++ (import ../../packages/dev/nix.nix { inherit pkgs; });
@@ -466,6 +521,9 @@
           // {
           ghostty = import ../../homes/programs/ghostty.nix { inherit pkgs; };
           firefox = import ../../homes/programs/firefox.nix { inherit pkgs; };
+          # Keeps the cache behind a bare `tldr <cmd>` fresh, via the
+          # services.tldr-update user timer this pulls in.
+          tealdeer = import ../../homes/programs/tealdeer.nix { inherit pkgs; };
 
         };
       }

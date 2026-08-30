@@ -37,7 +37,7 @@
     tesseract5
     unpaper
     libxml2
-    poppler_utils
+    poppler-utils
     imagemagick
   ];
 }

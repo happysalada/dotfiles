@@ -1,0 +1,38 @@
+# Rebuild this machine from the working tree, untracked files included #dotfiles #nix
+sudo nixos-rebuild switch --flake "path:/home/yt/dotfiles#{{machine}}"
+
+# Build a machine's system closure without switching to it #dotfiles #nix
+nix build --no-link --print-out-paths "path:/home/yt/dotfiles#nixosConfigurations.{{machine}}.config.system.build.toplevel"
+
+# Build every machine at once #dotfiles #nix
+nfb /home/yt/dotfiles
+
+# Evaluate one attribute out of a machine's config #dotfiles #nix
+nix eval "path:/home/yt/dotfiles#nixosConfigurations.{{machine}}.config.{{attr}}"
+
+# What a rebuild would change, closure-wise #dotfiles #nix
+nix store diff-closures /run/current-system /nix/var/nix/profiles/system
+
+# Update every flake input #dotfiles #nix
+nix flake update --flake /home/yt/dotfiles
+
+# Update a single flake input #dotfiles #nix
+nix flake update {{input}} --flake /home/yt/dotfiles
+
+# Collect garbage, system and user #dotfiles #nix
+nixgc
+
+# What is pinning the store, gc roots #dotfiles #nix
+nixroots
+
+# Status of a user service #dotfiles #systemd
+systemctl --user status {{user_unit}}
+
+# Follow a user service's log #dotfiles #systemd
+journalctl --user -u {{user_unit}} -f
+
+# Restart a user service #dotfiles #systemd
+systemctl --user restart {{user_unit}}
+
+# Follow a system service's log #dotfiles #systemd
+journalctl -u {{system_unit}} -f

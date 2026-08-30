@@ -5,6 +5,10 @@
 # Code wants `mcpServers.<n> = { command, args }`, opencode wants
 # `mcp.<n> = { type, command = [cmd args...] }`). Add a server here and it
 # appears in both on the next rebuild.
+#
+# Not everything lives here: homes/programs/crw.nix registers its own server,
+# because that entry has to name the port its systemd unit listens on and
+# splitting the two across files is how they drift apart.
 { pkgs, lib, ... }:
 let
   # Same callPackage calls as packages/ai.nix, so these are the same store
@@ -16,7 +20,7 @@ in
   programs.mcp = {
     enable = true;
 
-    # Both speak stdio and are pinned to absolute store paths, so they do not
+    # All speak stdio and are pinned to absolute store paths, so they do not
     # depend on PATH when the agent spawns them.
     servers = {
       mempalace = {

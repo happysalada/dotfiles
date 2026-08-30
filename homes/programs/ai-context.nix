@@ -24,7 +24,7 @@
       # Installers that must never be run.
       installers =
         if isClaude then
-          "(`rtk init`, `icm init`, `graphify claude install`)"
+          "(`rtk init`, `icm init`, `graphify claude install`, `crw setup`, `cargo agents init`)"
         else
           "(`opencode upgrade`, `opencode plugin ...`, and any tool's `init` subcommand)";
 
@@ -77,6 +77,34 @@
             remembers what you explicitly tell it to**. If you learn something
             durable in an opencode session, `icm store` it by hand or it is gone
             when the session ends.
+          '';
+
+      # Claude Code ships WebFetch/WebSearch; opencode has webfetch and no
+      # search. The overlap with crw differs, so the "which one" advice does.
+      crwSection =
+        if isClaude then
+          ''
+            You already have WebFetch and WebSearch, and they stay the right
+            default for one page. WebFetch runs a small model over the page and
+            hands back its answer; crw_scrape hands back the page itself as
+            markdown.
+
+            Prefer crw when you need the *content* rather than a summary of it -
+            exact API signatures, code samples, tables, anything you are going
+            to quote or copy - and whenever the answer spans more than one page.
+
+            For search specifically the split is where the query runs, not how
+            good it is. Your WebSearch is server-side: the query leaves this
+            machine. `crw_search` runs against a SearXNG on loopback. Either is
+            fine for ordinary work; use crw_search when the query itself is
+            something I would not want off the box - anything naming this
+            repo's private code, a client, or my own data.
+          ''
+        else
+          ''
+            opencode's built-in `webfetch` handles a single URL. crw is what you
+            have for everything past that: markdown extraction rather than raw
+            page text, and crawling a site instead of fetching one page of it.
           '';
 
       memorySplit =
@@ -334,6 +362,104 @@
       ${memorySplit}
       When recalling, one lookup in the most likely store is enough; do not
       query every store before answering.
+
+      ### crw - web scrape, crawl and search (MCP)
+
+      fastCRW. Exposed as MCP tools (`crw_search`, `crw_scrape`, `crw_crawl`,
+      `crw_check_crawl_status`, `crw_map`, `crw_extract`, `crw_parse_file`) and
+      as a `crw` CLI for one-off shell use. Everything it does happens on this
+      machine: no account, no API key, nothing sent to a third party except the
+      fetch of the page itself.
+
+      ${crwSection}
+      Pick the tool by shape:
+
+      - `crw_scrape` - one URL to markdown.
+      - `crw_map` - what URLs a site has, without fetching each one. Cheap;
+        run it first when you do not yet know which page you want.
+      - `crw_crawl` - bounded BFS over a site. Async: it returns a job id and
+        you poll `crw_check_crawl_status`. Bound it (`limit`, `maxDepth`) or
+        it will happily walk a whole documentation site into your context.
+      - `crw_extract` - structured fields across many URLs, also async.
+      - `crw_parse_file` - a local PDF to markdown.
+
+      JS rendering works: the binary is wrapped with both renderers, and the
+      auto ladder runs LightPanda first (fast, no layout engine) and falls
+      through to headless Chrome when a page crashes during hydration. Chrome
+      is also the only one of the two that can screenshot, since LightPanda
+      never rasterises anything.
+
+      `crw_search` works, and is the only web search on this machine that
+      actually runs here. It proxies a SearXNG bound to loopback
+      (`modules/searx-local.nix`), which fans the query out to DuckDuckGo,
+      Brave, Startpage, Mojeek, Qwant and Wikipedia and merges the results.
+      `crw search "..."` is the same thing from the shell.
+
+      Two consequences of it being *my* IP asking, rather than a public
+      instance with a crowd to hide in:
+
+      - Do not loop on it. A burst of near-identical queries earns a CAPTCHA,
+        and SearXNG then suspends that engine for an hour. Search once, read
+        the results, then `crw_scrape` the page you actually want.
+      - Partial results are normal. If an engine is suspended the others still
+        answer, so thin results mean "one engine is out", not "nothing exists".
+        Say so rather than silently concluding there is no answer.
+
+      `categories` picks the fan-out: `research` for arxiv/crossref/scholar,
+      `github` for code, omitted for the general web. `!kg` and `engines=kagi`
+      reach a paid, metered engine - never send those unless I ask for Kagi by
+      name.
+
+      That shared engine is a systemd user service. If *every* crw tool starts
+      failing at once, it is down rather than broken - `systemctl --user status
+      crw` says so, and restarting it is my call, not yours.
+
+      And do not run `crw setup`, `crw-mcp install` or `npx crw-mcp` - like the
+      other tools above, they write into the two generated files.
+
+      ### Rust
+
+      The toolchain is rust-overlay's `stable.latest`, not nixpkgs', so `rustc`,
+      `cargo`, `clippy`, `rustfmt`, `rust-src` and `rust-analyzer` all come from
+      one release and cannot drift apart. It is pinned by the `rust-overlay`
+      flake input, so a version bump is `nix flake update rust-overlay` in
+      `/home/yt/dotfiles` - never `rustup`, which has nothing to manage here.
+
+      `cargo check` and `clippy` are the loop; run them rather than reasoning
+      about whether something compiles. Beyond that:
+
+      - `cargo nextest run` instead of `cargo test`. The built-in harness
+        interleaves output from parallel threads, which is easy to misattribute.
+      - `cargo expand` to settle what a derive or `macro_rules!` actually
+        generated, instead of inferring it from the macro's documentation.
+      - `cargo machete` for dependencies left in `Cargo.toml` after a refactor,
+        and `cargo semver-checks` before picking a version for a published crate.
+
+      Prefer `ast-grep` over `rg` for Rust: it parses the language, so a pattern
+      matches a real call or impl rather than the same word in a doc comment.
+
+      ### symposium - per-crate agent skills
+
+      `cargo agents`. It reads the workspace dependency graph and installs the
+      skills, hooks and MCP servers that those specific crate versions ship, so
+      guidance for a library comes from its maintainers rather than from what
+      the model remembers of an older release. Worth a `cargo agents sync` when
+      you land in an unfamiliar Rust project.
+
+      Two things about how it is set up here:
+
+      - `hook-scope` is `"project"`, not the upstream default of `"global"`.
+        Global scope merges hook entries into `~/.claude/settings.json`, which
+        is generated and read-only, so the write fails. The cost is that
+        Symposium is inert in a checkout until `cargo agents sync` has been run
+        there once. (Only Claude Code gets hooks at all - for opencode
+        Symposium installs skills and nothing else.)
+      - `~/.symposium/config.toml` is generated from
+        `homes/programs/symposium.nix` and is read-only for the same reason as
+        the two files above, so anything that would write it fails by design.
+        `cargo agents plugin list` shows what the configured registries offer;
+        to enable something, propose the edit to that nix file rather than
+        trying to write the config.
 
       ### nono - sandboxing
 

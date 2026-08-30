@@ -47,6 +47,7 @@ in
         "Bash(icm *)"
         "Bash(graphify *)"
         "Bash(nono *)"
+        "Bash(crw *)"
         # Deliberately NOT "Bash(sg *)": on NixOS `sg` resolves to
         # /run/wrappers/bin/sg, the setgid "run a command as another group"
         # utility - not ast-grep. Always spell out `ast-grep`.

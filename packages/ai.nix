@@ -57,6 +57,28 @@ with pkgs;
   # MCP. NOTE: the `fff` attribute in nixpkgs is dylanaraps' bash file manager,
   # a completely unrelated project - do not "simplify" this to `fff`.
 
+  (callPackage ./ai/symposium.nix { }) # `cargo agents`: matches the workspace
+  # dependency graph against plugin manifests and installs the skills, hooks and
+  # MCP servers those crates ship for their own version. Rust-specific, and the
+  # reason rtk is above - the recommendations registry points at it too.
+  #
+  # Configured declaratively in homes/programs/symposium.nix. Do NOT run
+  # `cargo agents init`: at the default global hook scope it merges hook entries
+  # straight into ~/.claude/settings.json, which is a mode-444 store symlink
+  # here, so the write fails. That config pins hook-scope to "project" instead.
+
+  (callPackage ./ai/crw.nix { }) # fastCRW: web scrape, crawl, map and search.
+  # Puts `crw` on PATH; the `crw-mcp` binary from the same derivation is
+  # registered in homes/programs/ai-mcp.nix.
+  #
+  # Wraps in both renderers - LightPanda (packages/ai/lightpanda.nix) and
+  # chromium - so JS rendering works out of the box. That is where the ~700 MB
+  # of closure comes from; the wrapper in crw.nix is the one place to cut it.
+  #
+  # Do NOT run `crw setup` or `npx crw-mcp install` - both write MCP entries
+  # into ~/.claude/settings.json and prose into ~/.claude/CLAUDE.md, the two
+  # generated files. The equivalent wiring is declared in nix already.
+
   nono # capability-based sandbox for agents: `nono run -- claude`.
   # NOTE: nixpkgs disables the command_policies tests because nono's ELF
   # resolver cannot find libc.so.6 for libgcc_s.so.1 - that feature is

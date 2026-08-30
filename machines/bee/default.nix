@@ -20,7 +20,9 @@ in
         ../../modules/fail2ban.nix
         ../../modules/vector.nix
         ../../modules/postgresql.nix
-        ../../modules/grafana
+        # Parked: NixOS 26.05 dropped the default for
+        # services.grafana.settings.security.secret_key and now asserts on it.
+        # ../../modules/grafana
         ../../modules/ntpd-rs.nix
         ../../modules/loki.nix
         ../../modules/mimir.nix
@@ -44,7 +46,9 @@ in
         ../../modules/adguardhome.nix
         ../../modules/searx.nix
         ../../modules/open-webui.nix
-        ../../modules/cloudflare-dyndns.nix
+        # Parked with the rest of the secrets: apiTokenFile has no value without
+        # the CLOUDFLARE_API_TOKEN age secret.
+        # ../../modules/cloudflare-dyndns.nix
         ../../modules/ollama.nix
         ../../modules/prefect.nix
         ../../modules/paperless.nix
@@ -210,6 +214,17 @@ in
       services = {
         # Load nvidia driver for Xorg and Wayland
         # xserver.videoDrivers = [ "nvidia" ];
+
+        # rest of the server config is in modules/ollama.nix; the package picks
+        # the backend, and this box is amdgpu.
+        ollama = {
+          package = pkgs.ollama-rocm;
+          loadModels = [
+            "mistral-nemo"
+            "bge-m3" # for embeddings
+            "paraphrase-multilingual" # for reranking with sentence transformers
+          ];
+        };
 
         # TODO use a cronjob to backup and delete old logs
         # https://askubuntu.com/questions/1012912/systemd-logs-journalctl-are-too-large-and-slow/1012913#1012913

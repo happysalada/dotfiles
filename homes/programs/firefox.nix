@@ -95,6 +95,11 @@ in
       "privacy.globalprivacycontrol.enabled" = true;
       "privacy.query_stripping.enabled" = true;
       "dom.security.https_only_mode" = true;
+      # The default search engine below is http://127.0.0.1:8888. Loopback is
+      # already exempt from the upgrade, but the pref that decides that is
+      # pinned rather than assumed - a silent flip upstream would break every
+      # search in the address bar.
+      "dom.security.https_only_mode.upgrade_local" = false;
       "network.trr.mode" = 2; # DoH with plain-DNS fallback
 
       # no sponsored anything
@@ -142,6 +147,74 @@ in
     # to #000000 with the same carbon accents as helix/ghostty. Best-effort:
     # internal IDs do shift between Firefox releases, so if a bar goes grey
     # after a major update, that's what to re-check.
+    # The local SearXNG from modules/searx-local.nix becomes the address bar's
+    # default, with the engines it replaces kept a bang away.
+    #
+    # `force` is required because this profile already has a search.json.mozlz4
+    # - Firefox rewrites that file on every launch, so without it home-manager's
+    # copy is ignored. It also means engines added through the browser UI are
+    # discarded on the next activation: new ones go here, not in Settings.
+    search = {
+      force = true;
+      default = "searxng";
+      privateDefault = "searxng";
+      order = [
+        "searxng"
+        "ddg"
+      ];
+
+      engines = {
+        searxng = {
+          name = "SearXNG";
+          urls = [
+            {
+              template = "http://127.0.0.1:8888/search";
+              params = [
+                {
+                  name = "q";
+                  value = "{searchTerms}";
+                }
+              ];
+            }
+            # SearXNG speaks the opensearch suggestion format on its own
+            # endpoint, so the address bar keeps completing - the completions
+            # just come from the local instance now.
+            {
+              type = "application/x-suggestions+json";
+              template = "http://127.0.0.1:8888/autocompleter";
+              params = [
+                {
+                  name = "q";
+                  value = "{searchTerms}";
+                }
+              ];
+            }
+          ];
+          definedAliases = [ "@sx" ];
+        };
+
+        # Kagi through the normal web UI, which the subscription covers - as
+        # opposed to the metered API the SearXNG `!kg` bang would call. This is
+        # the free half of the A/B: `@k <query>` against `@sx <query>`.
+        kagi = {
+          name = "Kagi";
+          urls = [
+            {
+              template = "https://kagi.com/search";
+              params = [
+                {
+                  name = "q";
+                  value = "{searchTerms}";
+                }
+              ];
+            }
+          ];
+          iconMapObj."16" = "https://kagi.com/favicon.ico";
+          definedAliases = [ "@k" ];
+        };
+      };
+    };
+
     userChrome = ''
       :root {
         --lwt-accent-color: #000000 !important;

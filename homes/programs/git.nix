@@ -7,6 +7,10 @@
     package = pkgs.gitFull;
     ignores = [
       "*~"
+      # Claude Code nests its worktrees inside the repo, so each one is another
+      # full checkout under the root. fff and every other ignore-aware walker
+      # honours this file, which stops them indexing the tree once per worktree.
+      ".claude/worktrees/"
     ];
     settings = {
       user = {
