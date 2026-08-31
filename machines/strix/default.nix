@@ -59,6 +59,12 @@
 
         kernelPackages = pkgs.linuxPackages_latest;
 
+        # The dgpu's display engine times out being torn down under s2idle
+        # ("Failed to tear down display engine channel"), which is what breaks
+        # resume. Firmware offers real S3, and nvidia's suspend path is far
+        # better tested against it.
+        kernelParams = [ "mem_sleep_default=deep" ];
+
         # Every agent session starts its own fff-mcp, and each one recursively
         # watches its whole checkout - roughly 38k directories for nixpkgs. A
         # few concurrent sessions ate the entire 512k the desktop module
