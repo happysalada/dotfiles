@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   services.chatgpt-retrieval-plugin = {
@@ -8,7 +13,7 @@
     qdrantCollection = "gc_first_test";
   };
 
-  age.secrets =  {
+  age.secrets = {
     CHATGPT_RETRIEVAL_PLUGIN_BEARER_TOKEN = {
       file = ../secrets/chatgpt_retrieval_plugin.bearer_token.age;
     };

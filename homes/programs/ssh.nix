@@ -45,7 +45,6 @@
       StrictHostKeyChecking = "accept-new";
       HashKnownHosts = true;
 
-
       # Ciphers/MACs/KexAlgorithms/HostKeyAlgorithms are deliberately NOT set.
       # The hand-rolled lists that used to live here still permitted ssh-rsa
       # (SHA-1) and diffie-hellman-group-exchange-sha256; OpenSSH's own

@@ -27,4 +27,5 @@ in
 # The key definitions above are deliberately kept despite being unused right
 # now, so recreating a secret is a one-line change rather than a copy-paste
 # from another machine.
-{ }
+{
+}

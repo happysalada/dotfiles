@@ -2,7 +2,11 @@
 with pkgs;
 [
   # linux-only tools, kept out of the shared basic_cli_set
-  clipboard-jh # `cb`, clipboard manager
+  # clipboard-jh (`cb`) removed 2026-08-30. Its daemon polled the wayland
+  # clipboard every 2s, and each poll meant mapping a 1x1 surface that took
+  # keyboard focus - which dismissed every open popup, in every app, about
+  # as fast as one could be clicked. cliphist in homes/niri/default.nix
+  # already owns clipboard history, bound to Mod+V.
   libnotify # `notify-send`; -A makes the notification clickable (see ~/.claude/hooks)
   intentrace # clearer strace
   trippy # network diagnostic tool

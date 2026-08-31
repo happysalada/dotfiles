@@ -1,11 +1,16 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   services.tremor-rs = {
     enable = true;
     troyFileList = [ "${../tremor-rs/main.troy}" ];
     tremorLibDir = "${../tremor-rs}";
-    loggerSettings =  {
+    loggerSettings = {
       appenders.stdout.kind = "console";
       root = {
         level = "warn";

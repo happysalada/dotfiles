@@ -22,7 +22,7 @@ in
   services.restic = {
     backups = {
       postgresql = defaults // {
-        paths = ["/root/pg_backup.sql"];
+        paths = [ "/root/pg_backup.sql" ];
         repository = "s3:${s3_url}/postgresql";
         backupPrepareCommand = ''
           ${pkgs.sudo}/bin/sudo -u postgres ${pkgs.postgresql_15}/bin/pg_dumpall > /root/pg_backup.sql
@@ -33,19 +33,19 @@ in
       #   repository = "s3:${s3_url}/surrealdb";
       #   # TODO figure out how to inject the correct user and password.
       #   backupPrepareCommand = ''
-      #     surreal backup http://127.0.0.1:${toString config.services.surrealdb.port}  /root/backup.surql --user ___ --pass ___ 
+      #     surreal backup http://127.0.0.1:${toString config.services.surrealdb.port}  /root/backup.surql --user ___ --pass ___
       #   '';
       # };
       bitwarden_rs = defaults // {
-        paths = ["/var/lib/bitwarden_rs"];
+        paths = [ "/var/lib/bitwarden_rs" ];
         repository = "s3:${s3_url}/bitwarden_rs";
       };
       gitea = defaults // {
-        paths = ["/var/lib/gitea"];
+        paths = [ "/var/lib/gitea" ];
         repository = "s3:${s3_url}/gitea";
       };
       rustus = defaults // {
-        paths = ["/var/lib/rustus"];
+        paths = [ "/var/lib/rustus" ];
         repository = "s3:${s3_url}/rustus";
       };
     };

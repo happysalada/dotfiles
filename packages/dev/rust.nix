@@ -1,5 +1,6 @@
 { pkgs }:
-with pkgs; [
+with pkgs;
+[
   # most packages needed will be done on a per-repo basis in a dev shell
   #
   # Every machine imports this file, including the servers, so it stays empty:

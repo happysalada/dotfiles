@@ -1,4 +1,4 @@
-{ pkgs, ...}:
+{ pkgs, ... }:
 {
   # ssh-iptables jail is enabled by default
   services.fail2ban = {

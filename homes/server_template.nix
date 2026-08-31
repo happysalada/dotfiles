@@ -17,22 +17,24 @@ home-manager.nixosModules.home-manager {
 
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
-      packages = with pkgs; [
-        # network
-        mtr # network traffic
-        # tcptrack
+      packages =
+        with pkgs;
+        [
+          # network
+          mtr # network traffic
+          # tcptrack
 
-        # shell stuff
-        nodePackages.bash-language-server
-        shellcheck
+          # shell stuff
+          nodePackages.bash-language-server
+          shellcheck
 
-        remarshal
-        comby
-      ] ++
-      (import ../packages/basic_cli_set.nix { inherit pkgs; }) ++
-      (import ../packages/dev/rust.nix { inherit pkgs; }) ++
-      (import ../packages/dev/js.nix { inherit pkgs; }) ++
-      (import ../packages/dev/nix.nix { inherit pkgs; });
+          remarshal
+          comby
+        ]
+        ++ (import ../packages/basic_cli_set.nix { inherit pkgs; })
+        ++ (import ../packages/dev/rust.nix { inherit pkgs; })
+        ++ (import ../packages/dev/js.nix { inherit pkgs; })
+        ++ (import ../packages/dev/nix.nix { inherit pkgs; });
 
       file.".cargo/config.toml".source = ../config/cargo.toml;
     };

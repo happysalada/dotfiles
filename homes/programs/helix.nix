@@ -71,6 +71,11 @@
         command = "${ruff}/bin/ruff";
         args = [ "server" ];
       };
+      # helix 25.07 has no built-in entry for ty, so it is spelled out here.
+      ty = {
+        command = "${ty}/bin/ty";
+        args = [ "server" ];
+      };
     };
     language = [
       {
@@ -154,7 +159,7 @@
       {
         name = "python";
         language-servers = [
-          "pyright"
+          "ty"
           "ruff"
         ];
         auto-format = true;

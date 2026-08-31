@@ -6,7 +6,12 @@
 }:
 [
   (
-    { pkgs, config, lib, ... }:
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
     {
       imports = [
         ./hardware-configuration.nix
@@ -519,13 +524,13 @@
           import ../../homes/common.nix { inherit pkgs config lib; }
           // (import ../../homes/programs/git.nix { inherit pkgs; })
           // {
-          ghostty = import ../../homes/programs/ghostty.nix { inherit pkgs; };
-          firefox = import ../../homes/programs/firefox.nix { inherit pkgs; };
-          # Keeps the cache behind a bare `tldr <cmd>` fresh, via the
-          # services.tldr-update user timer this pulls in.
-          tealdeer = import ../../homes/programs/tealdeer.nix { inherit pkgs; };
+            ghostty = import ../../homes/programs/ghostty.nix { inherit pkgs; };
+            firefox = import ../../homes/programs/firefox.nix { inherit pkgs; };
+            # Keeps the cache behind a bare `tldr <cmd>` fresh, via the
+            # services.tldr-update user timer this pulls in.
+            tealdeer = import ../../homes/programs/tealdeer.nix { inherit pkgs; };
 
-        };
+          };
       }
     );
   }

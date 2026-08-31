@@ -1,4 +1,8 @@
-{ home-manager, agenix, rust-overlay }:
+{
+  home-manager,
+  agenix,
+  rust-overlay,
+}:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
 in
@@ -58,7 +62,11 @@ in
 
     environment = {
       enableDebugInfo = true;
-      systemPackages = with pkgs; [ vim lsof git ];
+      systemPackages = with pkgs; [
+        vim
+        lsof
+        git
+      ];
     };
 
     networking.hostName = "htz";
@@ -79,7 +87,10 @@ in
       }
     ];
     networking.defaultGateway = "65.108.111.129";
-    networking.defaultGateway6 = { address = "fe80::1"; interface = "enp7s0"; };
+    networking.defaultGateway6 = {
+      address = "fe80::1";
+      interface = "enp7s0";
+    };
     networking.nameservers = [
       # cloudflare
       "1.1.1.1"
@@ -136,41 +147,45 @@ in
   {
     # `home-manager` config
     home-manager.useGlobalPkgs = true;
-    home-manager.users.yt = ({ pkgs, ... }: {
-      home = {
-        username = "yt";
-        # This value determines the Home Manager release that your
-        # configuration is compatible with. This helps avoid breakage
-        # when a new Home Manager release introduces backwards
-        # incompatible changes.
-        #
-        # You can update Home Manager without changing this value. See
-        # the Home Manager release notes for a list of state version
-        # changes in each release.
-        stateVersion = "22.05";
-        # homeDirectory = /home/yt;
+    home-manager.users.yt = (
+      { pkgs, ... }: {
+        home = {
+          username = "yt";
+          # This value determines the Home Manager release that your
+          # configuration is compatible with. This helps avoid breakage
+          # when a new Home Manager release introduces backwards
+          # incompatible changes.
+          #
+          # You can update Home Manager without changing this value. See
+          # the Home Manager release notes for a list of state version
+          # changes in each release.
+          stateVersion = "22.05";
+          # homeDirectory = /home/yt;
 
-        # List packages installed in system profile. To search by name, run:
-        # $ nix-env -qaP | grep wget
-        packages = with pkgs; [
-          # network
-          mtr # network traffic
-          # tcptrack
+          # List packages installed in system profile. To search by name, run:
+          # $ nix-env -qaP | grep wget
+          packages =
+            with pkgs;
+            [
+              # network
+              mtr # network traffic
+              # tcptrack
 
-          # shell stuff
-          nodePackages.bash-language-server
-          shellcheck
+              # shell stuff
+              nodePackages.bash-language-server
+              shellcheck
 
-          remarshal
-        ] ++
-        (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
-        (import ../../packages/dev/rust.nix { inherit pkgs; }) ++
-        (import ../../packages/dev/js.nix { inherit pkgs; }) ++
-        (import ../../packages/dev/nix.nix { inherit pkgs; });
-      };
-      news.display = "silent";
-      programs = import ../../homes/common.nix { inherit pkgs; };
-    });
+              remarshal
+            ]
+            ++ (import ../../packages/basic_cli_set.nix { inherit pkgs; })
+            ++ (import ../../packages/dev/rust.nix { inherit pkgs; })
+            ++ (import ../../packages/dev/js.nix { inherit pkgs; })
+            ++ (import ../../packages/dev/nix.nix { inherit pkgs; });
+        };
+        news.display = "silent";
+        programs = import ../../homes/common.nix { inherit pkgs; };
+      }
+    );
   }
   {
     _module.args.nixinate = {

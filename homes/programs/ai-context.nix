@@ -18,8 +18,7 @@
       selfOption = if isClaude then "programs.claude-code.context" else "programs.opencode.context";
       selfFile = if isClaude then "homes/programs/claude-code.nix" else "homes/programs/opencode.nix";
       settingsPath = if isClaude then "~/.claude/settings.json" else "~/.config/opencode/opencode.json";
-      settingsOption =
-        if isClaude then "programs.claude-code.settings" else "programs.opencode.settings";
+      settingsOption = if isClaude then "programs.claude-code.settings" else "programs.opencode.settings";
 
       # Installers that must never be run.
       installers =
@@ -460,6 +459,31 @@
         `cargo agents plugin list` shows what the configured registries offer;
         to enable something, propose the edit to that nix file rather than
         trying to write the config.
+
+      ### Python
+
+      Astral's three tools cover what used to take five. `uv` owns
+      environments, lockfiles and the interpreters themselves; `ruff` is lint
+      and format; `ty` is the type checker. There is no pyright, poetry, pdm or
+      hatch on this box - if a project's docs call for one, use the `uv`
+      equivalent rather than installing it.
+
+      - `uv run <cmd>` rather than activating a venv. It resolves and syncs
+        first, so it is also the cheapest way to be sure the environment
+        matches the lockfile. `uv add` / `uv remove` edit `pyproject.toml`;
+        never hand-edit the lockfile.
+      - `uv python install <version>` works here - `nix-ld` is enabled, which
+        is what lets uv's portable interpreters find their loader.
+      - `ruff check --fix` and `ruff format` are the loop. `ty check` on top of
+        it; it is pre-1.0, so treat an assertion it cannot prove as a question
+        rather than a verdict.
+      - `py-spy dump --pid <pid>` for a process that is already hung, and
+        `py-spy top` for one that is merely slow. Neither needs the program
+        restarted or instrumented.
+      - `marimo edit` for notebooks. They are stored as plain `.py`, so read
+        and edit one as an ordinary module - no `.ipynb` JSON to pick through.
+
+      Prefer `ast-grep` over `rg` for Python, for the same reason as Rust.
 
       ### nono - sandboxing
 

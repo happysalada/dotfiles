@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   services.adafilter = {
@@ -38,7 +43,7 @@
     };
   };
 
-  age.secrets =  {
+  age.secrets = {
     OPENAI_KEY = {
       file = ../secrets/openai.key.age;
     };
@@ -53,5 +58,3 @@
     '';
   };
 }
-
-

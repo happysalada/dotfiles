@@ -88,7 +88,7 @@
 
         # http_server_format = {
         #   type = "remap"; # required
-        #   inputs = ["http_server"]; # required                         
+        #   inputs = ["http_server"]; # required
         #   source = ''
         #     del(.source_type)
         #     del(.path)
@@ -107,7 +107,7 @@
           endpoint = "http://localhost:3100";
           inputs = [
             "journald_format"
-            # "http_server_format" 
+            # "http_server_format"
           ];
           type = "loki";
           encoding.codec = "json";

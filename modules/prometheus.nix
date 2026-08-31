@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   # TODO figure out how to set alertmanager properly
@@ -10,17 +15,23 @@
       evaluation_interval = "5s";
     };
 
-    remoteWrite = [ {
-      url = "http://localhost:9009/api/v1/push";
-    }];
+    remoteWrite = [
+      {
+        url = "http://localhost:9009/api/v1/push";
+      }
+    ];
 
     scrapeConfigs = [
       {
         job_name = "prometheus";
-        static_configs = [{
-          targets = [ "localhost:9090" ];
-          labels = { alias = "prometheus"; };
-        }];
+        static_configs = [
+          {
+            targets = [ "localhost:9090" ];
+            labels = {
+              alias = "prometheus";
+            };
+          }
+        ];
       }
 
       # {
@@ -33,10 +44,14 @@
 
       {
         job_name = "node";
-        static_configs = [{
-          targets = [ "localhost:9100" ];
-          labels = { alias = "node"; };
-        }];
+        static_configs = [
+          {
+            targets = [ "localhost:9100" ];
+            labels = {
+              alias = "node";
+            };
+          }
+        ];
       }
 
     ];

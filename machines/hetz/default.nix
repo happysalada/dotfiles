@@ -51,7 +51,7 @@ in
     nix = {
       package = pkgs.nixVersions.latest;
       settings = {
-        cores = 12;  
+        cores = 12;
         max-jobs = "auto";
         auto-optimise-store = true;
       };
@@ -78,7 +78,12 @@ in
 
     environment = {
       enableDebugInfo = true;
-      systemPackages = with pkgs; [ vim lsof git agenix.packages.x86_64-linux.default ];
+      systemPackages = with pkgs; [
+        vim
+        lsof
+        git
+        agenix.packages.x86_64-linux.default
+      ];
       shells = [ pkgs.nushell ];
     };
 
@@ -102,7 +107,10 @@ in
       }
     ];
     networking.defaultGateway = "116.202.222.1";
-    networking.defaultGateway6 = { address = "fe80::1"; interface = "enp41s0"; };
+    networking.defaultGateway6 = {
+      address = "fe80::1";
+      interface = "enp41s0";
+    };
     networking.nameservers = [
       # Quad 9
       "9.9.9.9"
@@ -197,9 +205,11 @@ in
         #   '';
         # };
         "surrealdb.sassy.technology" = {
-          extraConfig = let 
-            port = toString config.services.surrealdb.port;
-            in ''
+          extraConfig =
+            let
+              port = toString config.services.surrealdb.port;
+            in
+            ''
               import security_headers
               import websockets
               reverse_proxy 127.0.0.1:${port}
@@ -320,36 +330,46 @@ in
   {
     # `home-manager` config
     home-manager.useGlobalPkgs = true;
-    home-manager.users.yt = ({ pkgs, config, lib, ... }: {
-      home = {
-        username = "yt";
-        # This value determines the Home Manager release that your
-        # configuration is compatible with. This helps avoid breakage
-        # when a new Home Manager release introduces backwards
-        # incompatible changes.
-        #
-        # You can update Home Manager without changing this value. See
-        # the Home Manager release notes for a list of state version
-        # changes in each release.
-        stateVersion = "23.11";
-        # homeDirectory = /home/yt;
+    home-manager.users.yt = (
+      {
+        pkgs,
+        config,
+        lib,
+        ...
+      }:
+      {
+        home = {
+          username = "yt";
+          # This value determines the Home Manager release that your
+          # configuration is compatible with. This helps avoid breakage
+          # when a new Home Manager release introduces backwards
+          # incompatible changes.
+          #
+          # You can update Home Manager without changing this value. See
+          # the Home Manager release notes for a list of state version
+          # changes in each release.
+          stateVersion = "23.11";
+          # homeDirectory = /home/yt;
 
-        # List packages installed in system profile. To search by name, run:
-        # $ nix-env -qaP | grep wget
-        packages = with pkgs; [
-          # network
-          mtr # network traffic
-          # tcptrack
-          # surrealdb-migrations
-        ] ++
-        (import ../../packages/basic_cli_set.nix { inherit pkgs; }) ++
-        (import ../../packages/dev/rust.nix { inherit pkgs; }) ++
-        (import ../../packages/dev/js.nix { inherit pkgs; }) ++
-        (import ../../packages/dev/nix.nix { inherit pkgs; });
-      };
-      news.display = "silent";
-      programs = import ../../homes/common.nix { inherit pkgs config lib; };
-    });
+          # List packages installed in system profile. To search by name, run:
+          # $ nix-env -qaP | grep wget
+          packages =
+            with pkgs;
+            [
+              # network
+              mtr # network traffic
+              # tcptrack
+              # surrealdb-migrations
+            ]
+            ++ (import ../../packages/basic_cli_set.nix { inherit pkgs; })
+            ++ (import ../../packages/dev/rust.nix { inherit pkgs; })
+            ++ (import ../../packages/dev/js.nix { inherit pkgs; })
+            ++ (import ../../packages/dev/nix.nix { inherit pkgs; });
+        };
+        news.display = "silent";
+        programs = import ../../homes/common.nix { inherit pkgs config lib; };
+      }
+    );
   }
   {
     _module.args.nixinate = {

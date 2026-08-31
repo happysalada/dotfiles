@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   services.erigon = {
@@ -11,7 +16,7 @@
       "database.verbosity" = 3;
     };
   };
-  age.secrets =  {
+  age.secrets = {
     ERIGON_JWT = {
       file = ../secrets/erigon.jwt.age;
     };

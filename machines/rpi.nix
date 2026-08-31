@@ -25,7 +25,10 @@
   users.users = {
     yt = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
+      extraGroups = [
+        "wheel"
+        "networkmanager"
+      ]; # Enable ‘sudo’ for the user.
       home = "/home/yt";
       description = "Yours truly";
       openssh.authorizedKeys.keys = [
@@ -103,7 +106,10 @@
     # Filter incoming traffic
     firewall.enable = true;
     firewall.allowPing = true;
-    firewall.allowedTCPPorts = [ 22 8123 ];
+    firewall.allowedTCPPorts = [
+      22
+      8123
+    ];
     firewall.allowedUDPPorts = [ ];
   };
 

@@ -1,8 +1,13 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  
-  age.secrets =  {
+
+  age.secrets = {
     SECRET_KEY_BASE = {
       file = ./secrets/plausible.secretKeybase.age;
     };
@@ -26,7 +31,7 @@
     };
     releaseCookiePath = "/run/agenix/RELEASE_COOKIE";
   };
-  
+
   services.caddy.virtualHosts."plausible.union.rocks" = {
     extraConfig = ''
       reverse_proxy 127.0.0.1:${toString config.services.plausible.server.port}

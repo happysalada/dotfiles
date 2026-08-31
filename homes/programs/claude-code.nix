@@ -8,7 +8,14 @@ let
   aiContext = import ./ai-context.nix { inherit lib; };
 
   # One hook entry, matcher-less (fires on every event of its kind).
-  cmd = command: { hooks = [ { type = "command"; inherit command; } ]; };
+  cmd = command: {
+    hooks = [
+      {
+        type = "command";
+        inherit command;
+      }
+    ];
+  };
   # One hook entry scoped to a tool matcher.
   cmdFor = matcher: command: (cmd command) // { inherit matcher; };
 in

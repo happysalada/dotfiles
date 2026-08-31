@@ -29,7 +29,6 @@ let
     "zoxide/zoxide-completions.nu"
   ];
 
-
   useLines = builtins.concatStringsSep "\n" (
     map (c: "use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/${c} *") completions
   );

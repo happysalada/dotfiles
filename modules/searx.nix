@@ -187,7 +187,10 @@ in
         # service down on start - disabled or not. Re-add once upstream gives
         # that module an `about`, and only with a meilisearch actually running.
       ]
-      ++ map (name: { inherit name; disabled = false; }) enabled;
+      ++ map (name: {
+        inherit name;
+        disabled = false;
+      }) enabled;
     };
   };
 
