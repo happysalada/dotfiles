@@ -57,6 +57,29 @@ in
       # and diffable in a way neither of the other two are.
       autoMemoryEnabled = false;
 
+      # The Git section of ai-context.nix, enforced rather than merely asked
+      # for - the same denies opencode.nix already carries in permission.bash.
+      # Deny beats allow and beats a narrower rule, and claude-code matches each
+      # subcommand of a compound command independently, so `foo && git commit`
+      # is caught too.
+      #
+      # Not airtight: the pattern is literal up to the first `*`, so
+      # `git -c user.name=x commit` slips past. It stops the accident, not a
+      # determined agent - the prose in ai-context.nix is still what carries the
+      # rule.
+      permissions.deny = [
+        "Bash(git add *)"
+        "Bash(git commit *)"
+        "Bash(git push *)"
+        "Bash(git reset *)"
+        "Bash(git restore *)"
+        "Bash(git stash *)"
+      ];
+
+      # `git checkout -b` is fine when asked for, `git checkout -- path` destroys
+      # work. One pattern cannot tell them apart, so this one prompts.
+      permissions.ask = [ "Bash(git checkout *)" ];
+
       permissions.allow = [
         "Bash(ast-grep *)"
         "Bash(rtk *)"
@@ -130,6 +153,34 @@ in
     # mempalace + fff come from the shared registry in ai-mcp.nix, so opencode
     # gets identical servers. `mcpServers` still works for Claude-only ones.
     enableMcpIntegration = true;
+
+    # Real code intelligence instead of grep: claude-code speaks
+    # textDocument/definition, /references and /documentSymbol, and surfaces
+    # publishDiagnostics. Same servers and same store paths as helix.nix, so the
+    # editor and the agent can never disagree about a version.
+    #
+    # The marketplace's twelve `*-lsp` plugins are nothing but this attrset plus
+    # a README, and there is no Nix one at all. `ty` rather than `ruff server`
+    # on .py: ruff's server is lint and format, which ai-context.nix already
+    # tells the agent to get from `ruff check --fix`.
+    lspServers = with pkgs; {
+      nixd = {
+        command = "${nixd}/bin/nixd";
+        extensionToLanguage.".nix" = "nix";
+      };
+      rust-analyzer = {
+        command = "${rust-analyzer-unwrapped}/bin/rust-analyzer";
+        extensionToLanguage.".rs" = "rust";
+      };
+      ty = {
+        command = "${ty}/bin/ty";
+        args = [ "server" ];
+        extensionToLanguage.".py" = "python";
+      };
+    };
+
+    # Cherry-picked upstream skills, shared with opencode.
+    skills = import ./ai-skills.nix { inherit pkgs; };
 
     # -> ~/.claude/CLAUDE.md, same prose as opencode's AGENTS.md.
     context = aiContext.mkContext { tool = "claude-code"; };

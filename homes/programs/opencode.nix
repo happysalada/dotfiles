@@ -56,6 +56,9 @@ in
     # change the theme here.
     tui.theme = "system";
 
+    # -> ~/.config/opencode/skills/, same set claude-code gets.
+    skills = import ./ai-skills.nix { inherit pkgs; };
+
     # -> ~/.config/opencode/AGENTS.md
     context = aiContext.mkContext { tool = "opencode"; };
   };
