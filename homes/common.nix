@@ -115,6 +115,12 @@
     settings = {
       add_newline = false;
       package.disabled = true;
+
+      # Claude Code's statusline, invoked as `starship statusline claude-code`
+      # from programs/claude-code.nix. Directory leads because agents run in
+      # .claude/worktrees - which checkout this is matters more than which
+      # model. The three claude_* modules only exist inside this profile.
+      profiles.claude-code = "$directory$git_branch$claude_model$claude_context$claude_cost";
     };
   };
 

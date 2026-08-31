@@ -1,0 +1,16 @@
+# Run by `prek` (pre-commit in rust). Install the git hook once per checkout:
+#   prek install
+#
+# nixfmt rewrites the file in place. prek fails the commit whenever a hook
+# modifies a file, so a badly-formatted file is both fixed and rejected - the
+# reformatted result is left unstaged for review rather than committed blind.
+exclude: '^\.claude/worktrees/'
+
+repos:
+  - repo: local
+    hooks:
+      - id: nixfmt
+        name: nixfmt
+        entry: nixfmt
+        language: system
+        types: [nix]

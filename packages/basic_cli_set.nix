@@ -38,6 +38,7 @@ with pkgs;
   igrep
   # ast-grep
   gh
+  prek # pre-commit in rust; runs this repo's .pre-commit-config.yaml
   bat
   termscp
   numbat # over libqalculate

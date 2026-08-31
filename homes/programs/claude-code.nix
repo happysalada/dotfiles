@@ -3,6 +3,7 @@ let
   rtk = lib.getExe pkgs.rtk;
   icm = lib.getExe pkgs.icm;
   graphify = lib.getExe pkgs.graphify;
+  starship = lib.getExe pkgs.starship;
 
   # Global instructions, shared with opencode.
   aiContext = import ./ai-context.nix { inherit lib; };
@@ -35,6 +36,14 @@ in
       theme = "dark";
       effortLevel = "high";
       agentPushNotifEnabled = true;
+
+      # Model, context gauge and session cost, rendered by starship rather than
+      # a hand-rolled script - the profile lives beside the shell prompt in
+      # homes/common.nix. Needs starship >= 1.25, which added the subcommand.
+      statusLine = {
+        type = "command";
+        command = "${starship} statusline claude-code";
+      };
 
       # Native auto-memory is OFF deliberately. It is the third memory system
       # here, and the only one whose store is per-project and invisible to
