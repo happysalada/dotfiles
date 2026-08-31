@@ -17,6 +17,31 @@
   lib,
   ...
 }:
+let
+  systemctl = "${pkgs.systemd}/bin/systemctl";
+  systemdRun = "${pkgs.systemd}/bin/systemd-run";
+
+  # swayidle fires a timeout action exactly once, so a plain "skip if busy"
+  # would leave the laptop awake all night after a build that ended at minute
+  # 40. Retry instead - swayidle's resume command kills the waiter on the first
+  # keypress, so it can only ever fire while you are actually away.
+  #
+  # `systemctl suspend` fails while any logind *block* inhibitor is up, which
+  # is what makes this honour the lock Claude holds while it is working and
+  # anything wrapped in `keepawake`. The pgrep covers the one case with no lock
+  # holder: nix-daemon forks a child per client connection, so a count above 1
+  # means a build is live. `nix develop` and `nix repl` hold a connection open
+  # while idle and read as busy too.
+  deferredSuspend = pkgs.writeShellScript "deferred-suspend" ''
+    while true; do
+      if [ "$(${pkgs.procps}/bin/pgrep -c -x nix-daemon)" -le 1 ] \
+        && ${systemctl} suspend; then
+        exit 0
+      fi
+      ${pkgs.coreutils}/bin/sleep 60
+    done
+  '';
+in
 {
   home.packages = with pkgs; [
     # screenshot/annotate pipeline; niri's own `screenshot` action covers the
@@ -121,6 +146,11 @@
   #
   # The timeouts assume you are on AC as often as not; they are deliberately
   # conservative because the display is the biggest draw on this machine.
+  #
+  # Only the last step is conditional. Dimming, locking and blanking happen on
+  # schedule whatever is running - it is suspending mid-build that costs you
+  # something. swayidle itself is not inhibitor-aware (it takes only a `delay`
+  # lock, for before-sleep), so the condition has to live in the action.
   # ---------------------------------------------------------------------
   services.swayidle = {
     enable = true;
@@ -146,8 +176,9 @@
         command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
       }
       {
-        timeout = 1800; # 30 min - suspend
-        command = "${pkgs.systemd}/bin/systemctl suspend";
+        timeout = 1800; # 30 min - suspend, unless something is still running
+        command = "${systemdRun} --user --quiet --collect --unit=deferred-suspend ${deferredSuspend}";
+        resumeCommand = "${systemctl} --user stop deferred-suspend";
       }
     ];
   };

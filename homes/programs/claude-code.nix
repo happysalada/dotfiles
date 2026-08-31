@@ -4,6 +4,39 @@ let
   icm = lib.getExe pkgs.icm;
   graphify = lib.getExe pkgs.graphify;
   starship = lib.getExe pkgs.starship;
+  jaq = lib.getExe pkgs.jaq;
+  systemctl = "${pkgs.systemd}/bin/systemctl";
+  systemdRun = "${pkgs.systemd}/bin/systemd-run";
+  systemdInhibit = "${pkgs.systemd}/bin/systemd-inhibit";
+
+  # Keep the laptop awake while Claude is actually working.
+  #
+  # "Is the agent busy" is not answerable from the process table - claude is
+  # alive whether it is thinking or waiting on you - but it does not have to
+  # be guessed: UserPromptSubmit and Stop *are* the started/finished edges. A
+  # lock held between them also stays held while Claude sits on a permission
+  # prompt, which is the case you would most hate to sleep through.
+  #
+  # RuntimeMaxSec is the fuse. A Stop hook that never fires (crash, SIGKILL)
+  # must not pin the machine awake indefinitely, so the lock expires on its
+  # own after four hours no matter what.
+  claudeAwake = pkgs.writeShellScript "claude-awake-start" ''
+    set -uo pipefail
+    unit="claude-awake-$(${jaq} -r '.session_id // "nosession"')"
+    ${systemctl} --user stop "$unit" 2>/dev/null
+    ${systemdRun} --user --quiet --collect --unit="$unit" \
+      --property=RuntimeMaxSec=4h \
+      ${systemdInhibit} --what=sleep:handle-lid-switch --mode=block \
+        --who=claude --why="agent working" -- ${pkgs.coreutils}/bin/sleep infinity
+    exit 0
+  '';
+
+  claudeRelease = pkgs.writeShellScript "claude-awake-stop" ''
+    set -uo pipefail
+    unit="claude-awake-$(${jaq} -r '.session_id // "nosession"')"
+    ${systemctl} --user stop "$unit" 2>/dev/null || true
+    exit 0
+  '';
 
   # Global instructions, shared with opencode.
   aiContext = import ./ai-context.nix { inherit lib; };
@@ -106,6 +139,8 @@ in
               }
             ];
           }
+          # drop the keep-awake lock: the turn is over, so normal idle applies
+          (cmd "${claudeRelease}")
         ];
 
         PreToolUse = [
@@ -145,8 +180,17 @@ in
         # what rtk is here to do, and it re-injects on turns that have nothing
         # to do with the recalled topic. `icm recall` on demand covers the same
         # ground at the moment it is actually needed.
-        # UserPromptSubmit = [ (cmd "${icm} hook prompt") ];
-        SessionEnd = [ (cmd "${icm} hook end") ];
+        # (cmd "${icm} hook prompt")
+
+        # Take the keep-awake lock; Stop below drops it again.
+        UserPromptSubmit = [ (cmd "${claudeAwake}") ];
+
+        # Drop it here too, in case Stop never fired - a session torn down
+        # mid-turn would otherwise leave the lock to its 4h fuse.
+        SessionEnd = [
+          (cmd "${icm} hook end")
+          (cmd "${claudeRelease}")
+        ];
       };
     };
 

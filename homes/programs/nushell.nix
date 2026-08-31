@@ -352,5 +352,13 @@ in
     def nix_copy_inputs [to: string] {
       nix flake archive --json | from json | get inputs | transpose | each { |input| $input.column1.path | xargs nix copy --to $"ssh://($to)" }
     }
+
+    # hold the laptop awake for the duration of one command. logind honours a
+    # block lock on both paths that would otherwise cut a long job short:
+    # `systemctl suspend` and closing the lid. The screen still blanks.
+    def --wrapped keepawake [...cmd] {
+      let why = ($cmd | str join " ")
+      systemd-inhibit --what=sleep:handle-lid-switch --mode=block --who=keepawake --why $why ...$cmd
+    }
   '';
 }
