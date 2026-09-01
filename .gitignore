@@ -208,3 +208,7 @@ erl_crash.dump
 # belonging to dotfile repo
 .extra
 backup/
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json
