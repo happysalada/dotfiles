@@ -28,14 +28,17 @@ let
   #
   # `systemctl suspend` fails while any logind *block* inhibitor is up, which
   # is what makes this honour the lock Claude holds while it is working and
-  # anything wrapped in `keepawake`. The pgrep covers the one case with no lock
+  # anything wrapped in `keepawake`. --check-inhibitors=yes is not redundant:
+  # logind enforces the lock either way, but the default "auto" only does the
+  # client-side check for TTY callers, and this runs from a systemd unit. Asking
+  # explicitly gets the refusal before the D-Bus call and names the blocker. The pgrep covers the one case with no lock
   # holder: nix-daemon forks a child per client connection, so a count above 1
   # means a build is live. `nix develop` and `nix repl` hold a connection open
   # while idle and read as busy too.
   deferredSuspend = pkgs.writeShellScript "deferred-suspend" ''
     while true; do
       if [ "$(${pkgs.procps}/bin/pgrep -c -x nix-daemon)" -le 1 ] \
-        && ${systemctl} suspend; then
+        && ${systemctl} suspend --check-inhibitors=yes; then
         exit 0
       fi
       ${pkgs.coreutils}/bin/sleep 60
