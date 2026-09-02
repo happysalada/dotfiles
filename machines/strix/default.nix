@@ -23,6 +23,10 @@
         # local LLM server on 127.0.0.1:11434, on the 4090 - see below.
         ../../modules/ollama.nix
 
+        # WireGuard mesh to the phone, plus the sshd and firewall holes
+        # that only make sense across it.
+        ../../modules/netbird.nix
+
         # --- nixos-hardware -------------------------------------------------
         # there's no g834 profile upstream, so this is the g533zw profile
         # rebuilt for ada lovelace instead of ampere.
@@ -397,6 +401,8 @@
           ../../homes/programs/ai-mcp.nix
           ../../homes/programs/claude-code.nix
           ../../homes/programs/opencode.nix
+          # Serves that same opencode over the mesh, for the phone.
+          ../../homes/programs/opencode-server.nix
           # Registers its own MCP server next to the units it talks to.
           ../../homes/programs/crw.nix
           # ~/.symposium/config.toml, so `cargo agents init` never has to run.
