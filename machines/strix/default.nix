@@ -75,6 +75,24 @@
         # defaults to, and inotify reports that as ENOSPC ("No space left on
         # device") in whatever tool asks for the next watch.
         kernel.sysctl."fs.inotify.max_user_watches" = 1048576;
+
+        # Swapping to zram costs a decompress, not an NVMe round trip, so it is
+        # worth doing far earlier than the default 60 assumes.
+        kernel.sysctl."vm.swappiness" = 150;
+
+        # Readahead exists to amortise seeks. zram has none, so faulting in the
+        # default 8 pages just decompresses 7 nobody asked for.
+        kernel.sysctl."vm.page-cluster" = 0;
+      };
+
+      # A compressed swap device held in RAM. Buys roughly 3x its own footprint
+      # back as headroom for the cold, highly compressible pages a wide rustc
+      # fan-out leaves behind, and absorbs the spike far faster than the 8 GB
+      # disk partition can. 25% rather than the 50% default: this only has to
+      # cover a spike, and every page it stores is RAM the build cannot use.
+      zramSwap = {
+        enable = true;
+        memoryPercent = 25;
       };
 
       # ---------------------------------------------------------------------
@@ -279,8 +297,9 @@
       nix = {
         package = pkgs.nixVersions.latest;
         settings = {
-          cores = 0;
-          max-jobs = "auto";
+          # 32 x 32 is multiplicative and memory-blind; rustc peaks past 12 GB per crate.
+          cores = 8;
+          max-jobs = 4;
           auto-optimise-store = true;
           download-buffer-size = 104857600; # 100 Mb
           experimental-features = [
@@ -316,6 +335,14 @@
           automatic = true;
           options = "--delete-older-than 14d";
         };
+      };
+
+      # Without a ceiling the OOM killer takes the desktop instead: user@.service
+      # carries OOMScoreAdjust=100 while nixbld sits at 0, so a 12 GB rustc outranks
+      # every session process. Kill inside the build cgroup instead.
+      systemd.services.nix-daemon.serviceConfig = {
+        MemoryHigh = "40G";
+        MemoryMax = "48G";
       };
 
       nixpkgs = {
