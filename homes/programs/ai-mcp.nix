@@ -11,10 +11,9 @@
 # splitting the two across files is how they drift apart.
 { pkgs, lib, ... }:
 let
-  # Same callPackage calls as packages/ai.nix, so these are the same store
-  # paths - listing them twice does not duplicate anything.
+  # Same callPackage call as packages/ai.nix, so it is the same store path -
+  # listing it twice does not duplicate anything.
   mempalace = pkgs.callPackage ../../packages/ai/mempalace.nix { };
-  fff-mcp = pkgs.callPackage ../../packages/ai/fff-mcp.nix { };
 in
 {
   programs.mcp = {
@@ -30,7 +29,7 @@ in
       };
 
       fff = {
-        command = lib.getExe fff-mcp;
+        command = lib.getExe pkgs.fff-mcp;
         args = [ ];
       };
     };

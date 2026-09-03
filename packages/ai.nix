@@ -34,6 +34,16 @@ with pkgs;
   # `graphify query`). Complements ast-grep: ast-grep matches syntax, graphify
   # answers cross-file "what talks to what". nixpkgs 0.9.28, upstream v0.9.48.
 
+  # ---- file search ----
+
+  fff-mcp # agent-oriented file/content search, exposed over MCP and registered
+  # in homes/programs/ai-mcp.nix. Keeps a resident index, so it answers in
+  # milliseconds where a fresh rg spawn takes seconds.
+  #
+  # NOTE: the `fff` attribute in nixpkgs is dylanaraps' bash file manager, a
+  # completely unrelated project - this is dmtrKovalenko/fff.
+  # nixpkgs 0.10.6 == upstream v0.10.6 (current).
+
   # ---- git worktrees ----
 
   worktrunk # `wt`: git worktree manager aimed at running several agents at
@@ -53,10 +63,6 @@ with pkgs;
   (callPackage ./ai/mempalace.nix { }) # local memory palace, MCP server is
   # `mempalace-mcp`. Pure-python + chromadb, all of it already in nixpkgs.
 
-  (callPackage ./ai/fff-mcp.nix { }) # agent-oriented file/content search over
-  # MCP. NOTE: the `fff` attribute in nixpkgs is dylanaraps' bash file manager,
-  # a completely unrelated project - do not "simplify" this to `fff`.
-
   (callPackage ./ai/symposium.nix { }) # `cargo agents`: matches the workspace
   # dependency graph against plugin manifests and installs the skills, hooks and
   # MCP servers those crates ship for their own version. Rust-specific, and the
@@ -69,7 +75,10 @@ with pkgs;
 
   (callPackage ./ai/crw.nix { }) # fastCRW: web scrape, crawl, map and search.
   # Puts `crw` on PATH; the `crw-mcp` binary from the same derivation is
-  # registered in homes/programs/ai-mcp.nix.
+  # registered in homes/programs/crw.nix.
+  #
+  # The build is nixpkgs' `fastcrw` now, so it substitutes instead of compiling.
+  # ./ai/crw.nix is down to the renderer wrapper nixpkgs leaves out.
   #
   # Wraps in both renderers - LightPanda (packages/ai/lightpanda.nix) and
   # chromium - so JS rendering works out of the box. That is where the ~700 MB
