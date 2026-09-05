@@ -5,28 +5,26 @@
   ...
 }:
 let
+  # Only the commands carapace cannot complete. These define `extern`s, and
+  # nushell prefers a known extern over the external completer, so anything
+  # listed here shadows carapace - trading its live values (real branches, real
+  # units, real containers) for a static flag list.
+  #
+  # `man` is here despite carapace shipping a man completer: carapace's shells
+  # out to `apropos`, which needs an mandb index this machine does not build
+  # (programs.man.generateCaches = false), so it only ever answers "nothing
+  # appropriate". The nu_scripts one walks `man -w` directly and finds ~6000.
+  #
   # NOTE: these are `use`d, which happens at PARSE time. A path that doesn't
   # exist aborts the whole of config.nu - which silently takes starship,
   # keybindings, aliases and every custom command down with it. That's what the
   # old `tealdeer/tldr-completions.nu` entry was doing (upstream renamed the
   # directory to `tldr/`). Verified against nu_scripts 2026-07-19.
   completions = [
-    "bat/bat-completions.nu"
     "btm/btm-completions.nu"
-    "cargo/cargo-completions.nu"
-    "curl/curl-completions.nu"
-    "gh/gh-completions.nu"
-    "git/git-completions.nu"
-    "jj/jj-completions.nu"
     "man/man-completions.nu"
-    "nix/nix-completions.nu"
-    "rg/rg-completions.nu"
-    "ssh/ssh-completions.nu"
-    "tar/tar-completions.nu"
-    "tldr/tldr-completions.nu"
     "uv/uv-completions.nu"
     "zellij/zellij-completions.nu"
-    "zoxide/zoxide-completions.nu"
   ];
 
   useLines = builtins.concatStringsSep "\n" (

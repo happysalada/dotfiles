@@ -67,8 +67,18 @@ let
   # commit and to end each task at a review checkpoint instead - the one change
   # that makes it usable under the Git rules. ./skills/ is where hand-written
   # skills go; NOTICE records what was changed and carries upstream's MIT.
+  # orx is the shim `orx install-skills` would write into ~/.claude/skills/,
+  # carried here instead because that directory is generated. It is a pointer,
+  # not a manual: it tells the agent to run `orx skill`, which prints the real
+  # guide out of the installed binary, so it cannot drift from the CLI version.
+  #
+  # Deliberately not the eleven modules of `--full`. They are always-listed, and
+  # this file's whole premise is that the description listing is a budget -
+  # eleven orx entries would crowd the sixteen below for a tool used in a
+  # fraction of sessions. Upstream defaults to the shim alone for this reason.
   local = {
     writing-plans = ./skills/writing-plans;
+    orx = ./skills/orx;
   };
 
   # Both modules resolve a store-path string to a whole skill directory.

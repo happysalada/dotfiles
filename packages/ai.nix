@@ -88,6 +88,24 @@ with pkgs;
   # into ~/.claude/settings.json and prose into ~/.claude/CLAUDE.md, the two
   # generated files. The equivalent wiring is declared in nix already.
 
+  (callPackage ./ai/openresearch.nix { }) # `orx`: runs claude-code/codex/
+  # opencode as parallel sessions over one repo, each in its own worktree, and
+  # records every run in a git-native experiment tree pinned to the commit it
+  # ran against. `orx up` serves a dashboard on 127.0.0.1:4791 over local
+  # SQLite. Also ships key-free paper retrieval - `orx discover` (alphaXiv
+  # full-text BM25 with page snippets, OpenAlex, bioRxiv) and `orx paper --full`
+  # for extracted full text, which SearXNG's research category cannot give.
+  #
+  # Overlaps worktrunk above on parallel worktrees; the experiment tree is the
+  # part neither that nor graphify does. Not in nixpkgs (checked 2026-09-05),
+  # and upstream cuts a release most days, so this pin goes stale fast.
+  #
+  # Telemetry is structurally off here: build.rs only stamps the production
+  # channel inside alphaXiv's own CI, so a source build reports
+  # "off (development build)". Do NOT run `orx install-skills` or `orx update` -
+  # the first writes a skill into ~/.claude/, the second targets the read-only
+  # store.
+
   nono # capability-based sandbox for agents: `nono run -- claude`.
   # NOTE: nixpkgs disables the command_policies tests because nono's ELF
   # resolver cannot find libc.so.6 for libgcc_s.so.1 - that feature is
