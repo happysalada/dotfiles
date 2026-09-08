@@ -46,4 +46,17 @@ with pkgs;
 
   cargo-semver-checks # whether a change to a published crate is breaking,
   # before the version number is picked.
+
+  # ---- the link step ----
+  #
+  # rustc emits object files and then shells out to a C compiler to link them,
+  # so with no cc on PATH every build dies at "linker `cc` not found" - the
+  # rust-overlay toolchain above ships no C toolchain of its own. clang is the
+  # smaller of the two candidates and needs no libstdc++ for Rust's purposes.
+  clang
+
+  # The default ld is single-threaded and dominates the edit-build-run loop on
+  # a crate graph this size. mold is selected in homes/programs/cargo.nix -
+  # having it on PATH alone changes nothing.
+  mold
 ]
