@@ -270,6 +270,13 @@
       picture. Applies to functions in a file, attributes in a nix module,
       sections in a doc.
 
+      Concretely, and check this before calling a file done: a helper is
+      defined *after* its first caller, never before, and a constant sits
+      next to the function that reads it rather than in a block at the top.
+      This is not a preference to weigh against others - reordering afterwards
+      is cheap, so there is no excuse for handing over a file that reads
+      bottom-up.
+
       ### Comments
 
       Short. Long comments never get read, so shorter is always better than

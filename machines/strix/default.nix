@@ -27,6 +27,10 @@
         # that only make sense across it.
         ../../modules/netbird.nix
 
+        # prefect's server on 127.0.0.1:4200 - the UI and run history for
+        # the flows in homes/programs/starred-digest.
+        ../../modules/prefect-local.nix
+
         # --- nixos-hardware -------------------------------------------------
         # there's no g834 profile upstream, so this is the g533zw profile
         # rebuilt for ada lovelace instead of ampere.
@@ -437,6 +441,8 @@
           # ctrl-space command search. Seeds its own store, so it is a module
           # rather than a programs entry.
           ../../homes/programs/intelli-shell
+          # Monday-morning digest of releases in my starred repos.
+          ../../homes/programs/starred-digest
         ];
 
         home = {

@@ -358,5 +358,23 @@ in
       let why = ($cmd | str join " ")
       systemd-inhibit --what=sleep:handle-lid-switch --mode=block --who=keepawake --why $why ...$cmd
     }
+
+    # citations alone can't rank a finance paper against a physics one. FWCI is
+    # citations received over citations expected for the same year, type and
+    # subfield, where 1.0 is world average. Undefined below ~4 years old - that
+    # is the window it is computed over - so it says nothing about a new preprint.
+    #
+    # Lists every record instead of picking one: a paper's arXiv preprint and its
+    # published version are separate rows, and only the published one carries the
+    # citations. mailto buys OpenAlex's faster "polite" pool.
+    def fwci [title: string] {
+      let q = ($title | url encode)
+      http get $"https://api.openalex.org/works?filter=title.search:($q)&select=display_name,publication_year,type,cited_by_count,fwci,primary_location&per-page=10&mailto=openalex@megzari.com"
+      | get results
+      | select publication_year type cited_by_count fwci primary_location
+      | update primary_location {|r| $r.primary_location.source?.display_name? }
+      | rename year type cites fwci venue
+      | sort-by -r cites
+    }
   '';
 }
