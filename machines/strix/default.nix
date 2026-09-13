@@ -221,6 +221,14 @@
       services.displayManager.gdm.enable = true;
       services.desktopManager.gnome.enable = true;
 
+      # gnome turns this on (mkDefault true, type "ibus"), which drops an
+      # ibus-daemon XDG autostart entry marked NotShowIn=GNOME;KDE - gnome-shell
+      # and kwin each start ibus themselves. niri is neither, so the entry fires,
+      # ibus finds a wayland session nobody wired it into, and notifies about it
+      # on every login. Nothing here uses an input engine beyond xkb:us, so drop
+      # ibus rather than teach niri to host it.
+      i18n.inputMethod.enable = false;
+
       # ---------------------------------------------------------------------
       # niri: a scrollable-tiling wayland compositor, and the session GDM logs
       # into by default. GNOME stays installed as the fallback - pick it from
@@ -317,13 +325,10 @@
           substituters = [
             "https://cache.nixos.org"
             "https://nix-community.cachix.org"
-            # Hydra never builds unfree, so cache.nixos.org has no cuda.
-            "https://cuda-maintainers.cachix.org"
           ];
           trusted-public-keys = [
             "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
             "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-            "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
           ];
         };
         extraOptions = ''

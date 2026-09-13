@@ -290,6 +290,17 @@
       longer - one line beats three, and no comment beats one that restates the
       code. Comment *why*, never *what*.
 
+      ### Shell scripts
+
+      Write them in nushell. `nu` is the login shell here, and passing
+      structured data between commands removes most of the quoting discipline
+      that keeps a bash script correct. Shebang `#!/usr/bin/env nu`, arguments
+      via `def main [--flag]`, and `| complete` to inspect an external
+      command's exit code.
+
+      Reach for bash only when the script has to run somewhere nu is not
+      installed - and say that is why when you do.
+
       ## Tooling
 
       These tools are installed system-wide (packages/ai.nix,
