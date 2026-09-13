@@ -132,32 +132,35 @@ in
   // at damping-ratio 1.0 it falls out as -ln(epsilon)/sqrt(stiffness) seconds.
   //
   // So both knobs move here. Stiffness is how hard the spring pulls; epsilon
-  // is where niri calls the motion done, and the default 0.0001 spends a third
-  // of the animation crawling through a last 0.09% of travel nobody can see.
-  // niri's defaults work out to 291ms per workspace switch, 326ms per scroll.
+  // is where niri gives up and snaps, so it doubles as the size of that snap -
+  // 0.002 leaves ~2px of a 1066px switch, invisible at 240Hz. niri's defaults
+  // (1000/0.0001, 800/0.0001) work out to 291ms per switch, 326ms per scroll.
+  //
+  // Below ~60ms the motion stops reading as travel and just flickers; at that
+  // point `off` is the honest setting rather than an ever stiffer spring.
   // ---------------------------------------------------------------------
   animations {
-      // 291ms -> 178ms
+      // 291ms -> 105ms
       workspace-switch {
-          spring damping-ratio=1.0 stiffness=1500 epsilon=0.001
+          spring damping-ratio=1.0 stiffness=3500 epsilon=0.002
       }
 
-      // camera scrolling to an off-screen column: 326ms -> 199ms
+      // camera scrolling to an off-screen column: 326ms -> 113ms
       horizontal-view-movement {
-          spring damping-ratio=1.0 stiffness=1200 epsilon=0.001
+          spring damping-ratio=1.0 stiffness=3000 epsilon=0.002
       }
 
       // windows sliding inside a workspace, kept in step with the camera above
       window-movement {
-          spring damping-ratio=1.0 stiffness=1200 epsilon=0.001
+          spring damping-ratio=1.0 stiffness=3000 epsilon=0.002
       }
 
       window-resize {
-          spring damping-ratio=1.0 stiffness=1200 epsilon=0.001
+          spring damping-ratio=1.0 stiffness=3000 epsilon=0.002
       }
 
       overview-open-close {
-          spring damping-ratio=1.0 stiffness=1200 epsilon=0.001
+          spring damping-ratio=1.0 stiffness=3000 epsilon=0.002
       }
 
       // easings are fine here - no gesture drives them

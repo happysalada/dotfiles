@@ -112,6 +112,12 @@ in
           # turns `crw_search` from `search_disabled` into a working tool.
           # The system instance from modules/searx-local.nix.
           "CRW_SEARCH__SEARCH_BACKEND_URL=http://127.0.0.1:8888"
+          # Ollama ignores the key, but fastCRW requires a non-empty value before
+          # it enables its LLM-backed extraction routes.
+          "CRW_EXTRACTION__LLM__PROVIDER=openai-compatible"
+          "CRW_EXTRACTION__LLM__API_KEY=ollama"
+          "CRW_EXTRACTION__LLM__MODEL=mistral-nemo"
+          "CRW_EXTRACTION__LLM__BASE_URL=http://127.0.0.1:11434/v1"
         ];
         Restart = "always";
         RestartSec = 2;

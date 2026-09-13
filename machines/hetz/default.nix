@@ -160,11 +160,11 @@ in
 
       # TODO use a cronjob to backup and delete old logs
       # https://askubuntu.com/questions/1012912/systemd-logs-journalctl-are-too-large-and-slow/1012913#1012913
-      journald.extraConfig = ''
-        MaxFileSec=1day
-        MaxRetentionSec=1week
-        SystemMaxUse=1G
-      '';
+      journald.settings.Journal = {
+        MaxFileSec = "1day";
+        MaxRetentionSec = "1week";
+        SystemMaxUse = "1G";
+      };
 
       # antivirus
       clamav = {

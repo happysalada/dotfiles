@@ -384,11 +384,11 @@
         };
       };
 
-      services.journald.extraConfig = ''
-        MaxFileSec=1day
-        MaxRetentionSec=1month
-        SystemMaxUse=2G
-      '';
+      services.journald.settings.Journal = {
+        MaxFileSec = "1day";
+        MaxRetentionSec = "1month";
+        SystemMaxUse = "2G";
+      };
 
       # shows what changed on every rebuild
       # MIT Jörg Thalheim - https://github.com/Mic92/dotfiles

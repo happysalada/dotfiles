@@ -70,6 +70,17 @@ in
       # Nothing to update against a read-only store path, so do not spend a
       # request on asking at every launch.
       check_for_update_on_startup = false;
+
+      agents = {
+        enabled = true;
+        max_concurrent_threads_per_session = 4;
+        default_subagent_model = "gpt-5.6-terra";
+        default_subagent_reasoning_effort = "medium";
+      };
+
+      # Codex otherwise tries to persist this choice into the generated,
+      # read-only config.toml and asks again on the next launch.
+      projects."/home/yt/dotfiles".trust_level = "trusted";
     };
 
     # icm's memory, the same four events claude-code.nix registers.
@@ -146,5 +157,48 @@ in
 
     # -> ~/.codex/AGENTS.md, same prose as CLAUDE.md and opencode's AGENTS.md.
     context = aiContext.mkContext { tool = "codex"; };
+  };
+
+  # Codex discovers personal roles directly under $CODEX_HOME/agents. Home
+  # Manager does not yet expose a programs.codex.agents option.
+  home.file = {
+    ".codex/agents/explorer.toml".source = (pkgs.formats.toml { }).generate "codex-agent-explorer" {
+      name = "explorer";
+      description = "Read-only codebase explorer for mapping files, symbols, and execution paths before changes.";
+      model = "gpt-5.6-terra";
+      model_reasoning_effort = "medium";
+      sandbox_mode = "read-only";
+      developer_instructions = ''
+        Stay in exploration mode. Trace the real execution path with targeted
+        searches and file reads, cite exact files and symbols, and return a
+        concise evidence summary. Do not propose speculative fixes or delegate.
+      '';
+    };
+
+    ".codex/agents/worker.toml".source = (pkgs.formats.toml { }).generate "codex-agent-worker" {
+      name = "worker";
+      description = "Implementation worker for one bounded change after the desired behavior is understood.";
+      model = "gpt-5.6-terra";
+      model_reasoning_effort = "medium";
+      sandbox_mode = "workspace-write";
+      developer_instructions = ''
+        Implement only the bounded task assigned by the primary thread. Make the
+        smallest defensible change, preserve unrelated work, run focused
+        verification, and report changed files and results. Do not delegate.
+      '';
+    };
+
+    ".codex/agents/reviewer.toml".source = (pkgs.formats.toml { }).generate "codex-agent-reviewer" {
+      name = "reviewer";
+      description = "Read-only reviewer for correctness, security, regressions, and missing tests.";
+      model = "gpt-5.6-terra";
+      model_reasoning_effort = "high";
+      sandbox_mode = "read-only";
+      developer_instructions = ''
+        Review like an owner. Lead with concrete findings ordered by severity,
+        cite exact files and lines, and prioritize correctness, security,
+        behavior regressions, and missing tests. Do not edit or delegate.
+      '';
+    };
   };
 }

@@ -294,6 +294,19 @@
       declaratively in nix. If one of them needs new wiring, propose the change
       to the relevant file in `/home/yt/dotfiles` instead.
 
+      ## Multi-agent workflow
+
+      The primary thread owns requirements, decisions, integration and the final
+      answer. Delegate only when a bounded task can run independently or when
+      exploration would pollute the primary context.
+
+      Run independent read-only work in parallel. Use `explorer` to map code,
+      `reviewer` to inspect an understood change, and `worker` to implement one
+      bounded change. Never assign two writers to the same area, wait for every
+      delegated task before integrating, and return summaries rather than raw
+      logs. Do trivial or tightly coupled work in the primary thread instead of
+      paying delegation overhead.
+
       ## Git
 
       **Never stage. Never commit.** I stage and I commit - always, without exception.
