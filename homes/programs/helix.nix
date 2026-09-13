@@ -22,6 +22,9 @@
       space.space = "file_picker";
       space.w = ":w";
       space.q = ":q";
+      # jumplist navigation, in place of goto_file
+      g.f = "jump_forward";
+      g.b = "jump_backward";
     };
   };
 

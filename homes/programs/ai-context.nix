@@ -247,6 +247,13 @@
       Creating a branch is fine if I ask for it. Reading git state (`git status`,
       `git diff`, `git log`) is always fine.
 
+      **No worktrees.** Edit the files in the checkout I am already in. Do not run
+      `git worktree add`, and do not reach for a worktree tool if your harness
+      offers one - a worktree hides the change from me and dies with the session,
+      which is the opposite of what the rules above are for. If your harness
+      refuses to edit outside a worktree, say so and stop rather than working
+      around it.
+
       If a tool genuinely needs files staged in order to run, **say so and stop** -
       tell me what to stage. Do not stage it "just to make the build work".
 
