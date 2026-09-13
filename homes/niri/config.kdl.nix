@@ -124,6 +124,55 @@ in
   }
 
   // ---------------------------------------------------------------------
+  // animations
+  //
+  // Springs rather than easings: niri feeds the touchpad swipe's release
+  // velocity into the spring, so a gesture keeps its momentum instead of
+  // restarting from zero. The cost is that duration is not settable directly -
+  // at damping-ratio 1.0 it falls out as -ln(epsilon)/sqrt(stiffness) seconds.
+  //
+  // So both knobs move here. Stiffness is how hard the spring pulls; epsilon
+  // is where niri calls the motion done, and the default 0.0001 spends a third
+  // of the animation crawling through a last 0.09% of travel nobody can see.
+  // niri's defaults work out to 291ms per workspace switch, 326ms per scroll.
+  // ---------------------------------------------------------------------
+  animations {
+      // 291ms -> 178ms
+      workspace-switch {
+          spring damping-ratio=1.0 stiffness=1500 epsilon=0.001
+      }
+
+      // camera scrolling to an off-screen column: 326ms -> 199ms
+      horizontal-view-movement {
+          spring damping-ratio=1.0 stiffness=1200 epsilon=0.001
+      }
+
+      // windows sliding inside a workspace, kept in step with the camera above
+      window-movement {
+          spring damping-ratio=1.0 stiffness=1200 epsilon=0.001
+      }
+
+      window-resize {
+          spring damping-ratio=1.0 stiffness=1200 epsilon=0.001
+      }
+
+      overview-open-close {
+          spring damping-ratio=1.0 stiffness=1200 epsilon=0.001
+      }
+
+      // easings are fine here - no gesture drives them
+      window-open {
+          duration-ms 100
+          curve "ease-out-expo"
+      }
+
+      window-close {
+          duration-ms 100
+          curve "ease-out-quad"
+      }
+  }
+
+  // ---------------------------------------------------------------------
   // startup
   // ---------------------------------------------------------------------
 

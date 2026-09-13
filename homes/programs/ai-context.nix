@@ -1,36 +1,88 @@
-# Shared global instructions, rendered into both ~/.claude/CLAUDE.md
-# (programs.claude-code.context) and ~/.config/opencode/AGENTS.md
-# (programs.opencode.context).
+# Shared global instructions, rendered into ~/.claude/CLAUDE.md
+# (programs.claude-code.context), ~/.config/opencode/AGENTS.md
+# (programs.opencode.context) and ~/.codex/AGENTS.md (programs.codex.context).
 #
 # AGENTS.md is the cross-tool convention, CLAUDE.md is Claude Code's name for
-# the same thing; neither tool reads the other's file. Generated from one
-# source instead of symlinked, because a few paragraphs genuinely differ per
-# tool (hooks and native auto-memory exist only in Claude Code).
+# the same thing; no tool reads another's file. Generated from one source
+# instead of symlinked, because a few paragraphs genuinely differ per tool -
+# which hooks fire, and whether the tool ships a web search of its own.
 { lib }:
 {
-  # tool :: "claude-code" | "opencode"
+  # tool :: "claude-code" | "opencode" | "codex"
   mkContext =
     { tool }:
     let
-      isClaude = tool == "claude-code";
-
-      selfPath = if isClaude then "~/.claude/CLAUDE.md" else "~/.config/opencode/AGENTS.md";
-      selfOption = if isClaude then "programs.claude-code.context" else "programs.opencode.context";
-      selfFile = if isClaude then "homes/programs/claude-code.nix" else "homes/programs/opencode.nix";
-      settingsPath = if isClaude then "~/.claude/settings.json" else "~/.config/opencode/opencode.json";
-      settingsOption = if isClaude then "programs.claude-code.settings" else "programs.opencode.settings";
+      # The three per-tool files the prose has to name: itself, the settings
+      # file beside it, and the credential file that is deliberately neither.
+      paths = {
+        claude-code = {
+          selfPath = "~/.claude/CLAUDE.md";
+          selfOption = "programs.claude-code.context";
+          selfFile = "homes/programs/claude-code.nix";
+          settingsPath = "~/.claude/settings.json";
+          settingsOption = "programs.claude-code.settings";
+          authPath = "~/.claude/.credentials.json";
+          authCommand = "/login";
+        };
+        opencode = {
+          selfPath = "~/.config/opencode/AGENTS.md";
+          selfOption = "programs.opencode.context";
+          selfFile = "homes/programs/opencode.nix";
+          settingsPath = "~/.config/opencode/opencode.json";
+          settingsOption = "programs.opencode.settings";
+          authPath = "~/.local/share/opencode/auth.json";
+          authCommand = "opencode auth login";
+        };
+        codex = {
+          selfPath = "~/.codex/AGENTS.md";
+          selfOption = "programs.codex.context";
+          selfFile = "homes/programs/codex.nix";
+          settingsPath = "~/.codex/config.toml";
+          settingsOption = "programs.codex.settings";
+          authPath = "~/.codex/auth.json";
+          authCommand = "codex login";
+        };
+      };
+      inherit (paths.${tool})
+        selfPath
+        selfOption
+        selfFile
+        settingsPath
+        settingsOption
+        authPath
+        authCommand
+        ;
 
       # Installers that must never be run.
       installers =
-        if isClaude then
-          "(`rtk init`, `icm init`, `graphify claude install`, `crw setup`, `cargo agents init`)"
-        else
-          "(`opencode upgrade`, `opencode plugin ...`, and any tool's `init` subcommand)";
+        {
+          claude-code = "(`rtk init`, `icm init`, `graphify claude install`, `crw setup`, `cargo agents init`)";
+          opencode = "(`opencode upgrade`, `opencode plugin ...`, and any tool's `init` subcommand)";
+          codex = "(`codex update`, `rtk init`, `icm init`, `crw setup`, `cargo agents init`)";
+        }
+        .${tool};
 
-      # `rtk hook` has no opencode backend, so under opencode rtk is manual.
+      # `rtk hook` ships backends for claude, cursor, gemini, copilot, droid and
+      # vibe - none for opencode or codex, so there the compression is manual.
+      rtkManual = ''
+        There is **no automatic rewriting here** - `rtk hook` has no backend for
+        this tool, so nothing intercepts your bash calls the way it does under
+        Claude Code. If you want the compression you have to ask for it:
+
+        ```sh
+        rtk git status        # instead of `git status`
+        rtk test              # instead of the bare test runner
+        rtk grep <pattern>
+        ```
+
+        Worth doing for commands whose output is large and repetitive (test
+        runs, `git status` in a dirty tree, dependency trees). Not worth doing
+        for short output - the wrapper costs more than it saves.
+      '';
+
       rtkSection =
-        if isClaude then
-          ''
+        {
+          claude-code = ''
             A PreToolUse hook already rewrites ordinary bash commands to their `rtk`
             equivalents, so just run commands normally. Call `rtk` explicitly only
             for its own subcommands, e.g. `rtk gain` for token-savings stats.
@@ -38,27 +90,15 @@
             If a command's output looks truncated or reformatted in a way that
             changes the answer, re-run it as `rtk proxy <cmd>` to bypass filtering
             before concluding anything about the result.
-          ''
-        else
-          ''
-            There is **no automatic rewriting here** - `rtk hook` has no opencode
-            backend, so nothing intercepts your bash calls the way it does under
-            Claude Code. If you want the compression you have to ask for it:
-
-            ```sh
-            rtk git status        # instead of `git status`
-            rtk test              # instead of the bare test runner
-            rtk grep <pattern>
-            ```
-
-            Worth doing for commands whose output is large and repetitive (test
-            runs, `git status` in a dirty tree, dependency trees). Not worth doing
-            for short output - the wrapper costs more than it saves.
           '';
+          opencode = rtkManual;
+          codex = rtkManual;
+        }
+        .${tool};
 
       icmSection =
-        if isClaude then
-          ''
+        {
+          claude-code = ''
             Under Claude Code, icm's *write* side is partly automatic: a
             PostToolUse hook extracts as you work, and a SessionStart hook
             injects a wake-up pack (identity, preferences, critical decisions)
@@ -68,21 +108,35 @@
             switched off on purpose, so nothing arrives mid-session unless you
             ask: run `icm recall` at the point you actually need a fact, rather
             than assuming it was already injected.
-          ''
-        else
-          ''
+          '';
+          opencode = ''
             Under Claude Code icm is also driven by session hooks, which extract
             as it works. opencode has no such wiring, so here **icm only
             remembers what you explicitly tell it to**. If you learn something
             durable in an opencode session, `icm store` it by hand or it is gone
             when the session ends.
           '';
+          codex = ''
+            icm speaks codex's hook schema, so the write side is wired exactly as
+            it is under Claude Code: extraction on PostToolUse and PreCompact, a
+            wake-up pack on SessionStart, a final extraction on SessionEnd.
 
-      # Claude Code ships WebFetch/WebSearch; opencode has webfetch and no
-      # search. The overlap with crw differs, so the "which one" advice does.
+            Codex will not run a hook it has not been shown. Run `/hooks` once,
+            review the four icm entries, and trust them - until then this tool
+            has no memory at all, and a changed hook drops back to untrusted.
+
+            The read side is not automatic here either: `icm recall` when you
+            need a fact.
+          '';
+        }
+        .${tool};
+
+      # Claude Code ships WebFetch/WebSearch, codex ships a cached web_search,
+      # opencode has webfetch and no search. The overlap with crw differs, so
+      # the "which one" advice does.
       crwSection =
-        if isClaude then
-          ''
+        {
+          claude-code = ''
             You already have WebFetch and WebSearch, and they stay the right
             default for one page. WebFetch runs a small model over the page and
             hands back its answer; crw_scrape hands back the page itself as
@@ -98,110 +152,109 @@
             fine for ordinary work; use crw_search when the query itself is
             something I would not want off the box - anything naming this
             repo's private code, a client, or my own data.
-          ''
-        else
-          ''
+          '';
+          opencode = ''
             opencode's built-in `webfetch` handles a single URL. crw is what you
             have for everything past that: markdown extraction rather than raw
             page text, and crawling a site instead of fetching one page of it.
           '';
+          codex = ''
+            Codex has a `web_search` tool of its own, answered from OpenAI's
+            cache rather than the live page. That is the cheap default for "what
+            does this error mean". Reach for crw when you need the page itself -
+            exact API signatures, code samples, tables - or more than one of them.
 
-      memorySplit =
-        if isClaude then
-          ''
+            And for search, `crw_search` is the one that runs on this machine:
+            use it when the query names this repo's private code, a client, or
+            my own data.
+          '';
+        }
+        .${tool};
+
+      # Which *third* store exists and has been switched off differs per tool;
+      # the two-system split itself does not.
+      memoryIntro =
+        {
+          claude-code = ''
             There are exactly two memory systems on this box: `icm` and
             mempalace. Claude Code's own native auto-memory is switched off, so
             do not look for it and do not write to it.
-
-            They are split by *retrieval shape*, not by subject. The same topic
-            can legitimately have an icm fact and a mempalace body of context;
-            what must not happen is the same sentence living in both.
-
-            **icm** - narrow, keyed, global, cheap.
-            One fact per entry, phrased as a sentence. Shared across every tool
-            and every project on this machine. Exact lookup, near-zero cost.
-            Write here when the fact is short, standalone, and you would want it
-            in an unrelated project next month: a resolved root cause, a
-            settled decision, a stated preference.
-
-            **mempalace** - broad, semantic, corpus-scoped, pull-only.
-            Mined in bulk from files and transcripts rather than hand-authored a
-            fact at a time. Write here by pointing it at material
-            (`mempalace mine`), not by transcribing individual facts. Query it
-            when the question is fuzzy, is about this corpus, and only makes
-            sense with surrounding context.
-
-            ### Rules
-
-            1. **One entry point per fact.** Before storing, ask which of the
-               two shapes it is. If you can say it in one sentence that would
-               still make sense in another repo, it is icm. If it only means
-               something next to the material it came from, it is mempalace.
-               Never write both.
-            2. **Read cheapest-first.** `icm recall` is one command against a
-               local index; try it first. Reach for mempalace only when icm
-               comes back empty *and* the question is genuinely semantic. Do not
-               query both to be thorough - that is two lookups to answer one
-               question.
-            3. **Only one system may inject automatically.** icm's session-start
-               wake-up pack owns that slot. mempalace is pull-only by design:
-               it has no hooks installed, and it should not get any. If you find
-               yourself wanting automatic mempalace injection, that is a request
-               to change the nix config, not something to arrange at runtime.
-            4. **Recall is not free and not authoritative.** A stored fact
-               reflects what was true when it was written. If it names a file, a
-               flag or a version, check that it still holds before acting on it.
-          ''
-        else
-          ''
+          '';
+          opencode = ''
             There are exactly two memory systems on this box: `icm` and
             mempalace. Claude Code's own native auto-memory is switched off, so
             do not look for it and do not write to it.
+          '';
+          codex = ''
+            There are exactly two memory systems on this box: `icm` and
+            mempalace. Codex's own `memories` feature is left at its default of
+            off, for the reason Claude Code's native auto-memory is: a third
+            store, invisible to the other two tools, covering ground they
+            already cover between them.
+          '';
+        }
+        .${tool};
 
-            They are split by *retrieval shape*, not by subject. The same topic
-            can legitimately have an icm fact and a mempalace body of context;
-            what must not happen is the same sentence living in both.
-
-            **icm** - narrow, keyed, global, cheap.
-            One fact per entry, phrased as a sentence. Shared across every tool
-            and every project on this machine. Exact lookup, near-zero cost.
-            Write here when the fact is short, standalone, and you would want it
-            in an unrelated project next month: a resolved root cause, a
-            settled decision, a stated preference.
-
-            **mempalace** - broad, semantic, corpus-scoped, pull-only.
-            Mined in bulk from files and transcripts rather than hand-authored a
-            fact at a time. Write here by pointing it at material
-            (`mempalace mine`), not by transcribing individual facts. Query it
-            when the question is fuzzy, is about this corpus, and only makes
-            sense with surrounding context.
-
-            ### Rules
-
-            1. **One entry point per fact.** Before storing, ask which of the
-               two shapes it is. If you can say it in one sentence that would
-               still make sense in another repo, it is icm. If it only means
-               something next to the material it came from, it is mempalace.
-               Never write both.
-            2. **Read cheapest-first.** `icm recall` is one command against a
-               local index; try it first. Reach for mempalace only when icm
-               comes back empty *and* the question is genuinely semantic. Do not
-               query both to be thorough - that is two lookups to answer one
-               question.
-            3. **Only one system may inject automatically.** icm's session-start
-               wake-up pack owns that slot. mempalace is pull-only by design:
-               it has no hooks installed, and it should not get any. If you find
-               yourself wanting automatic mempalace injection, that is a request
-               to change the nix config, not something to arrange at runtime.
-            4. **Recall is not free and not authoritative.** A stored fact
-               reflects what was true when it was written. If it names a file, a
-               flag or a version, check that it still holds before acting on it.
+      memoryCaveat =
+        {
+          claude-code = "";
+          opencode = ''
 
             Caveat specific to opencode: icm's session hooks are Claude
             Code-only, so nothing is injected for you at session start. Anything
             you want remembered has to be stored by hand, and anything you want
             recalled has to be asked for.
           '';
+          codex = ''
+
+            Caveat specific to codex: the icm hooks only fire once you have
+            trusted them in `/hooks`, so check there before assuming a session
+            started with its wake-up pack.
+          '';
+        }
+        .${tool};
+
+      memorySplit = ''
+        ${memoryIntro}
+        They are split by *retrieval shape*, not by subject. The same topic
+        can legitimately have an icm fact and a mempalace body of context;
+        what must not happen is the same sentence living in both.
+
+        **icm** - narrow, keyed, global, cheap.
+        One fact per entry, phrased as a sentence. Shared across every tool
+        and every project on this machine. Exact lookup, near-zero cost.
+        Write here when the fact is short, standalone, and you would want it
+        in an unrelated project next month: a resolved root cause, a
+        settled decision, a stated preference.
+
+        **mempalace** - broad, semantic, corpus-scoped, pull-only.
+        Mined in bulk from files and transcripts rather than hand-authored a
+        fact at a time. Write here by pointing it at material
+        (`mempalace mine`), not by transcribing individual facts. Query it
+        when the question is fuzzy, is about this corpus, and only makes
+        sense with surrounding context.
+
+        ### Rules
+
+        1. **One entry point per fact.** Before storing, ask which of the
+           two shapes it is. If you can say it in one sentence that would
+           still make sense in another repo, it is icm. If it only means
+           something next to the material it came from, it is mempalace.
+           Never write both.
+        2. **Read cheapest-first.** `icm recall` is one command against a
+           local index; try it first. Reach for mempalace only when icm
+           comes back empty *and* the question is genuinely semantic. Do not
+           query both to be thorough - that is two lookups to answer one
+           question.
+        3. **Only one system may inject automatically.** icm's session-start
+           wake-up pack owns that slot. mempalace is pull-only by design:
+           it has no hooks installed, and it should not get any. If you find
+           yourself wanting automatic mempalace injection, that is a request
+           to change the nix config, not something to arrange at runtime.
+        4. **Recall is not free and not authoritative.** A stored fact
+           reflects what was true when it was written. If it names a file, a
+           flag or a version, check that it still holds before acting on it.
+        ${memoryCaveat}'';
     in
     ''
       # Global instructions
@@ -221,6 +274,12 @@
 
       The same goes for `${settingsPath}`, which is generated from
       `${settingsOption}` in that same file.
+
+      Credentials are the one file in that directory nix does not own:
+      `${authPath}` is written by the tool itself when you run
+      `${authCommand}`. If a session is unauthenticated, that command is the
+      fix - never an edit to `${selfFile}`, and never a key pasted into
+      `${settingsPath}`.
 
       Because the prose is shared, an edit to `ai-context.nix` changes the
       instructions for *every* agent on this machine, not just you. Sections that
@@ -476,8 +535,8 @@
         Global scope merges hook entries into `~/.claude/settings.json`, which
         is generated and read-only, so the write fails. The cost is that
         Symposium is inert in a checkout until `cargo agents sync` has been run
-        there once. (Only Claude Code gets hooks at all - for opencode
-        Symposium installs skills and nothing else.)
+        there once. (Symposium knows claude, codex and opencode; it registers
+        project hooks for the first two and installs skills only for opencode.)
       - `~/.symposium/config.toml` is generated from
         `homes/programs/symposium.nix` and is read-only for the same reason as
         the two files above, so anything that would write it fails by design.

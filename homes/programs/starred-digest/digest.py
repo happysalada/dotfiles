@@ -21,8 +21,9 @@ import pathlib
 import re
 import sqlite3
 import subprocess
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 import httpx2
 from prefect import flow, task
@@ -391,21 +392,97 @@ def summarize(highlights: list[Highlight], model: str, limit: int) -> Summaries:
     log = get_run_logger()
     summaries: Summaries = {}
     considered = highlights[:limit]
+    from_commits = 0
     for highlight in considered:
-        notes = clean_notes(highlight.repo.release_body)
-        if not notes:
+        asked = summary_prompt(highlight)
+        if asked is None:
             continue
+        prompt, source = asked
         try:
-            sentence = tidy_sentence(
-                ask_ollama(release_prompt(highlight, notes), model)
-            )
+            sentence = tidy_sentence(ask_ollama(prompt, model))
         except (httpx2.HTTPError, KeyError, ValueError) as error:
             log.warning("summary failed for %s: %s", highlight.repo.name, error)
             continue
-        if sentence and not sentence.lower().startswith("no release notes"):
-            summaries[highlight.repo.name] = sentence
-    log.info("summarised %d of %d releases", len(summaries), len(considered))
+        if not sentence or sentence.lower().startswith("no release notes"):
+            continue
+        if source == "commits":
+            from_commits += 1
+            sentence += " _(from commits)_"
+        summaries[highlight.repo.name] = sentence
+    log.info(
+        "summarised %d of %d releases (%d from commits)",
+        len(summaries),
+        len(considered),
+        from_commits,
+    )
     return summaries
+
+
+RULES = """Rules:
+- ONE sentence, at most 30 words. Begin with a verb.
+- Name only the two or three most significant changes, not every entry.
+- Write about THIS RELEASE only. Never describe what the project is or who it
+  is for - the reader already starred it and knows.
+- No quotation marks, no bullets, no preamble."""
+
+NOTES_PROMPT = """Summarise what changed in one software release, in a single sentence.
+
+Repository: {repo}
+Release: {tag}
+Release notes:
+{notes}
+
+{rules}
+- If the notes say nothing about what changed, reply exactly: no release notes"""
+
+COMMITS_PROMPT = """Summarise what changed in one software release, in a single sentence.
+
+This release shipped no notes, so what follows are the commit subjects it
+contains. Describe the themes across them rather than listing them.
+
+Repository: {repo}
+Release: {tag}
+{count} commits since {previous}:
+{commits}
+
+{rules}"""
+
+
+def summary_prompt(highlight: Highlight) -> tuple[str, str] | None:
+    """What to ask about this release, and which source the answer came from.
+
+    Release notes when there are any. Otherwise the commits the release
+    actually contains, which is the difference between a useful line and
+    "no release notes" for the handful of projects that tag without writing
+    anything - `git log` is, after all, where the notes would have come from.
+    """
+    notes = clean_notes(highlight.repo.release_body)
+    if notes:
+        return (
+            NOTES_PROMPT.format(
+                repo=highlight.repo.name,
+                tag=highlight.tag_display,
+                notes=notes,
+                rules=RULES,
+            ),
+            "notes",
+        )
+
+    found = commits_in_release(highlight.repo)
+    if found is None:
+        return None
+    previous, total, subjects = found
+    return (
+        COMMITS_PROMPT.format(
+            repo=highlight.repo.name,
+            tag=highlight.tag_display,
+            count=total,
+            previous=previous,
+            commits="\n".join(f"- {subject}" for subject in subjects),
+            rules=RULES,
+        ),
+        "commits",
+    )
 
 
 # GitHub's auto-generated notes are mostly scaffolding: image tags, changelog
@@ -430,26 +507,127 @@ def clean_notes(body: str, limit: int = 1500) -> str:
     return re.sub(r"[ \t]{2,}", " ", text).strip()[:limit]
 
 
-def release_prompt(highlight: Highlight, notes: str) -> str:
-    return PROMPT.format(
-        repo=highlight.repo.name, tag=highlight.tag_display, notes=notes
+COMMIT_SUBJECTS = 60  # what the model sees; a big release ships far more
+
+
+def commits_in_release(repo: Repo) -> tuple[str, int, list[str]] | None:
+    """The commits a release contains: (previous tag, total, subjects).
+
+    None when there is no sane base to compare against - a first release, or a
+    monorepo component whose previous tag is not in reach. Comparing against
+    another component's tag would describe the wrong software, so not answering
+    is the better failure.
+    """
+    log = get_run_logger()
+    previous = previous_release_tag(repo)
+    if previous is None or not repo.tag:
+        return None
+    compare = github_rest(f"repos/{repo.name}/compare/{previous}...{repo.tag}")
+    if compare is None:
+        return None
+    subjects = clean_commits(
+        commit["commit"]["message"].splitlines()[0]
+        for commit in compare.get("commits", [])
+    )
+    if not subjects:
+        return None
+    log.info("%s: %s..%s, %d commits", repo.name, previous, repo.tag, len(subjects))
+    return (
+        previous,
+        compare.get("total_commits", len(subjects)),
+        subjects[:COMMIT_SUBJECTS],
     )
 
 
-PROMPT = """Summarise what changed in one software release, in a single sentence.
+RELEASES_SCANNED = 50
 
-Repository: {repo}
-Release: {tag}
-Release notes:
-{notes}
 
-Rules:
-- ONE sentence, at most 30 words. Begin with a verb.
-- Name only the two or three most significant changes, not every entry.
-- Write about THIS RELEASE only. Never describe what the project is or who it
-  is for - the reader already starred it and knows.
-- No quotation marks, no bullets, no preamble.
-- If the notes say nothing about what changed, reply exactly: no release notes"""
+def previous_release_tag(repo: Repo) -> str | None:
+    """Highest released version below this one that shares its tag prefix.
+
+    Neither "the next entry in the list" nor "the previous by date" works.
+    GitHub orders releases by creation, and a project backporting to stable
+    branches publishes v259.9 after v261.3; a monorepo interleaves tags for
+    components that share no history at all. Prefix plus version order is what
+    picks v261.2 over v260.5, and refuses rather than crossing components.
+    """
+    releases = github_rest(
+        f"repos/{repo.name}/releases", {"per_page": str(RELEASES_SCANNED)}
+    )
+    current = parse_version(repo.tag)
+    if releases is None or current is None:
+        return None
+
+    prefix = tag_prefix(repo.tag)
+    best: tuple[tuple[int, int, int], str] | None = None
+    for release in releases:
+        if release.get("draft") or release.get("prerelease"):
+            continue
+        tag = release.get("tag_name") or ""
+        if tag_prefix(tag) != prefix:
+            continue
+        version = parse_version(tag)
+        # "latest" and other rolling tags do not parse, and must not be a base.
+        if version is None or version >= current:
+            continue
+        if best is None or version > best[0]:
+            best = (version, tag)
+    return best[1] if best else None
+
+
+def github_rest(path: str, params: dict[str, str] | None = None) -> Any:
+    """A REST call, for the two things the GraphQL API cannot express.
+
+    Never fatal: this whole path exists to improve bullets that would otherwise
+    read "no release notes", so a failure here costs one line, not the digest.
+    """
+    log = get_run_logger()
+    try:
+        response = http().get(
+            f"https://api.github.com/{path}",
+            headers={
+                "Authorization": f"bearer {github_token()}",
+                "Accept": "application/vnd.github+json",
+            },
+            params=params,
+        )
+        response.raise_for_status()
+        return response.json()
+    except (httpx2.HTTPError, ValueError) as error:
+        log.warning("github rest %s: %s", path, error)
+        return None
+
+
+def tag_prefix(tag: str | None) -> str | None:
+    """Everything before the version number: "v", "rust-v", "beam-worker-".
+
+    Two tags sharing a prefix are the same release series; two that do not may
+    be unrelated components of one repository.
+    """
+    match = VERSION.search(tag or "")
+    return tag[: match.start()] if match and tag else None
+
+
+# Commits that say nothing about what the release does.
+NOISE_COMMIT = re.compile(
+    r"(?i)^(merge (pull request|branch|remote)"
+    r"|(chore|build|ci|docs)(\([^)]*\))?:\s*(bump|release|prepare|version)"
+    r"|bump version|prepare release|release v?\d|version bump|update changelog)"
+)
+
+
+def clean_commits(subjects: Iterable[str]) -> list[str]:
+    """Drop merges and release chores, and collapse repeats, keeping order."""
+    kept: list[str] = []
+    seen: set[str] = set()
+    for subject in subjects:
+        text = ATTRIBUTION.sub("", subject).strip()
+        text = re.sub(r"\s*\(#\d+\)$", "", text)
+        if not text or NOISE_COMMIT.match(text) or text in seen:
+            continue
+        seen.add(text)
+        kept.append(text[:160])
+    return kept
 
 
 @task(retries=2, retry_delay_seconds=10)
@@ -477,7 +655,7 @@ def tidy_sentence(raw: str) -> str:
     and leaves the closer stranded mid-sentence, inside a markdown bullet.
     """
     first = next((line for line in raw.strip().splitlines() if line.strip()), "")
-    first = BOLD.sub("", first).strip().strip('`"\u201c\u201d\u2018\u2019 -')
+    first = BOLD.sub("", first).strip().strip('`"“”‘’ -')
     return LABEL.sub("", first).strip()
 
 

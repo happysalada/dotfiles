@@ -433,10 +433,11 @@
       {
         imports = [
           ../../homes/niri
-          # Shared MCP registry first - claude-code and opencode both read it.
+          # Shared MCP registry first - all three agents read it.
           ../../homes/programs/ai-mcp.nix
           ../../homes/programs/claude-code.nix
           ../../homes/programs/opencode.nix
+          ../../homes/programs/codex.nix
           # Serves that same opencode over the mesh, for the phone.
           ../../homes/programs/opencode-server.nix
           # Registers its own MCP server next to the units it talks to.

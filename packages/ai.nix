@@ -10,6 +10,10 @@ with pkgs;
   # collide on bin/opencode. `opencode upgrade` is likewise a no-op against the
   # read-only store, which is why autoupdate is turned off there.
   #
+  # codex too, via programs.codex in homes/programs/codex.nix - same collision
+  # on bin/codex, and `codex update` fails the same way, which is why
+  # check_for_update_on_startup is false there.
+  #
   # nixpkgs tracks upstream closely but can lag by a few days. `claude update`
   # is a no-op here (the store is read-only) - bump nixpkgs instead, or run it
   # off mise/npm if you need same-day releases.

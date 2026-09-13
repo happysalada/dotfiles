@@ -36,6 +36,9 @@
     [[agent]]
     name = "opencode"
 
+    [[agent]]
+    name = "codex"
+
     [logging]
     level = "info"
 
