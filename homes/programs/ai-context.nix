@@ -121,9 +121,9 @@
             it is under Claude Code: extraction on PostToolUse and PreCompact, a
             wake-up pack on SessionStart, a final extraction on SessionEnd.
 
-            Codex will not run a hook it has not been shown. Run `/hooks` once,
-            review the four icm entries, and trust them - until then this tool
-            has no memory at all, and a changed hook drops back to untrusted.
+            The four icm hooks and their content-derived trust hashes are managed
+            together in `homes/programs/codex.nix`. `/hooks` is useful for
+            inspection, but its trust action cannot write the generated config.
 
             The read side is not automatic here either: `icm recall` when you
             need a fact.
@@ -379,6 +379,13 @@
       packages/basic_cli_set.nix). Prefer them where they apply, but none of
       them override the git rules above, and none of them are worth a detour
       when a plain `rg`/read already answers the question.
+
+      ### xh - HTTP client
+
+      Prefer `xh` over `curl` for ad hoc HTTP requests and API calls. Use
+      `curl` only when reproducing an exact documented command or when the
+      command must run somewhere `xh` is unavailable, and say why. Translate
+      ordinary `curl` examples to `xh` rather than copying them unchanged.
 
       ### ast-grep - structural search and rewrite
 

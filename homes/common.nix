@@ -165,8 +165,29 @@
   jujutsu = {
     enable = true;
     settings = {
-      email = "raphael@megzari.com";
-      name = "happysalada";
+      ui = {
+        editor = "hx";
+        diff-formatter = "delta";
+      };
+
+      merge-tools.delta = {
+        diff-args = [
+          "--no-gitconfig"
+          "--paging=never"
+          "--line-numbers"
+          "$left"
+          "$right"
+        ];
+        diff-expected-exit-codes = [
+          0
+          1
+        ];
+      };
+
+      user = {
+        email = "raphael@megzari.com";
+        name = "happysalada";
+      };
     };
   };
 

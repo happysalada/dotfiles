@@ -13,7 +13,12 @@
 # with ChatGPT, which is what bills sessions to the Plus subscription instead of
 # to an API key. It writes ~/.codex/auth.json, the one file in that directory
 # nix does not own. `codex login --device-auth` is the fallback with no browser.
-{ pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   icm = lib.getExe pkgs.icm;
 
@@ -33,6 +38,32 @@ let
       ];
     }
   ];
+
+  # Codex hashes the normalized hook before allowing it to run. Generate the
+  # same hash so reviewed nix configuration is the trust boundary.
+  trustedHook =
+    {
+      event,
+      command,
+      timeout ? 600,
+    }:
+    {
+      name = "${config.home.homeDirectory}/.codex/hooks.json:${event}:0:0";
+      value.trusted_hash = "sha256:${
+        builtins.hashString "sha256" (
+          builtins.toJSON {
+            event_name = event;
+            hooks = [
+              {
+                type = "command";
+                inherit command timeout;
+                async = false;
+              }
+            ];
+          }
+        )
+      }";
+    };
 in
 {
   programs.codex = {
@@ -81,15 +112,35 @@ in
       # Codex otherwise tries to persist this choice into the generated,
       # read-only config.toml and asks again on the next launch.
       projects."/home/yt/dotfiles".trust_level = "trusted";
+
+      # `/hooks` cannot persist trust into the read-only config.toml. These
+      # hashes admit exactly the hooks declared below and follow icm upgrades.
+      hooks.state = builtins.listToAttrs [
+        (trustedHook {
+          event = "session_start";
+          command = "${icm} hook start";
+        })
+        (trustedHook {
+          event = "post_tool_use";
+          command = "${icm} hook post";
+        })
+        (trustedHook {
+          event = "pre_compact";
+          command = "${icm} hook compact";
+        })
+        (trustedHook {
+          event = "session_end";
+          command = "${icm} hook end";
+          timeout = 3;
+        })
+      ];
     };
 
     # icm's memory, the same four events claude-code.nix registers.
     #
-    # Codex skips a hook it has not been shown: run `/hooks` once, review these
-    # and trust them, or the tool starts every session with no memory. The
-    # `icm hook pre` auto-allow hook is left off here for the same reason it is
-    # there - it returns permission decisions, which is a bypass driven by a
-    # third-party binary.
+    # Trust is derived above from each normalized command. The `icm hook pre`
+    # auto-allow hook is left off because it returns permission decisions, which
+    # is a bypass driven by a third-party binary.
     #
     # SessionEnd is capped at three seconds by codex (most hooks get 600), so
     # end-of-session extraction can be cut short. PostToolUse and PreCompact are

@@ -4,31 +4,28 @@ with pkgs;
   ripgrep # better grep
   tealdeer # terser man
   fd # improved find
-  # procs # process monitor
+  procs # process monitor
   smartmontools # ssd health monitoring
   bottom # a better top
   dua # a better du
   restic # backup
   # oil # better shell language for scripts
   delta # better git diff
-  # sd # better sed
-  # choose # better cut & awk
+  sd # better sed
+  choose # better cut & awk
   # hyperfine # benchmarking tool
-  # xh # http client
+  xh # http client
   # file # get informations about files
   # moreutils # sponge
   # zstd # fast compression
   jaq # jq built in rust
   ast-grep # `sg`, structural/AST search+rewrite where ripgrep's regex runs out
-  # btop # top with cpufreq
   # sequoia-sq # openpgp in rust
   # ruplacer # sed with visual feedback
   ouch # painless (de)compression
   solo2-cli # updating solokeys
   # sqlite
   uutils-coreutils
-  # shell_gpt
-  # gptcommit
   skim # search mode for atuin
   fzf # zoxide's `zi` interactive picker shells out to fzf specifically
   pueue
@@ -36,8 +33,8 @@ with pkgs;
   # rustypaste # file sharing service
   killport # kill a service on a port
   igrep
-  # ast-grep
   gh
+  jjui
   prek # pre-commit in rust; runs this repo's .pre-commit-config.yaml
   bat
   termscp
