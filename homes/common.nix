@@ -124,21 +124,6 @@
     };
   };
 
-  broot = {
-    enable = true;
-    settings.verbs = [
-      {
-        invocation = "edit";
-        shortcut = "e";
-        execution = "$EDITOR {file}";
-      }
-      {
-        invocation = "create {subpath}";
-        execution = "$EDITOR {directory}/{subpath}";
-      }
-    ];
-  };
-
   zoxide = {
     enable = true;
     enableNushellIntegration = true;

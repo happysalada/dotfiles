@@ -147,7 +147,7 @@ in
     grh = "git reset --hard";
     grm = "git rebase master";
     # misc
-    b = "broot -ghi";
+    st = "systemctl-tui";
     # GitHub hides "Releases only" watches from its API; this mines them out of
     # notification history and resets them. `list` first, then `reset --apply`.
     gh-release-unwatch = "nu ${./gh-release-unwatch.nu}";

@@ -45,5 +45,6 @@ with pkgs;
   qsv # data wrangling
   tabiew # tui viewer for csv/parquet/json, sql over files
   ripgrep-all # ripgrep for pdf and all docs
+  systemctl-tui # browse/control systemd units and their logs
   # epy # ebook cli reader
 ]
