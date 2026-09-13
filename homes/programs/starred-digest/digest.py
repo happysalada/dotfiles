@@ -21,6 +21,8 @@ import pathlib
 import re
 import sqlite3
 import subprocess
+from dataclasses import dataclass
+from typing import Literal
 
 import httpx2
 from prefect import flow, task
@@ -40,6 +42,7 @@ STATE_DIR = (
 def starred_digest(
     window_days: int = 7,
     top_n: int = 15,
+    max_summaries: int = 80,
     model: str = "mistral-nemo",
 ) -> str:
     """Fetch every starred repo, pick the highlights, write the digest."""
@@ -54,8 +57,7 @@ def starred_digest(
     previous = load_previous(week)
     save_snapshot(repos, week)
 
-    candidates = select_feature_releases(repos, previous, cutoff)
-    ranked = rank_by_star_delta(candidates)
+    ranked = rank_by_star_delta(select_feature_releases(repos, previous, cutoff))
     fresh = newly_starred(repos, cutoff)
     log.info(
         "%d feature releases in window, %d newly starred, %d repos seen before",
@@ -64,21 +66,38 @@ def starred_digest(
         len(previous),
     )
 
-    sentences = summarize(ranked[:top_n], model) if ranked else {}
+    summaries = summarize(ranked, model, max_summaries)
     path = write_digest(
-        week, ranked, fresh, sentences, top_n, window_days, bool(previous)
+        week, ranked, fresh, summaries, top_n, window_days, bool(previous)
     )
     notify(path, len(ranked))
     return str(path)
 
 
-def fetch_starred() -> list[dict]:
-    """Every starred repo, flattened to one dict each. About 17 requests."""
-    repos: list[dict] = []
+@dataclass(frozen=True, slots=True)
+class Repo:
+    """A starred repository, reduced to the fields the digest actually reads."""
+
+    name: str  # owner/name
+    url: str
+    description: str
+    stars: int
+    archived: bool
+    starred_at: str
+    tag: str | None
+    release_name: str | None
+    release_at: str | None
+    release_body: str
+    release_url: str | None
+
+
+def fetch_starred() -> list[Repo]:
+    """Every starred repo. About 17 requests, one rate-limit point each."""
+    repos: list[Repo] = []
     cursor = None
     while True:
         page = fetch_page(cursor)
-        repos.extend(flatten(edge) for edge in page["edges"])
+        repos.extend(to_repo(edge) for edge in page["edges"])
         if not page["pageInfo"]["hasNextPage"]:
             return repos
         cursor = page["pageInfo"]["endCursor"]
@@ -93,8 +112,7 @@ query($cursor: String) {
       edges {
         starredAt
         node {
-          nameWithOwner url description stargazerCount pushedAt isArchived
-          primaryLanguage { name }
+          nameWithOwner url description stargazerCount isArchived
           latestRelease { name tagName publishedAt description url }
         }
       }
@@ -106,7 +124,7 @@ query($cursor: String) {
 
 @task(retries=3, retry_delay_seconds=[5, 20, 60])
 def fetch_page(cursor: str | None) -> dict:
-    """One page of 100 starred repos. Costs a single rate-limit point."""
+    """One page of 100 starred repos, as GraphQL returns it."""
     response = http().post(
         "https://api.github.com/graphql",
         headers={"Authorization": f"bearer {github_token()}"},
@@ -157,26 +175,23 @@ def github_token() -> str:
     return result.stdout.strip()
 
 
-def flatten(edge: dict) -> dict:
-    """One starred-repository edge, with the bits actually used pulled up."""
+def to_repo(edge: dict) -> Repo:
+    """One starred-repository edge. The only place the API's shape is assumed."""
     node = edge["node"]
     release = node.get("latestRelease") or {}
-    language = node.get("primaryLanguage") or {}
-    return {
-        "repo": node["nameWithOwner"],
-        "url": node["url"],
-        "description": node.get("description") or "",
-        "stars": node["stargazerCount"],
-        "pushed_at": node.get("pushedAt"),
-        "archived": node["isArchived"],
-        "language": language.get("name"),
-        "starred_at": edge["starredAt"],
-        "tag": release.get("tagName"),
-        "release_name": release.get("name"),
-        "release_at": release.get("publishedAt"),
-        "release_body": release.get("description") or "",
-        "release_url": release.get("url"),
-    }
+    return Repo(
+        name=node["nameWithOwner"],
+        url=node["url"],
+        description=node.get("description") or "",
+        stars=node["stargazerCount"],
+        archived=node["isArchived"],
+        starred_at=edge["starredAt"],
+        tag=release.get("tagName"),
+        release_name=release.get("name"),
+        release_at=release.get("publishedAt"),
+        release_body=release.get("description") or "",
+        release_url=release.get("url"),
+    )
 
 
 def week_key(moment: dt.datetime) -> str:
@@ -185,7 +200,18 @@ def week_key(moment: dt.datetime) -> str:
     return f"{year}-W{week:02d}"
 
 
-def load_previous(week: str) -> dict[str, dict]:
+@dataclass(frozen=True, slots=True)
+class Baseline:
+    """What one repo looked like in the previous weekly snapshot."""
+
+    stars: int
+    tag: str | None
+
+
+Snapshot = dict[str, Baseline]  # keyed by Repo.name
+
+
+def load_previous(week: str) -> Snapshot:
     """The most recent snapshot taken before `week`. Empty on the first run.
 
     Keying by week rather than by run is what makes "week over week" mean what
@@ -201,7 +227,7 @@ def load_previous(week: str) -> dict[str, dict]:
         rows = connection.execute(
             "SELECT repo, stars, tag FROM repo_state WHERE week = ?", (baseline,)
         ).fetchall()
-    return {repo: {"stars": stars, "tag": tag} for repo, stars, tag in rows}
+    return {repo: Baseline(stars=stars, tag=tag) for repo, stars, tag in rows}
 
 
 SCHEMA = """
@@ -226,14 +252,14 @@ KEEP_WEEKS = 8
 
 
 @task
-def save_snapshot(repos: list[dict], week: str) -> None:
+def save_snapshot(repos: list[Repo], week: str) -> None:
     """Record this week, and drop snapshots too old to be anyone's baseline."""
     with db() as connection:
         connection.executemany(
             "INSERT INTO repo_state (week, repo, stars, tag) VALUES (?,?,?,?) "
             "ON CONFLICT(week, repo) DO UPDATE SET "
             "stars=excluded.stars, tag=excluded.tag",
-            [(week, r["repo"], r["stars"], r["tag"]) for r in repos],
+            [(week, r.name, r.stars, r.tag) for r in repos],
         )
         connection.execute(
             "DELETE FROM repo_state WHERE week NOT IN "
@@ -243,34 +269,56 @@ def save_snapshot(repos: list[dict], week: str) -> None:
         )
 
 
+Bump = Literal["major", "minor", "patch", "none", "unknown"]
+
+# What counts as worth reporting. "none" means the tag has not moved since last
+# week, so the release was already in a previous digest.
+FEATURE_BUMPS: frozenset[Bump] = frozenset({"major", "minor"})
+
+
+@dataclass(frozen=True, slots=True)
+class Highlight:
+    """A release worth reporting, with the context that ranked it."""
+
+    repo: Repo
+    bump: Bump
+    star_delta: int | None  # None when the repo predates the baseline
+    previous_tag: str | None
+
+    @property
+    def tag_display(self) -> str:
+        """`Repo.tag` is optional, but selection only keeps parseable ones."""
+        return self.repo.tag or "?"
+
+
 PRERELEASE = re.compile(r"(?i)(alpha|beta|rc\d|[-.]rc|dev|nightly|snapshot|preview)")
 
 
 def select_feature_releases(
-    repos: list[dict], previous: dict[str, dict], cutoff: dt.datetime
-) -> list[dict]:
+    repos: list[Repo], previous: Snapshot, cutoff: dt.datetime
+) -> list[Highlight]:
     """Releases published in the window that are more than a bug-fix bump."""
     selected = []
     for repo in repos:
-        if repo["archived"] or not repo["release_at"]:
+        if repo.archived or not repo.release_at:
             continue
-        if parse_time(repo["release_at"]) < cutoff:
+        if parse_time(repo.release_at) < cutoff:
             continue
-        if PRERELEASE.search(repo["tag"] or ""):
+        if PRERELEASE.search(repo.tag or ""):
             continue
 
-        was = previous.get(repo["repo"])
-        bump = bump_kind(was["tag"] if was else None, repo["tag"])
-        if bump not in ("major", "minor"):
+        was = previous.get(repo.name)
+        bump = bump_kind(was.tag if was else None, repo.tag)
+        if bump not in FEATURE_BUMPS:
             continue
 
         selected.append(
-            repo
-            | {
-                "bump": bump,
-                "star_delta": repo["stars"] - was["stars"] if was else None,
-                "previous_tag": was["tag"] if was else None,
-            }
+            Highlight(
+                repo=repo,
+                bump=bump,
+                star_delta=repo.stars - was.stars if was else None,
+                previous_tag=was.tag if was else None,
+            )
         )
     return selected
 
@@ -279,7 +327,7 @@ def parse_time(value: str) -> dt.datetime:
     return dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
-def bump_kind(previous_tag: str | None, current_tag: str | None) -> str:
+def bump_kind(previous_tag: str | None, current_tag: str | None) -> Bump:
     """major/minor/patch for this release, against the one seen last week.
 
     With no previous tag - a repo's first appearance - the tag has to speak for
@@ -311,61 +359,101 @@ def parse_version(tag: str | None) -> tuple[int, int, int] | None:
     return (int(match[1]), int(match[2]), int(match[3] or 0))
 
 
-def rank_by_star_delta(candidates: list[dict]) -> list[dict]:
+def rank_by_star_delta(candidates: list[Highlight]) -> list[Highlight]:
     """Biggest weekly star gain first; repos with no history sink to the end."""
     return sorted(
         candidates,
-        key=lambda c: (c["star_delta"] is not None, c["star_delta"] or 0, c["stars"]),
+        key=lambda c: (
+            c.star_delta is not None,
+            c.star_delta or 0,
+            c.repo.stars,
+        ),
         reverse=True,
     )
 
 
-def newly_starred(repos: list[dict], cutoff: dt.datetime) -> list[dict]:
-    return [r for r in repos if parse_time(r["starred_at"]) >= cutoff]
+def newly_starred(repos: list[Repo], cutoff: dt.datetime) -> list[Repo]:
+    return [r for r in repos if parse_time(r.starred_at) >= cutoff]
 
 
-def summarize(highlights: list[dict], model: str) -> dict[str, str]:
-    """One sentence per repo, keyed by repo.
+Summaries = dict[str, str]  # Repo.name -> one line about what the release changed
 
-    The model gets no say over links, tags or counts: it hallucinates version
-    numbers, and every one of those facts is already known here. Never fatal -
-    the ranked data is the deliverable and the prose is a bonus.
+
+def summarize(highlights: list[Highlight], model: str, limit: int) -> Summaries:
+    """One line per release, describing the release rather than the repository.
+
+    Every release gets its own call. Batching fifteen into one prompt and asking
+    for a strict line format is what the first version did, and a 12B model
+    simply ignored the format - it answered with markdown sections, nothing
+    parsed, and every bullet silently fell back to the repo blurb. One release
+    per call needs no format at all: the reply *is* the sentence.
     """
     log = get_run_logger()
-    releases = "\n\n".join(
-        f"- {h['repo']} ({h['tag']}, {h['bump']} bump, "
-        f"{fmt_delta(h['star_delta'])} stars this week, {h['stars']} total)\n"
-        f"  about: {h['description'][:300]}\n"
-        f"  notes: {(h['release_body'] or '(none)')[:1200]}"
-        for h in highlights
+    summaries: Summaries = {}
+    considered = highlights[:limit]
+    for highlight in considered:
+        notes = clean_notes(highlight.repo.release_body)
+        if not notes:
+            continue
+        try:
+            sentence = tidy_sentence(
+                ask_ollama(release_prompt(highlight, notes), model)
+            )
+        except (httpx2.HTTPError, KeyError, ValueError) as error:
+            log.warning("summary failed for %s: %s", highlight.repo.name, error)
+            continue
+        if sentence and not sentence.lower().startswith("no release notes"):
+            summaries[highlight.repo.name] = sentence
+    log.info("summarised %d of %d releases", len(summaries), len(considered))
+    return summaries
+
+
+# GitHub's auto-generated notes are mostly scaffolding: image tags, changelog
+# links, "by @user in #123". The signal is the pull request titles underneath.
+MD_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+ATTRIBUTION = re.compile(r"\s+by\s+@[\w-]+(?:\s+in\s+(?:#\d+|https?://\S+))?")
+FULL_CHANGELOG = re.compile(r"(?im)^\s*\*{0,2}Full Changelog\*{0,2}\s*:.*$")
+# A list item of one whitespace-free token is an image ref or a bare url, never
+# prose - which is what strips the container-tag blocks big projects open with.
+LONE_TOKEN = re.compile(r"(?im)^\s*(?:[-*+]\s*)?(?:!\[|<img)?\S+$")
+HEADING = re.compile(r"(?m)^#{1,6}\s*")
+
+
+def clean_notes(body: str, limit: int = 1500) -> str:
+    """Strip the scaffolding so the model sees changes rather than boilerplate."""
+    text = FULL_CHANGELOG.sub("", body or "")
+    text = MD_LINK.sub(r"\1", text)
+    text = ATTRIBUTION.sub("", text)
+    text = LONE_TOKEN.sub("", text)
+    text = HEADING.sub("", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return re.sub(r"[ \t]{2,}", " ", text).strip()[:limit]
+
+
+def release_prompt(highlight: Highlight, notes: str) -> str:
+    return PROMPT.format(
+        repo=highlight.repo.name, tag=highlight.tag_display, notes=notes
     )
-    try:
-        raw = call_ollama(PROMPT.format(releases=releases), model)
-    except (httpx2.HTTPError, KeyError, ValueError) as error:
-        log.warning("ollama summary failed, writing digest without prose: %s", error)
-        return {}
-    return parse_sentences(raw, {h["repo"] for h in highlights})
 
 
-PROMPT = """You are writing the highlights of a weekly digest for a developer, \
-covering new releases in repositories they have starred.
+PROMPT = """Summarise what changed in one software release, in a single sentence.
 
-Write exactly one line per release, in the order given, formatted as:
+Repository: {repo}
+Release: {tag}
+Release notes:
+{notes}
 
-owner/name :: one sentence on what actually changed and why it might matter
-
-Name the concrete feature. If the release notes say nothing substantive, say \
-that plainly rather than padding. Do not add links, version numbers, bullets, \
-numbering, preamble or closing text - only those lines.
-
-Releases:
-
-{releases}
-"""
+Rules:
+- ONE sentence, at most 30 words. Begin with a verb.
+- Name only the two or three most significant changes, not every entry.
+- Write about THIS RELEASE only. Never describe what the project is or who it
+  is for - the reader already starred it and knows.
+- No quotation marks, no bullets, no preamble.
+- If the notes say nothing about what changed, reply exactly: no release notes"""
 
 
 @task(retries=2, retry_delay_seconds=10)
-def call_ollama(prompt: str, model: str) -> str:
+def ask_ollama(prompt: str, model: str) -> str:
     ollama = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434")
     response = http().post(
         f"{ollama}/api/generate",
@@ -373,25 +461,31 @@ def call_ollama(prompt: str, model: str) -> str:
         timeout=600,
     )
     response.raise_for_status()
-    return response.json()["response"].strip()
+    return response.json()["response"]
 
 
-def parse_sentences(raw: str, expected: set[str]) -> dict[str, str]:
-    """Pull `repo :: sentence` lines out, ignoring whatever else it emitted."""
-    sentences = {}
-    for line in raw.splitlines():
-        repo, _, sentence = line.partition("::")
-        repo = repo.strip().lstrip("-*# ").strip("`*")
-        if repo in expected and sentence.strip():
-            sentences[repo] = sentence.strip()
-    return sentences
+# Markdown the model adds no matter how the prompt is worded.
+BOLD = re.compile(r"\*\*|__")
+LABEL = re.compile(r"(?i)^(?:released?|summary|answer)\s*:\s*")
+
+
+def tidy_sentence(raw: str) -> str:
+    """First line, stripped of the markdown and labels it adds regardless.
+
+    Bold is deleted outright rather than balanced: the model often emits
+    `**Implemented** the thing`, and trimming only the ends takes the opener
+    and leaves the closer stranded mid-sentence, inside a markdown bullet.
+    """
+    first = next((line for line in raw.strip().splitlines() if line.strip()), "")
+    first = BOLD.sub("", first).strip().strip('`"\u201c\u201d\u2018\u2019 -')
+    return LABEL.sub("", first).strip()
 
 
 def write_digest(
     week: str,
-    ranked: list[dict],
-    fresh: list[dict],
-    sentences: dict[str, str],
+    ranked: list[Highlight],
+    fresh: list[Repo],
+    summaries: Summaries,
     top_n: int,
     window_days: int,
     had_history: bool,
@@ -416,13 +510,15 @@ def write_digest(
 
     if ranked:
         lines += ["", "## Highlights", ""] + [
-            bullet(h, sentences.get(h["repo"], "")) for h in ranked[:top_n]
+            bullet(h, summaries.get(h.repo.name, "")) for h in ranked[:top_n]
         ]
     if len(ranked) > top_n:
-        lines += ["", "## Also shipped", ""] + [bullet(h) for h in ranked[top_n:]]
+        lines += ["", "## Also shipped", ""] + [
+            bullet(h, summaries.get(h.repo.name, "")) for h in ranked[top_n:]
+        ]
     if fresh:
         lines += ["", "## Newly starred", ""] + [
-            f"- [{r['repo']}]({r['url']}) - {r['description'][:160]}" for r in fresh
+            f"- [{r.name}]({r.url}) - {r.description[:160]}" for r in fresh
         ]
 
     STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -435,13 +531,26 @@ def write_digest(
     return path
 
 
-def bullet(h: dict, sentence: str = "") -> str:
+def bullet(h: Highlight, sentence: str = "") -> str:
     """Every fact here is the API's; only `sentence` comes from the model."""
     return (
-        f"- [{h['repo']}]({h['release_url'] or h['url']}) `{h['tag']}` "
-        f"({h['bump']}, {fmt_delta(h['star_delta'])} stars) - "
-        f"{sentence or h['description'][:160]}"
+        f"- [{h.repo.name}]({h.repo.release_url or h.repo.url}) `{h.tag_display}` "
+        f"({h.bump}, {fmt_delta(h.star_delta)} stars) - "
+        f"{sentence or release_headline(h.repo)}"
     )
+
+
+def release_headline(repo: Repo) -> str:
+    """The best non-model line about the release, for when the model had none.
+
+    Deliberately never the repo description: a digest that tells you what a
+    project is has told you the one thing you already knew when you starred it.
+    """
+    if repo.release_name and repo.release_name.strip() not in ("", repo.tag):
+        return repo.release_name.strip()[:160]
+    notes = clean_notes(repo.release_body, limit=400)
+    first = next((ln.strip(" -*+") for ln in notes.splitlines() if ln.strip()), "")
+    return first[:160] or "no release notes"
 
 
 def fmt_delta(delta: int | None) -> str:

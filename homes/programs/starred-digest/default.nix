@@ -35,6 +35,10 @@ in
 
     Service = {
       Type = "oneshot";
+      # prefect resolves PREFECT_HOME at import, before the flow creates its
+      # state directory, and warns that it could not make it. Nothing else
+      # creates this path on a first run.
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${stateDir}/prefect";
       ExecStart = "${python}/bin/python ${./digest.py}";
 
       Environment = [

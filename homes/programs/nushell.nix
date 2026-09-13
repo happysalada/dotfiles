@@ -63,6 +63,12 @@ in
   ];
 
   envFile.text = ''
+    # helix.nix's `defaultEditor` only writes EDITOR into hm-session-vars.sh,
+    # a POSIX script nushell never sources - so yazi and friends fell through
+    # to their `EDITOR-or-vi` default and opened vim.
+    $env.EDITOR = "hx"
+    $env.VISUAL = "hx"
+
     $env.NIXPKGS_ALLOW_UNFREE = 1
 
     # `crw search` from the shell. Without it crw falls back to its built-in
@@ -142,6 +148,9 @@ in
     grm = "git rebase master";
     # misc
     b = "broot -ghi";
+    # GitHub hides "Releases only" watches from its API; this mines them out of
+    # notification history and resets them. `list` first, then `reset --apply`.
+    gh-release-unwatch = "nu ${./gh-release-unwatch.nu}";
   };
 
   extraConfig = ''
