@@ -110,6 +110,15 @@ with pkgs;
   # the first writes a skill into ~/.claude/, the second targets the read-only
   # store.
 
+  (callPackage ./ai/revdiff.nix { }) # diff review TUI: comment on lines, quit,
+  # and the comments come back to the agent as `## file:line` markdown. Its
+  # skill is registered for all three agents in homes/programs/ai-skills.nix,
+  # and its launcher opens revdiff as a Zellij floating pane - plain Ghostty is
+  # not enough, that backend is macOS-only. Not in nixpkgs (checked 2026-09-14).
+  #
+  # Do NOT run `/plugin install revdiff@revdiff`, `codex plugin add` or its
+  # opencode setup.sh - each writes into config generated here.
+
   nono # capability-based sandbox for agents: `nono run -- claude`.
   # NOTE: nixpkgs disables the command_policies tests because nono's ELF
   # resolver cannot find libc.so.6 for libgcc_s.so.1 - that feature is

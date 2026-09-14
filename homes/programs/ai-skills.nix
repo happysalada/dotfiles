@@ -81,6 +81,10 @@ let
     orx = ./skills/orx;
   };
 
+  # Built into its package with the script paths pinned to the store, so the
+  # skill and the binary it launches can never be different versions.
+  revdiff = pkgs.callPackage ../../packages/ai/revdiff.nix { };
+
   # Both modules resolve a store-path string to a whole skill directory.
   fromRepo =
     src: names:
@@ -91,4 +95,9 @@ let
       }) names
     );
 in
-fromRepo scientific-agent-skills quantitative // fromRepo superpowers methodology // local
+fromRepo scientific-agent-skills quantitative
+// fromRepo superpowers methodology
+// local
+// {
+  revdiff = "${revdiff}/share/revdiff/skill";
+}
