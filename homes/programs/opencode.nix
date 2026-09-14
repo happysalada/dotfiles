@@ -17,6 +17,7 @@
 { pkgs, lib, ... }:
 let
   aiContext = import ./ai-context.nix { inherit lib; };
+  aiAgents = import ./ai-agents.nix { inherit lib pkgs; };
 in
 {
   programs.opencode = {
@@ -99,62 +100,8 @@ in
     # -> ~/.config/opencode/skills/, same set claude-code gets.
     skills = import ./ai-skills.nix { inherit pkgs; };
 
-    # Native subagents. Read-only roles have no shell because an edit deny does
-    # not stop a shell command from writing; the primary thread runs tests.
-    agents = {
-      explorer = ''
-        ---
-        description: Read-only codebase explorer for mapping files, symbols, and execution paths before changes.
-        mode: subagent
-        model: openai/gpt-5.6-terra
-        options:
-          reasoningEffort: medium
-        permission:
-          edit: deny
-          bash: deny
-          task: deny
-        ---
-
-        Stay in exploration mode. Trace the real execution path with targeted
-        searches and file reads, cite exact files and symbols, and return a
-        concise evidence summary. Do not propose speculative fixes or delegate.
-      '';
-
-      worker = ''
-        ---
-        description: Implementation worker for one bounded change after the desired behavior is understood.
-        mode: subagent
-        model: openai/gpt-5.6-terra
-        options:
-          reasoningEffort: medium
-        permission:
-          edit: allow
-          task: deny
-        ---
-
-        Implement only the bounded task assigned by the primary thread. Make the
-        smallest defensible change, preserve unrelated work, run focused
-        verification, and report changed files and results. Do not delegate.
-      '';
-
-      reviewer = ''
-        ---
-        description: Read-only reviewer for correctness, security, regressions, and missing tests.
-        mode: subagent
-        model: openai/gpt-5.6-terra
-        options:
-          reasoningEffort: high
-        permission:
-          edit: deny
-          bash: deny
-          task: deny
-        ---
-
-        Review like an owner. Lead with concrete findings ordered by severity,
-        cite exact files and lines, and prioritize correctness, security,
-        behavior regressions, and missing tests. Do not edit or delegate.
-      '';
-    };
+    # -> ~/.config/opencode/agents/, same roles codex and claude-code get.
+    agents = aiAgents.mkAgents { tool = "opencode"; };
 
     # -> ~/.config/opencode/AGENTS.md
     context = aiContext.mkContext { tool = "opencode"; };

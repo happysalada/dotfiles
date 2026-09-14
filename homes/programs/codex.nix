@@ -25,6 +25,9 @@ let
   # Global instructions, shared with claude-code and opencode.
   aiContext = import ./ai-context.nix { inherit lib; };
 
+  # Subagent roles, shared with claude-code and opencode.
+  aiAgents = import ./ai-agents.nix { inherit lib pkgs; };
+
   # One matcher-less hook entry (fires on every event of its kind). Codex reuses
   # Claude Code's event names and JSON shape, which is why icm needs no
   # per-tool wiring beyond this.
@@ -216,44 +219,8 @@ in
   home.file = {
     # Let the managed daemon launch the Nix package without enabling its updater.
     ".codex/packages/standalone/current/bin/codex".source = lib.getExe config.programs.codex.package;
-
-    ".codex/agents/explorer.toml".source = (pkgs.formats.toml { }).generate "codex-agent-explorer" {
-      name = "explorer";
-      description = "Read-only codebase explorer for mapping files, symbols, and execution paths before changes.";
-      model = "gpt-5.6-terra";
-      model_reasoning_effort = "medium";
-      sandbox_mode = "read-only";
-      developer_instructions = ''
-        Stay in exploration mode. Trace the real execution path with targeted
-        searches and file reads, cite exact files and symbols, and return a
-        concise evidence summary. Do not propose speculative fixes or delegate.
-      '';
-    };
-
-    ".codex/agents/worker.toml".source = (pkgs.formats.toml { }).generate "codex-agent-worker" {
-      name = "worker";
-      description = "Implementation worker for one bounded change after the desired behavior is understood.";
-      model = "gpt-5.6-terra";
-      model_reasoning_effort = "medium";
-      sandbox_mode = "workspace-write";
-      developer_instructions = ''
-        Implement only the bounded task assigned by the primary thread. Make the
-        smallest defensible change, preserve unrelated work, run focused
-        verification, and report changed files and results. Do not delegate.
-      '';
-    };
-
-    ".codex/agents/reviewer.toml".source = (pkgs.formats.toml { }).generate "codex-agent-reviewer" {
-      name = "reviewer";
-      description = "Read-only reviewer for correctness, security, regressions, and missing tests.";
-      model = "gpt-5.6-terra";
-      model_reasoning_effort = "high";
-      sandbox_mode = "read-only";
-      developer_instructions = ''
-        Review like an owner. Lead with concrete findings ordered by severity,
-        cite exact files and lines, and prioritize correctness, security,
-        behavior regressions, and missing tests. Do not edit or delegate.
-      '';
-    };
-  };
+  }
+  // lib.mapAttrs' (
+    name: source: lib.nameValuePair ".codex/agents/${name}.toml" { inherit source; }
+  ) (aiAgents.mkAgents { tool = "codex"; });
 }

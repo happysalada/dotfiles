@@ -41,6 +41,9 @@ let
   # Global instructions, shared with opencode.
   aiContext = import ./ai-context.nix { inherit lib; };
 
+  # Subagent roles, shared with codex and opencode.
+  aiAgents = import ./ai-agents.nix { inherit lib pkgs; };
+
   # One hook entry, matcher-less (fires on every event of its kind).
   cmd = command: {
     hooks = [
@@ -240,6 +243,9 @@ in
 
     # Cherry-picked upstream skills, shared with opencode.
     skills = import ./ai-skills.nix { inherit pkgs; };
+
+    # -> ~/.claude/agents/, same roles codex and opencode get.
+    agents = aiAgents.mkAgents { tool = "claude-code"; };
 
     # -> ~/.claude/CLAUDE.md, same prose as opencode's AGENTS.md.
     context = aiContext.mkContext { tool = "claude-code"; };
