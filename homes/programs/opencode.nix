@@ -21,7 +21,16 @@ in
 {
   programs.opencode = {
     enable = true;
-    package = pkgs.opencode;
+    package = pkgs.symlinkJoin {
+      name = "opencode-${pkgs.opencode.version}";
+      paths = [ pkgs.opencode ];
+      nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
+      postBuild = ''
+        wrapProgram "$out/bin/opencode" \
+          --set OPENCODE_DISABLE_CLAUDE_CODE_SKILLS 1
+      '';
+      inherit (pkgs.opencode) version meta;
+    };
 
     # Pulls mempalace + fff from programs.mcp.servers.
     enableMcpIntegration = true;

@@ -18,7 +18,14 @@ with pkgs;
   # file # get informations about files
   # moreutils # sponge
   # zstd # fast compression
-  jaq # jq built in rust
+  (symlinkJoin {
+    name = "jaq-with-jq-alias-${jaq.version}";
+    paths = [ jaq ];
+    postBuild = ''
+      ln -s jaq "$out/bin/jq"
+    '';
+  }) # jq-compatible Rust implementation, also exposed under the familiar name
+  jsongrep # `jg`, search structured data without jq filters
   ast-grep # `sg`, structural/AST search+rewrite where ripgrep's regex runs out
   # sequoia-sq # openpgp in rust
   # ruplacer # sed with visual feedback

@@ -309,8 +309,8 @@
       nix = {
         package = pkgs.nixVersions.latest;
         settings = {
-          # 32 x 32 is multiplicative and memory-blind; rustc peaks past 12 GB per crate.
-          cores = 8;
+          # Four builds may each use all 32 threads, oversubscribing CPU and memory.
+          cores = 0;
           max-jobs = 4;
           auto-optimise-store = true;
           download-buffer-size = 104857600; # 100 Mb

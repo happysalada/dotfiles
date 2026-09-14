@@ -387,6 +387,13 @@
       command must run somewhere `xh` is unavailable, and say why. Translate
       ordinary `curl` examples to `xh` rather than copying them unchanged.
 
+      ### jsongrep - structured data search
+
+      Prefer `jg` over `jq` when selecting or searching fields in JSON, JSONL,
+      YAML or TOML. It accepts files or stdin and its query language is simpler
+      than a jq pipeline. `jq` is a compatibility alias for `jaq`; use either
+      only when a transformation is beyond what `jg` expresses.
+
       ### ast-grep - structural search and rewrite
 
       Invoke it as `ast-grep`, never as `sg` (`sg` is the setgid group utility

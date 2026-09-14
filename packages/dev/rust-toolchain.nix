@@ -44,7 +44,7 @@ with pkgs;
   cargo-machete # dependencies still declared in Cargo.toml but no longer used,
   # a common leftover once a module gets refactored away.
 
-  cargo-semver-checks # whether a change to a published crate is breaking,
+  # cargo-semver-checks # whether a change to a published crate is breaking,
   # before the version number is picked.
 
   # ---- the link step ----

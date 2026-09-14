@@ -67,8 +67,23 @@ in
     settings = {
       model = "opus";
       theme = "dark";
+      # Keep conversation output in Zellij's native scrollback.
+      tui = "default";
       effortLevel = "high";
       agentPushNotifEnabled = true;
+
+      # Every interactive session registers itself for Remote Control, so the
+      # phone can pick up whatever the terminal is already doing without
+      # having to have remembered to type `/remote-control` first. The session
+      # still runs here - claude.ai/code is only a window onto this machine.
+      #
+      # Costs one remote session per `claude` process, and the auto-generated
+      # title is `strix-<adjective>-<noun>` until the first prompt renames it,
+      # so name anything you intend to come back to with `/rename`.
+      #
+      # A `false` in a repo's .claude/settings.json still wins over this; a
+      # `true` there is ignored, which is why it has to live here.
+      remoteControlAtStartup = true;
 
       # Model, context gauge and session cost, rendered by starship rather than
       # a hand-rolled script - the profile lives beside the shell prompt in

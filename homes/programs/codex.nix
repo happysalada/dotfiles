@@ -91,6 +91,7 @@ in
       # workspace-write sandbox also protects .git, which is the second half of
       # the Git rules below.
       approval_policy = "on-request";
+      approvals_reviewer = "auto_review";
       sandbox_mode = "workspace-write";
 
       # Cached results come from OpenAI's index rather than a live fetch, which
@@ -213,6 +214,9 @@ in
   # Codex discovers personal roles directly under $CODEX_HOME/agents. Home
   # Manager does not yet expose a programs.codex.agents option.
   home.file = {
+    # Let the managed daemon launch the Nix package without enabling its updater.
+    ".codex/packages/standalone/current/bin/codex".source = lib.getExe config.programs.codex.package;
+
     ".codex/agents/explorer.toml".source = (pkgs.formats.toml { }).generate "codex-agent-explorer" {
       name = "explorer";
       description = "Read-only codebase explorer for mapping files, symbols, and execution paths before changes.";
