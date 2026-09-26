@@ -211,15 +211,12 @@
   vdirsyncer.enable = true; # contacts + calendar sync
   mbsync.enable = true; # main sync
 
-  keychain = {
-    enable = true;
-    # Off because home-manager's snippet is unguarded, and GDM runs config.nu in
-    # a login shell just to import the environment - where keychain's passphrase
-    # prompt has no terminal to answer it. programs/nushell.nix reimplements it
-    # behind $nu.is-interactive.
-    enableNushellIntegration = false;
-    keys = [ "id_ed25519" ];
-  };
+  # No keychain. It cached a passphrase the key does not have, via a second
+  # agent gcr-ssh-agent already provides - and 3.0.4's coordinator prompts on
+  # /dev/tty then selects on it with no timeout, which from GDM's env-import
+  # login shell froze the graphical login for minutes. gcr-ssh-agent.socket
+  # exports SSH_AUTH_SOCK on its own, and ssh.nix's AddKeysToAgent loads the
+  # key on first use, so nothing here replaces it.
 
   mise = {
     enable = true;

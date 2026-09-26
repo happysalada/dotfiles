@@ -156,25 +156,6 @@ in
   extraConfig = ''
     ${useLines}
 
-    # Replaces programs.keychain.enableNushellIntegration, which emits this
-    # unguarded. keychain shells out to ssh-add, and GDM runs config.nu in a
-    # login shell just to import the environment - where the passphrase prompt
-    # has no terminal to answer it, printing "Press Enter to initialize keys"
-    # into the session log while the graphical login waits on it.
-    # `if` takes a block, not a closure, so load-env still lands in this scope.
-    if $nu.is-interactive {
-      let keychain_env = (
-        SHELL=bash ${config.programs.keychain.package}/bin/keychain --eval ${
-          lib.concatStringsSep " " (config.programs.keychain.extraFlags ++ config.programs.keychain.keys)
-        }
-        | parse -r '(\w+)="?(.*?)"?; export \1'
-        | transpose -ird
-      )
-      if not ($keychain_env | is-empty) {
-        $keychain_env | load-env
-      }
-    }
-
     # keybindings and menus are lists: append, never assign, or nushell's
     # defaults (and atuin's ctrl-r, sourced later) are lost
     $env.config.menus = ($env.config.menus | append [
