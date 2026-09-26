@@ -252,6 +252,12 @@
 
       services.printing.enable = true;
 
+      # GNOME brings avahi, and resolved answers mDNS too: two responders on
+      # one port, which avahi warns makes discovery unreliable. Avahi is the one
+      # cups and GNOME talk to, so it keeps the job and gets the NSS hook.
+      services.avahi.nssmdns4 = true;
+      services.resolved.settings.Resolve.MulticastDNS = false;
+
       services.pulseaudio.enable = false;
       security.rtkit.enable = true;
       services.pipewire = {
@@ -366,6 +372,10 @@
         MemoryHigh = "40G";
         MemoryMax = "48G";
       };
+
+      # Every reboot sat 90s on a terminal scope: claude processes spawned after
+      # the reboot request ignore SIGTERM until the stop timeout SIGKILLs them.
+      systemd.user.settings.Manager.DefaultTimeoutStopSec = "10s";
 
       nixpkgs = {
         config.allowUnfree = true;

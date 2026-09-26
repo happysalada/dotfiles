@@ -226,6 +226,9 @@ let
       settings = baseSettings // {
         "browser.startup.page" = startupPage;
         "browser.startup.homepage" = builtins.concatStringsSep "|" urls;
+        # Otherwise a new profile's first launch shows about:welcome instead
+        # of `urls`, and a Firefox upgrade swaps in its what's-new page.
+        "browser.startup.homepage_override.mstone" = "ignore";
       };
       search = searchConfig;
       userChrome = chromeCss;
