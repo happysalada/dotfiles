@@ -86,7 +86,7 @@ in
 
   # niri hot-reloads this file on save, so most tweaks need no rebuild - but
   # the file is a read-only store symlink, so edit it here and `switch`.
-  xdg.configFile."niri/config.kdl".text = import ./config.kdl.nix { inherit pkgs; };
+  xdg.configFile."niri/config.kdl".text = import ./config.kdl.nix { inherit pkgs config; };
 
   # ---------------------------------------------------------------------
   # launcher (the rofi replacement)

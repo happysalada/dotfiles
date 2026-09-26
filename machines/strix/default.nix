@@ -343,7 +343,20 @@
         gc = {
           automatic = true;
           options = "--delete-older-than 14d";
+          # A laptop is rarely up at 03:15, so the default Persistent=true turns
+          # every missed run into a catch-up that fires seconds into the next
+          # boot. After five days down that was 16.7 GB and 15041 paths, which
+          # held the screen black for 37s past the password prompt.
+          persistent = false;
         };
+      };
+
+      # Belt to the above's braces, for the runs that do land while I am typing.
+      # Only the CPU half bites on this machine: ionice needs a scheduler that
+      # honours ioprio and both NVMEs run `none`.
+      systemd.services.nix-gc.serviceConfig = {
+        CPUSchedulingPolicy = "idle";
+        IOSchedulingClass = "idle";
       };
 
       # Without a ceiling the OOM killer takes the desktop instead: user@.service

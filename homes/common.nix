@@ -213,7 +213,11 @@
 
   keychain = {
     enable = true;
-    enableNushellIntegration = true;
+    # Off because home-manager's snippet is unguarded, and GDM runs config.nu in
+    # a login shell just to import the environment - where keychain's passphrase
+    # prompt has no terminal to answer it. programs/nushell.nix reimplements it
+    # behind $nu.is-interactive.
+    enableNushellIntegration = false;
     keys = [ "id_ed25519" ];
   };
 

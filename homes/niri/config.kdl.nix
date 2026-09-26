@@ -1,9 +1,14 @@
 # niri's config is KDL, and niri validates it itself - so this is a text
 # template rather than a nix attrset. `niri validate -c <file>` checks it, and
 # niri also hot-reloads the file on save, so most edits need no rebuild.
-{ pkgs }:
+{ pkgs, config }:
 let
   terminal = "${pkgs.ghostty}/bin/ghostty";
+  zellij = "${pkgs.zellij}/bin/zellij";
+  # the home-manager-wrapped firefox, not pkgs.firefox - the policies that
+  # force-install uBlock/Sidebery/Tridactyl live in the wrapper, so the bare
+  # package would start with none of them
+  firefox = "${config.programs.firefox.finalPackage}/bin/firefox";
   launcher = "${pkgs.fuzzel}/bin/fuzzel";
   brightness = "${pkgs.brightnessctl}/bin/brightnessctl";
   volume = "${pkgs.wireplumber}/bin/wpctl";
@@ -176,6 +181,19 @@ in
   }
 
   // ---------------------------------------------------------------------
+  // workspaces
+  //
+  // Naming them creates all four at login, in this order, so they hold
+  // indices 1-4 for Mod+1..4 even while empty. The window rules further down
+  // place windows by these names, which is why nothing here depends on what
+  // happens to open first.
+  // ---------------------------------------------------------------------
+  workspace "main"
+  workspace "trading"
+  workspace "nixos"
+  workspace "kids"
+
+  // ---------------------------------------------------------------------
   // startup
   // ---------------------------------------------------------------------
 
@@ -187,6 +205,21 @@ in
   // one anything that needs root (gnome-disks, gparted, nm-connection-editor's
   // system connections) silently fails instead of prompting.
   spawn-at-startup "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+
+  // The session: one terminal per zellij session, one browser per firefox
+  // profile. `attach --create` resurrects a saved zellij session when there
+  // is one and starts it fresh when there is not, so the same line covers
+  // both. Firefox has no named sessions at all - a profile is the unit it
+  // names, restores and locks separately.
+  //
+  // The --class / --name on each is the whole point: without them every
+  // terminal is com.mitchellh.ghostty and every browser is firefox, and no
+  // window rule can tell them apart. Nothing here waits on anything else;
+  // placement is by app-id, not by launch order.
+  spawn-at-startup "${terminal}" "--class=yt.term.main" "-e" "${zellij}" "attach" "--create" "main"
+  spawn-at-startup "${terminal}" "--class=yt.term.nixos" "-e" "${zellij}" "attach" "--create" "nixos"
+  spawn-at-startup "${firefox}" "-P" "trading" "--name" "yt.browser.trading"
+  spawn-at-startup "${firefox}" "-P" "kids" "--name" "yt.browser.kids"
 
   environment {
       DISPLAY ":0"
@@ -229,6 +262,34 @@ in
       match app-id=r#"^org\.gnome\.Seahorse\.Application$"#
       match title="^.*Bitwarden.*$"
       block-out-from "screencast"
+  }
+
+  // Each of these matches an app-id that only exists because of the
+  // --class/--name it was spawned with above. open-maximized because these
+  // workspaces hold one window each; drop it to get the usual half-width
+  // column back.
+  window-rule {
+      match app-id=r#"^yt\.term\.main$"#
+      open-on-workspace "main"
+      open-maximized true
+  }
+
+  window-rule {
+      match app-id=r#"^yt\.term\.nixos$"#
+      open-on-workspace "nixos"
+      open-maximized true
+  }
+
+  window-rule {
+      match app-id=r#"^yt\.browser\.trading$"#
+      open-on-workspace "trading"
+      open-maximized true
+  }
+
+  window-rule {
+      match app-id=r#"^yt\.browser\.kids$"#
+      open-on-workspace "kids"
+      open-maximized true
   }
 
   layer-rule {
