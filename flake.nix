@@ -24,6 +24,11 @@
     megzari_com.inputs.nixpkgs.follows = "nixpkgs";
     megzari_com.inputs.flake-utils.follows = "flake-utils";
 
+    # prebuilt nix-index database, weekly - `, <cmd>` and `nix-locate` work
+    # without an hour-long local index run
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
     # rust
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
@@ -39,6 +44,7 @@
       nixinate,
       megzari_com,
       rust-overlay,
+      nix-index-database,
       ...
     }:
     {
@@ -53,6 +59,7 @@
             agenix
             nixos-hardware
             rust-overlay
+            nix-index-database
             ;
         };
       };

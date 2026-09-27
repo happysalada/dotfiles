@@ -99,10 +99,10 @@
       icmSection =
         {
           claude-code = ''
-            Under Claude Code, icm's *write* side is partly automatic: a
-            PostToolUse hook extracts as you work, and a SessionStart hook
-            injects a wake-up pack (identity, preferences, critical decisions)
-            once per session.
+            Under Claude Code a SessionStart hook injects a wake-up pack
+            (identity, preferences, critical decisions) once per session.
+            Nothing extracts automatically - the extraction hooks filled the
+            store with fragments - so `icm store` anything durable by hand.
 
             Its *read* side is not automatic. Per-prompt auto-recall is
             switched off on purpose, so nothing arrives mid-session unless you
@@ -110,19 +110,18 @@
             than assuming it was already injected.
           '';
           opencode = ''
-            Under Claude Code icm is also driven by session hooks, which extract
-            as it works. opencode has no such wiring, so here **icm only
-            remembers what you explicitly tell it to**. If you learn something
+            **icm only remembers what you explicitly tell it to** - no tool on
+            this box extracts automatically. If you learn something
             durable in an opencode session, `icm store` it by hand or it is gone
             when the session ends.
           '';
           codex = ''
-            icm speaks codex's hook schema, so the write side is wired exactly as
-            it is under Claude Code: extraction on PostToolUse and PreCompact, a
-            wake-up pack on SessionStart, a final extraction on SessionEnd.
+            icm speaks codex's hook schema, so it is wired exactly as it is
+            under Claude Code: a wake-up pack on SessionStart, and no automatic
+            extraction - `icm store` anything durable by hand.
 
-            The four icm hooks and their content-derived trust hashes are managed
-            together in `homes/programs/codex.nix`. `/hooks` is useful for
+            The icm hook and its content-derived trust hash are managed together
+            in `homes/programs/codex.nix`. `/hooks` is useful for
             inspection, but its trust action cannot write the generated config.
 
             The read side is not automatic here either: `icm recall` when you

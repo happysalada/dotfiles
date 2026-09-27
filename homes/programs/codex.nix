@@ -124,46 +124,20 @@ in
           event = "session_start";
           command = "${icm} hook start";
         })
-        (trustedHook {
-          event = "post_tool_use";
-          command = "${icm} hook post";
-        })
-        (trustedHook {
-          event = "pre_compact";
-          command = "${icm} hook compact";
-        })
-        (trustedHook {
-          event = "session_end";
-          command = "${icm} hook end";
-          timeout = 3;
-        })
       ];
     };
 
-    # icm's memory, the same four events claude-code.nix registers.
+    # icm's wake-up pack only, same as claude-code.nix.
     #
     # Trust is derived above from each normalized command. The `icm hook pre`
     # auto-allow hook is left off because it returns permission decisions, which
     # is a bypass driven by a third-party binary.
     #
-    # SessionEnd is capped at three seconds by codex (most hooks get 600), so
-    # end-of-session extraction can be cut short. PostToolUse and PreCompact are
-    # what actually carry the memories.
+    # The post/compact/end extraction hooks are off: their rule-based extraction
+    # filled icm with sentence fragments and restatements of the repo, which then
+    # crowded the wake-up pack. Memories are stored by hand with `icm store`.
     hooks = {
       SessionStart = cmd "${icm} hook start";
-      PostToolUse = cmd "${icm} hook post";
-      PreCompact = cmd "${icm} hook compact";
-      SessionEnd = [
-        {
-          hooks = [
-            {
-              type = "command";
-              command = "${icm} hook end";
-              timeout = 3;
-            }
-          ];
-        }
-      ];
     };
 
     # -> ~/.codex/rules/default.rules, the Git section of ai-context.nix

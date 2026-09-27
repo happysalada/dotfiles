@@ -3,6 +3,7 @@
   agenix,
   nixos-hardware,
   rust-overlay,
+  nix-index-database,
 }:
 [
   (
@@ -52,10 +53,10 @@
         loader.systemd-boot.enable = true;
         loader.efi.canTouchEfiVariables = true;
 
-        # The stock menu flashes past too fast to pick anything. This is also
-        # what you need in order to reach the `battery-saver` specialisation,
-        # which only exists as a boot entry.
-        loader.timeout = 10;
+        # Long enough to reach the `battery-saver` specialisation, which only
+        # exists as a boot entry. 10 cost 10s on every boot; holding space
+        # during boot keeps the menu open regardless.
+        loader.timeout = 3;
 
         # Cap how many generations get an entry written to /boot. Note this
         # limits the *menu*, not the store: `nix-collect-garbage` still decides
@@ -106,6 +107,10 @@
         hostName = "strix";
         networkmanager.enable = true;
       };
+
+      # Held boot for ~5s waiting on a link. Nothing here needs the network up
+      # before login, and a laptop is often offline anyway.
+      systemd.services.NetworkManager-wait-online.enable = false;
 
       time.timeZone = "America/Toronto";
       i18n.defaultLocale = "en_CA.UTF-8";
@@ -252,6 +257,44 @@
 
       services.printing.enable = true;
 
+      # Firmware updates from LVFS: the NVMe drives, thunderbolt, and whatever
+      # ASUS publishes there. `fwupdmgr get-updates`, then `fwupdmgr update`.
+      services.fwupd.enable = true;
+
+      # Rootless containers, so an agent can `docker run postgres` for an
+      # integration test instead of guessing. dockerCompat puts `docker` on
+      # PATH as podman.
+      virtualisation.podman = {
+        enable = true;
+        dockerCompat = true;
+        # containers on a compose network resolve each other by name
+        defaultNetwork.settings.dns_enabled = true;
+      };
+
+      # Hourly read-only snapshots of /home, for undoing what an agent (or I)
+      # just broke: `ls /.snapshots`, copy back what you need. Same disk, so
+      # this is undo, not a backup - point a target at nvme1 for that.
+      services.btrbk.instances.home = {
+        onCalendar = "hourly";
+        settings = {
+          snapshot_preserve_min = "2d";
+          snapshot_preserve = "48h 14d 8w";
+          volume."/" = {
+            snapshot_dir = ".snapshots";
+            subvolume = "home";
+          };
+        };
+      };
+      # btrbk refuses to create its own snapshot_dir
+      systemd.tmpfiles.rules = [ "d /.snapshots 0755 root root -" ];
+
+      # `nh os switch` = nixos-rebuild + nom + a closure diff, in one command.
+      # Its clean timer is left off: nix.gc below already owns that.
+      programs.nh = {
+        enable = true;
+        flake = "/home/yt/dotfiles";
+      };
+
       # GNOME brings avahi, and resolved answers mDNS too: two responders on
       # one port, which avahi warns makes discovery unreliable. Avahi is the one
       # cups and GNOME talk to, so it keeps the job and gets the NSS hook.
@@ -292,6 +335,7 @@
           vim
           git
           lsof
+          perf
           agenix.packages.x86_64-linux.default
         ];
       };
@@ -455,6 +499,9 @@
       in
       {
         imports = [
+          # nix-index with a prebuilt database, plus comma: `, sqlite3` runs a
+          # command that is not installed, instead of "command not found"
+          nix-index-database.homeModules.nix-index
           ../../homes/niri
           # Shared MCP registry first - all three agents read it.
           ../../homes/programs/ai-mcp.nix
@@ -506,7 +553,8 @@
             # the rust-overlay overlay applied above.
             ++ (import ../../packages/dev/rust-toolchain.nix { inherit pkgs; })
             ++ (import ../../packages/dev/python.nix { inherit pkgs; })
-            ++ (import ../../packages/dev/js.nix { inherit pkgs; })
+            # general dev and debugging tools an agent expects to find
+            ++ (import ../../packages/dev/tools.nix { inherit pkgs; })
             ++ (import ../../packages/dev/nix.nix { inherit pkgs; });
         };
 
@@ -605,6 +653,7 @@
             # Keeps the cache behind a bare `tldr <cmd>` fresh, via the
             # services.tldr-update user timer this pulls in.
             tealdeer = import ../../homes/programs/tealdeer.nix { inherit pkgs; };
+            nix-index-database.comma.enable = true;
 
           };
       }

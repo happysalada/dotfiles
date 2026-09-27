@@ -13,9 +13,9 @@ with pkgs;
   delta # better git diff
   sd # better sed
   choose # better cut & awk
-  # hyperfine # benchmarking tool
+  hyperfine # benchmarking tool
   xh # http client
-  # file # get informations about files
+  file # get informations about files
   # moreutils # sponge
   # zstd # fast compression
   (symlinkJoin {
@@ -30,8 +30,11 @@ with pkgs;
   # sequoia-sq # openpgp in rust
   # ruplacer # sed with visual feedback
   ouch # painless (de)compression
+  unzip # what scripts and agents call, whatever ouch can do
+  zip
+  tree
   solo2-cli # updating solokeys
-  # sqlite
+  sqlite
   uutils-coreutils
   skim # search mode for atuin
   fzf # zoxide's `zi` interactive picker shells out to fzf specifically

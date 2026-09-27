@@ -1,7 +1,7 @@
 { pkgs }:
 with pkgs;
 [
-  nix-index
+  # nix-index comes from nix-index-database on strix, with its database
   editorconfig-checker
   nix-prefetch
   nvd

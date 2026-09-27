@@ -38,6 +38,53 @@ let
     exit 0
   '';
 
+  # Clickable "Claude is done" notification that focuses the niri window AND the
+  # zellij pane the session runs in.
+  #
+  # The window is found by title, not at SessionStart: `niri msg focused-window`
+  # only names the terminal if you happened to be looking at it. zellij prefixes
+  # the terminal title with its session name ("main | <tab>"), which is
+  # focus-independent - ghostty is single-instance, so PIDs cannot tell windows
+  # apart. No zellij (e.g. `claude --bg`) falls back to whatever is focused.
+  stopNotify = pkgs.writers.writeNu "claude-stop-notify" ''
+    def main [] {
+      let zsession = $env.ZELLIJ_SESSION_NAME? | default ""
+      let pane = $env.ZELLIJ_PANE_ID? | default ""
+
+      let by_title = if $zsession == "" { null } else {
+        try { ${niri} msg --json windows | from json } catch { [] }
+        | where {|w| ($w.title? | default "") | str starts-with $"($zsession) | " }
+        | get -o 0.id
+      }
+      let wid = $by_title | default (
+        try { ${niri} msg --json focused-window | from json | get -o id } catch { null }
+      )
+
+      # -f: notify-send -A blocks until answered, so the waiter must outlive us
+      ${setsid} -f ${focusWaiter} ($wid | default "" | into string) $pane $zsession ($env.PWD | path basename) o+e> /dev/null
+    }
+  '';
+
+  # Blocks on the notification; a click focuses, a dismissal does nothing.
+  focusWaiter = pkgs.writers.writeNu "claude-focus-waiter" ''
+    def main [wid: string, pane: string, zsession: string, body: string] {
+      let answer = ${notifySend} -a claude -A default=Focus "Claude is done" $body | complete | get stdout | str trim
+      if $answer != "default" { return }
+
+      if $wid != "" { ${niri} msg action focus-window --id $wid | complete | ignore }
+      # zellij resolves the target session from the env, so this works from
+      # outside the pane
+      if $pane != "" {
+        with-env { ZELLIJ_SESSION_NAME: $zsession } { ${zellij} action focus-pane-id $pane | complete | ignore }
+      }
+    }
+  '';
+
+  niri = "^${lib.getExe pkgs.niri}";
+  zellij = "^${lib.getExe pkgs.zellij}";
+  notifySend = "^${pkgs.libnotify}/bin/notify-send";
+  setsid = "^${pkgs.util-linux}/bin/setsid";
+
   # Global instructions, shared with opencode.
   aiContext = import ./ai-context.nix { inherit lib; };
 
@@ -144,15 +191,13 @@ in
       ];
 
       hooks = {
-        # Clickable "Claude is done" notification -> focuses the niri window
-        # and the zellij pane. Script is hand-maintained in ~/.claude/hooks and
-        # is NOT nix-managed (hooksDir would clobber the directory).
+        # Clickable "Claude is done" notification, see stopNotify above.
         Stop = [
           {
             hooks = [
               {
                 type = "command";
-                command = "~/.claude/hooks/stop-notify.sh";
+                command = "${stopNotify}";
                 timeout = 5;
               }
             ];
@@ -182,8 +227,10 @@ in
           # (cmdFor "Bash" "${icm} hook pre")
         ];
 
-        PostToolUse = [ (cmd "${icm} hook post") ];
-        PreCompact = [ (cmd "${icm} hook compact") ];
+        # icm's post/compact/end extraction hooks are off. Their rule-based
+        # extraction stored hundreds of sentence fragments and restatements of
+        # the repo, which crowded the wake-up pack below. Memories are stored by
+        # hand with `icm store`.
 
         # icm's wake-up pack: identity/preferences plus critical decisions,
         # injected once per session. This is the *only* automatic memory
@@ -205,10 +252,7 @@ in
 
         # Drop it here too, in case Stop never fired - a session torn down
         # mid-turn would otherwise leave the lock to its 4h fuse.
-        SessionEnd = [
-          (cmd "${icm} hook end")
-          (cmd "${claudeRelease}")
-        ];
+        SessionEnd = [ (cmd "${claudeRelease}") ];
       };
     };
 
@@ -238,6 +282,35 @@ in
         command = "${ty}/bin/ty";
         args = [ "server" ];
         extensionToLanguage.".py" = "python";
+      };
+      typescript-language-server = {
+        command = "${typescript-language-server}/bin/typescript-language-server";
+        args = [ "--stdio" ];
+        extensionToLanguage = {
+          ".ts" = "typescript";
+          ".tsx" = "typescriptreact";
+          ".js" = "javascript";
+          ".jsx" = "javascriptreact";
+        };
+      };
+      svelteserver = {
+        command = "${svelte-language-server}/bin/svelteserver";
+        args = [ "--stdio" ];
+        extensionToLanguage.".svelte" = "svelte";
+      };
+      # nushell is the scripting language here, and ships its own server.
+      nu = {
+        command = "${nushell}/bin/nu";
+        args = [ "--lsp" ];
+        extensionToLanguage.".nu" = "nushell";
+      };
+      taplo = {
+        command = "${taplo}/bin/taplo";
+        args = [
+          "lsp"
+          "stdio"
+        ];
+        extensionToLanguage.".toml" = "toml";
       };
     };
 
