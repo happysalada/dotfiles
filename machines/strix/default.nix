@@ -272,16 +272,22 @@
       };
 
       # Hourly read-only snapshots of /home, for undoing what an agent (or I)
-      # just broke: `ls /.snapshots`, copy back what you need. Same disk, so
-      # this is undo, not a backup - point a target at nvme1 for that.
+      # just broke: `ls /.snapshots`, copy back what you need. Each one is also
+      # sent incrementally to the second drive, which survives this one dying.
       services.btrbk.instances.home = {
         onCalendar = "hourly";
         settings = {
           snapshot_preserve_min = "2d";
           snapshot_preserve = "48h 14d 8w";
+          # the other drive has the room for a longer history
+          target_preserve_min = "no";
+          target_preserve = "48h 14d 8w 12m";
           volume."/" = {
             snapshot_dir = ".snapshots";
             subvolume = "home";
+            # not created by tmpfiles on purpose: with the drive unmounted it
+            # would land on the root fs, and btrbk would back up onto itself
+            target = "/mnt/backup/home";
           };
         };
       };
@@ -336,6 +342,8 @@
           git
           lsof
           perf
+          gptfdisk # sgdisk
+          cryptsetup
           agenix.packages.x86_64-linux.default
         ];
       };

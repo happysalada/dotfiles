@@ -23,6 +23,12 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];
+  # systemd initrd is what reads tpm2-device= from crypttab, for TPM unlock later
+  boot.initrd.systemd.enable = true;
+  boot.initrd.luks.devices.cryptroot = {
+    device = "/dev/disk/by-uuid/bfb5be95-98cf-4b62-b644-a88e8f7fa480";
+    allowDiscards = true;
+  };
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
@@ -52,9 +58,25 @@
     ];
   };
 
-  swapDevices = [
-    { device = "/dev/disk/by-uuid/1e883e80-3491-4149-a088-f5924c88ffe1"; }
-  ];
+  # btrbk's backup target on the second drive. Unlocked after boot with a key
+  # kept on the encrypted root, not in the initrd, and nofail throughout: a
+  # dead backup drive costs the backups, never the boot.
+  environment.etc.crypttab.text = ''
+    cryptbackup /dev/disk/by-partlabel/strix-backup /root/luks-backup.key nofail,discard
+  '';
+  fileSystems."/mnt/backup" = {
+    device = "/dev/mapper/cryptbackup";
+    fsType = "btrfs";
+    options = [
+      "nofail"
+      "noatime"
+      "compress=zstd"
+    ];
+  };
+
+  # No disk swap: a plain partition would write RAM to disk unencrypted, and
+  # zram covers it (suspend is S3, so there is no hibernation image to hold).
+  swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
