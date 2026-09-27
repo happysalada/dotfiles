@@ -134,7 +134,7 @@ in
     nci = "nix_copy_inputs";
     # git
     gp = "git push";
-    gpf = "git push --force";
+    gpf = "git push --force-with-lease";
     gl = "git log --pretty=oneline --abbrev-commit";
     gb = "git branch";
     gbd = "git branch --delete --force";
@@ -336,12 +336,13 @@ in
       git gc --prune=now --aggressive
     }
 
-    # sudo version cleans system generations, non-sudo cleans home-manager
+    # unreferenced store paths only - old generations are left to nix.gc (14d),
+    # so a rollback target always survives
     def nixgc [] {
       nix store gc --verbose
-      nix-collect-garbage -d
+      nix-collect-garbage
       sudo nix store gc --verbose
-      sudo nix-collect-garbage -d
+      sudo nix-collect-garbage
     }
 
     # deletes the branches already merged upstream

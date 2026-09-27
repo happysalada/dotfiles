@@ -61,8 +61,8 @@ in
     # X11 shim - niri from nixpkgs is built without built-in XWayland
     xwayland-satellite
 
-    # authentication dialogs (gparted, gnome-disks, ...)
-    polkit_gnome
+    # polkit_gnome deliberately NOT here: config.kdl.nix spawns it by store
+    # path, and its XDG autostart entry would start a second, failing agent.
 
     # what the GNOME session gives you for free and niri does not
     networkmanagerapplet # nm-applet, for the tray
@@ -138,7 +138,7 @@ in
       text-color = "c8ccd4";
       indicator-radius = 90;
       indicator-thickness = 6;
-      # don't leak window contents behind the lock indicator
+      # a stray Enter on an empty field is not a failed attempt
       ignore-empty-password = true;
       show-failed-attempts = true;
     };

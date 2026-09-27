@@ -172,6 +172,10 @@ in
         "Bash(git reset *)"
         "Bash(git restore *)"
         "Bash(git stash *)"
+        # opencode.nix's secret-file block. Not `.env.*`: deny beats allow
+        # here, so that would also hide .env.example.
+        "Read(**/.env)"
+        "Read(**/.env.local)"
       ];
 
       # `git checkout -b` is fine when asked for, `git checkout -- path` destroys

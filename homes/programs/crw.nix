@@ -162,6 +162,10 @@ in
           "--safebrowsing-disable-auto-update"
           "--disable-sync"
           "--metrics-recording-only"
+          # This starts at boot under linger, before login unlocks the keyring.
+          # Chrome's default store woke a locked gnome-keyring that then failed
+          # to prompt with no display. A throwaway profile needs no secrets.
+          "--password-store=basic"
           "--remote-debugging-address=${host}"
           "--remote-debugging-port=${toString ports.chrome}"
           "--remote-allow-origins=*"
