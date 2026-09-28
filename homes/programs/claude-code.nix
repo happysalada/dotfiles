@@ -189,6 +189,9 @@ in
         "Bash(graphify *)"
         "Bash(nono *)"
         "Bash(crw *)"
+        # Read-only search. Unlisted, every call waits on the auto-mode
+        # classifier, and a classifier outage blocks it outright.
+        "mcp__plugin_hm_fff"
         # Deliberately NOT "Bash(sg *)": on NixOS `sg` resolves to
         # /run/wrappers/bin/sg, the setgid "run a command as another group"
         # utility - not ast-grep. Always spell out `ast-grep`.
