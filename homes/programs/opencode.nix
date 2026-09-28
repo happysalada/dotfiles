@@ -89,11 +89,6 @@ in
       };
     };
 
-    # Since 1.2.15 TUI keys live in their own tui.json. Note this is a
-    # read-only store symlink, so the in-TUI /theme picker cannot persist -
-    # change the theme here.
-    tui.theme = "system";
-
     # -> ~/.config/opencode/skills/, same set claude-code gets.
     skills = import ./ai-skills.nix { inherit pkgs; };
 
@@ -102,5 +97,14 @@ in
 
     # -> ~/.config/opencode/AGENTS.md
     context = aiContext.mkContext { tool = "opencode"; };
+  };
+
+  # V2 keeps terminal-only settings separate from the server config.
+  xdg.configFile."opencode/cli.json".text = builtins.toJSON {
+    "$schema" = "https://opencode.ai/v2/cli.json";
+    theme = {
+      name = "system";
+      mode = "system";
+    };
   };
 }

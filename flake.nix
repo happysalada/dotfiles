@@ -4,6 +4,8 @@
   inputs = {
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    opencode-v2.url = "github:anomalyco/opencode/v2";
+    opencode-v2.inputs.nixpkgs.follows = "nixpkgs";
 
     # Hardware quirks (asus battery, nvidia prime, intel cpu, ...)
     nixos-hardware.url = "github:NixOS/nixos-hardware";
@@ -37,6 +39,7 @@
     {
       self,
       nixpkgs,
+      opencode-v2,
       nixos-hardware,
       home-manager,
       agenix,
@@ -59,6 +62,7 @@
             nixos-hardware
             rust-overlay
             nix-index-database
+            opencode-v2
             ;
         };
       };

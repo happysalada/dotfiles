@@ -19,9 +19,12 @@ in
   programs.mcp = {
     enable = true;
 
-    # All speak stdio and are pinned to absolute store paths, so they do not
-    # depend on PATH when the agent spawns them.
     servers = {
+      context7.url = "https://mcp.context7.com/mcp";
+      scite.url = "https://api.scite.ai/mcp";
+      wolfram.url = "https://agenttools.wolfram.com/mcp";
+
+      # Local servers use absolute store paths, so they do not depend on PATH.
       funes = {
         # No memory argument: recall reads the local memory, never the Hub.
         command = lib.getExe funes;

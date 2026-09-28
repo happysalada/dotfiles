@@ -250,6 +250,27 @@
         "type": "github"
       }
     },
+    "opencode-v2": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790616655,
+        "narHash": "sha256-yQJgBOJUkIlePB45O7qLID7YQdo0076wiUknXR5iXck=",
+        "owner": "anomalyco",
+        "repo": "opencode",
+        "rev": "f20f5b68ee318721c453fb19d20e46d2b9225bc0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anomalyco",
+        "ref": "v2",
+        "repo": "opencode",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -260,6 +281,7 @@
         "nixinate": "nixinate",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
+        "opencode-v2": "opencode-v2",
         "rust-overlay": "rust-overlay_2"
       }
     },

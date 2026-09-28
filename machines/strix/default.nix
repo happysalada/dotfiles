@@ -4,6 +4,7 @@
   nixos-hardware,
   rust-overlay,
   nix-index-database,
+  opencode-v2,
 }:
 [
   (
@@ -436,6 +437,19 @@
           # Everything it provides is fetched from static.rust-lang.org rather
           # than built, so this costs a download, not a compile.
           rust-overlay.overlays.default
+
+          # V2's flake ships a stale dependency hash and V1 completion hook.
+          (_final: _prev: {
+            opencode =
+              (opencode-v2.packages.x86_64-linux.opencode.override {
+                node_modules = opencode-v2.packages.x86_64-linux.opencode.node_modules.override {
+                  hash = "sha256-aVE36jaHfkvtzMyQv8ssMovGMHHgLKDk0GyxYeMOkVU=";
+                };
+              }).overrideAttrs
+                {
+                  postInstall = "";
+                };
+          })
 
           (final: prev: {
             pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
