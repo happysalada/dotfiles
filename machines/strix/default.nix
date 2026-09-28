@@ -158,6 +158,16 @@
         loadModels = [ "mistral-nemo" ];
       };
 
+      # services.ollaya = {
+      #   enable = true;
+      #   package = pkgs.ollaya.override {
+      #     onnxruntime = pkgs.onnxruntime.override { cudaSupport = true; };
+      #     llama-cpp = pkgs.llama-cpp.override { cudaSupport = true; };
+      #   };
+      #   loadModels = [ "winnow:e4b" ];
+      #   environmentVariables.OLLAYA_DEVICE = "auto";
+      # };
+
       # ---------------------------------------------------------------------
       # asus: rgb off + battery charge limit
       # ---------------------------------------------------------------------
@@ -441,7 +451,7 @@
             opencode =
               (opencode-v2.packages.x86_64-linux.opencode.override {
                 node_modules = opencode-v2.packages.x86_64-linux.opencode.node_modules.override {
-                  hash = "sha256-aVE36jaHfkvtzMyQv8ssMovGMHHgLKDk0GyxYeMOkVU=";
+                  hash = "sha256-gvpzGXJG5vQKLCUarV2aSwOg8hvU4Sy3PlJF89XDQkU=";
                 };
               }).overrideAttrs
                 {

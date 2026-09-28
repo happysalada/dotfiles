@@ -81,12 +81,8 @@ in
     # enable` cannot persist their choice - every change comes through here plus
     # a rebuild. `codex update` fails for the same reason; bump nixpkgs instead.
     settings = {
-      # Sol is the flagship of the GPT-5.6 family, the analogue of `model =
-      # "opus"` on the claude-code side. Plus includes all three: Terra is the
-      # workhorse and Luna the cheap one, and both go much further per
-      # five-hour window, so drop down here when Sol runs out rather than
-      # waiting for the window to reset.
-      model = "gpt-5.6-sol";
+      # GPT-6 Sol is OpenAI's default model for coding and agentic work.
+      model = "gpt-6-sol";
       model_reasoning_effort = "high";
 
       # Matches claude-code's default posture: edits inside the workspace go

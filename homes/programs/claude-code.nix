@@ -114,7 +114,7 @@ in
     # means `rtk init`, `icm init` and `graphify claude install` must never be
     # run: they mutate exactly these two files and will fail or be reverted.
     settings = {
-      model = "opus";
+      model = "sonnet";
       theme = "dark";
       # Keep conversation output in Zellij's native scrollback.
       tui = "default";
