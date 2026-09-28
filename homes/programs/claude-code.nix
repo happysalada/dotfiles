@@ -158,6 +158,9 @@ in
       # blocks every tool that is not allowlisted below. The deny list still applies
       # in this mode.
       permissions.defaultMode = "bypassPermissions";
+      # Bypass is ignored until its disclaimer is accepted, and accepting it
+      # writes here - which fails against the read-only store path.
+      skipDangerousModePermissionPrompt = true;
 
       # The Git section of ai-context.nix, enforced rather than merely asked
       # for - the same denies opencode.nix already carries in permission.bash.

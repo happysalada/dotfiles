@@ -1,42 +1,56 @@
 # funes - searchable memory of past agent sessions, exposed over MCP.
 #
-# The prebuilt release binary rather than a source build: that needs protoc
-# and compiles lance, for no difference in the result. The binary targets
-# glibc >= 2.35 and needs nothing beyond libgcc_s.
+# Built from source; lance's build scripts need protoc.
+#
+# rust-overlay's toolchain, not nixpkgs': nixpkgs links rustc against a newer
+# system LLVM, and lance-linalg's AVX-512 VNNI calls then fail with
+# "intrinsic signature mismatch". Upstream binaries bundle their own LLVM.
+# Needs the overlay, so strix only.
 {
   lib,
-  stdenv,
-  fetchurl,
-  autoPatchelfHook,
+  makeRustPlatform,
+  rust-bin,
+  fetchFromGitHub,
+  protobuf,
 }:
 
-stdenv.mkDerivation (finalAttrs: {
+let
+  toolchain = rust-bin.stable.latest.minimal;
+  rustPlatform = makeRustPlatform {
+    cargo = toolchain;
+    rustc = toolchain;
+  };
+in
+rustPlatform.buildRustPackage (finalAttrs: {
   pname = "funes";
   version = "1.4.0";
 
-  src = fetchurl {
-    url = "https://github.com/huggingface/funes/releases/download/v${finalAttrs.version}/funes-x86_64-linux";
-    hash = "sha256-hxEH7qrqsf7rza5HDBOdafmhaGZWlfgrLtvmSwF7hUM=";
+  src = fetchFromGitHub {
+    owner = "huggingface";
+    repo = "funes";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-ksK6FPv2ST4MH9lvHwq6zcRx3gCKvcs9BtGQA0Wr8qU=";
   };
 
-  dontUnpack = true;
+  cargoHash = "sha256-fajclmCP4TVaFcaazI4aCtOGwyefKRiRmb0788GJCA8=";
 
-  nativeBuildInputs = [ autoPatchelfHook ];
-  buildInputs = [ stdenv.cc.cc.lib ];
-
-  installPhase = ''
-    runHook preInstall
-    install -Dm755 $src $out/bin/funes
-    runHook postInstall
+  # the tag still says 1.3.3+dev (release CI stamps it), and that label makes
+  # funes nag for a `funes update` the read-only store cannot take
+  postPatch = ''
+    substituteInPlace Cargo.toml \
+      --replace-fail 'version = "1.3.3+dev"' 'version = "${finalAttrs.version}"'
   '';
+
+  nativeBuildInputs = [ protobuf ];
+
+  # lance's test suite is slow and wants network fixtures
+  doCheck = false;
 
   meta = {
     description = "Durable, searchable memory of your past agent sessions";
     homepage = "https://github.com/huggingface/funes";
     changelog = "https://github.com/huggingface/funes/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.asl20;
-    sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
     mainProgram = "funes";
-    platforms = [ "x86_64-linux" ];
   };
 })
