@@ -54,9 +54,6 @@ in
           model = "openai/gpt-5.6-sol";
           options.reasoningEffort = "high";
         };
-        # `general` overlaps the bounded worker and otherwise gives the main
-        # thread an unintended second write-capable role.
-        general.disable = true;
       };
 
       # `opencode upgrade` cannot write to a read-only store path; left on it
