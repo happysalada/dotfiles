@@ -18,6 +18,9 @@ with pkgs;
   # is a no-op here (the store is read-only) - bump nixpkgs instead, or run it
   # off mise/npm if you need same-day releases.
 
+  bubblewrap # Linux sandbox backend used by codex.
+  nodejs-slim # Runtime for bundled codex system skills.
+
   # ---- claude-code companions ----
   # All four below ship an `init`/`install` subcommand that writes hooks into
   # ~/.claude/settings.json and appends prose to ~/.claude/CLAUDE.md. Do NOT run
