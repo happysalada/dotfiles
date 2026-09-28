@@ -308,7 +308,7 @@ in
     userContent = contentCss;
   };
 
-  # Workspace 2. Restores what you leave open, so a tab opened while reading
+  # Workspace 3. Restores what you leave open, so a tab opened while reading
   # survives a logout; the three below only seed the very first launch.
   profiles.trading = taskProfile {
     id = 1;
@@ -320,7 +320,7 @@ in
     ];
   };
 
-  # Workspace 4. Deliberately *not* restore-on-start: every launch comes back
+  # Workspace 5. Deliberately *not* restore-on-start: every launch comes back
   # to these three and nothing else, whatever was open when it closed.
   profiles.kids = taskProfile {
     id = 2;
@@ -329,6 +329,15 @@ in
       "https://pbskids.org/"
       "https://www.starfall.com/h/me/index.php?mg=k"
       "https://www.mathplayground.com/kindergarten_games.html"
+    ];
+  };
+
+  # Workspace 2, beside the notebooks shell. Restores like trading.
+  profiles.research = taskProfile {
+    id = 3;
+    startupPage = 3;
+    urls = [
+      "TODO-timeseries-momentum-url"
     ];
   };
 }

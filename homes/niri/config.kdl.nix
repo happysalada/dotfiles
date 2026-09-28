@@ -183,12 +183,13 @@ in
   // ---------------------------------------------------------------------
   // workspaces
   //
-  // Naming them creates all four at login, in this order, so they hold
-  // indices 1-4 for Mod+1..4 even while empty. The window rules further down
+  // Naming them creates all five at login, in this order, so they hold
+  // indices 1-5 for Mod+1..5 even while empty. The window rules further down
   // place windows by these names, which is why nothing here depends on what
   // happens to open first.
   // ---------------------------------------------------------------------
   workspace "main"
+  workspace "research"
   workspace "trading"
   workspace "nixos"
   workspace "kids"
@@ -218,6 +219,10 @@ in
   // placement is by app-id, not by launch order.
   spawn-at-startup "${terminal}" "--class=yt.term.main" "-e" "${zellij}" "attach" "--create" "main"
   spawn-at-startup "${terminal}" "--class=yt.term.nixos" "-e" "${zellij}" "attach" "--create" "nixos"
+  // research: the shell is listed first so it usually opens first and takes
+  // the left column - niri has no rule for column order, only launch order.
+  spawn-at-startup "${terminal}" "--class=yt.term.research" "--working-directory=/home/yt/Projects/notebooks" "-e" "${zellij}" "attach" "--create" "research"
+  spawn-at-startup "${firefox}" "-P" "research" "--name" "yt.browser.research"
   spawn-at-startup "${firefox}" "-P" "trading" "--name" "yt.browser.trading"
   spawn-at-startup "${firefox}" "-P" "kids" "--name" "yt.browser.kids"
 
@@ -290,6 +295,12 @@ in
       match app-id=r#"^yt\.browser\.kids$"#
       open-on-workspace "kids"
       open-maximized true
+  }
+
+  // two half-width columns, so no open-maximized
+  window-rule {
+      match app-id=r#"^yt\.(term|browser)\.research$"#
+      open-on-workspace "research"
   }
 
   layer-rule {

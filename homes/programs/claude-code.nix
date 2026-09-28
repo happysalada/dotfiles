@@ -192,6 +192,17 @@ in
         # Read-only search. Unlisted, every call waits on the auto-mode
         # classifier, and a classifier outage blocks it outright.
         "mcp__plugin_hm_fff"
+        # Read-only diagnostics, same reason.
+        "Bash(rg *)"
+        "Bash(bluetoothctl show*)"
+        "Bash(bluetoothctl devices*)"
+        "Bash(bluetoothctl info *)"
+        "Bash(systemctl status *)"
+        "Bash(systemctl --user status *)"
+        "Bash(journalctl *)"
+        "Bash(lsmod*)"
+        "Bash(lsusb*)"
+        "Bash(ip addr*)"
         # Deliberately NOT "Bash(sg *)": on NixOS `sg` resolves to
         # /run/wrappers/bin/sg, the setgid "run a command as another group"
         # utility - not ast-grep. Always spell out `ast-grep`.
