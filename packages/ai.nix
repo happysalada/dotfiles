@@ -67,6 +67,10 @@ with pkgs;
 
   # ---- not in nixpkgs, built from packages/ai/ ----
 
+  (callPackage ./ai/reasonix.nix { }) # DeepSeek-native coding agent. Its
+  # provider key is decrypted directly to ~/.reasonix/.env by the strix Home
+  # Manager config. Do not run `reasonix upgrade`: bump this package instead.
+
   (callPackage ./ai/funes.nix { }) # memory of past agent sessions, MCP server
   # is `funes mcp` (registered in homes/programs/ai-mcp.nix). Local Lance index
   # plus pinned embedding/reranking models it downloads on first run.

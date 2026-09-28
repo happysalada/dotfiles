@@ -10,8 +10,6 @@
   (
     {
       pkgs,
-      config,
-      lib,
       ...
     }:
     {
@@ -521,6 +519,7 @@
       in
       {
         imports = [
+          agenix.homeManagerModules.default
           # nix-index with a prebuilt database, plus comma: `, sqlite3` runs a
           # command that is not installed, instead of "command not found"
           nix-index-database.homeModules.nix-index
@@ -578,6 +577,11 @@
             # general dev and debugging tools an agent expects to find
             ++ (import ../../packages/dev/tools.nix { inherit pkgs; })
             ++ (import ../../packages/dev/nix.nix { inherit pkgs; });
+        };
+
+        age.secrets.deepseek-api-key = {
+          file = ../../secrets/deepseek.api.key.age;
+          path = "${config.home.homeDirectory}/.reasonix/.env";
         };
 
         news.display = "silent";
