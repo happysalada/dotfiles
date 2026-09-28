@@ -2,7 +2,6 @@
 let
   rtk = lib.getExe pkgs.rtk;
   icm = lib.getExe pkgs.icm;
-  graphify = lib.getExe pkgs.graphify;
   starship = lib.getExe pkgs.starship;
   jaq = lib.getExe pkgs.jaq;
   systemctl = "${pkgs.systemd}/bin/systemctl";
@@ -146,7 +145,7 @@ in
       # Native auto-memory is OFF deliberately. It is the third memory system
       # here, and the only one whose store is per-project and invisible to
       # opencode - which makes it the odd one out now that icm (keyed, global,
-      # cross-tool) and mempalace (semantic, corpus-scoped) cover the same
+      # cross-tool) and funes (semantic, session history) cover the same
       # ground between them. Its directory
       # (~/.claude/projects/<proj>/memory) has been empty since it was created,
       # so nothing is being discarded by turning it off.
@@ -197,6 +196,8 @@ in
         # Read-only search. Unlisted, every call waits on the auto-mode
         # classifier, and a classifier outage blocks it outright.
         "mcp__plugin_hm_fff"
+        # Session recall, same reason: recall and get only read the index.
+        "mcp__plugin_hm_funes"
         # Web research, same reason: fetch and search only, nothing written.
         "mcp__plugin_hm_crw"
         "WebSearch"
@@ -279,8 +280,8 @@ in
           # The CLAUDE.md section below already tells Claude to use graphify,
           # which is the part that actually matters. Uncomment if you want the
           # hard guard instead of the instruction.
-          # (cmdFor "Bash|Grep" "${graphify} hook-guard search")
-          # (cmdFor "Read|Glob" "${graphify} hook-guard read")
+          # (cmdFor "Bash|Grep" "${lib.getExe pkgs.graphify} hook-guard search")
+          # (cmdFor "Read|Glob" "${lib.getExe pkgs.graphify} hook-guard read")
 
           # `icm hook pre` is icm's *auto-allow* hook: it returns permission
           # decisions, i.e. it can approve tool calls that would otherwise
@@ -315,10 +316,15 @@ in
         # Drop it here too, in case Stop never fired - a session torn down
         # mid-turn would otherwise leave the lock to its 4h fuse.
         SessionEnd = [ (cmd "${claudeRelease}") ];
+
+        # TODO funes: per-turn indexing. Copy the events and commands from the
+        # claude integration in huggingface/funes-integrations, pinned to a
+        # tag, instead of running `funes add claude`. It converts transcripts
+        # with jq >= 1.6 - pass real jq by store path, not the jaq alias.
       };
     };
 
-    # mempalace + fff come from the shared registry in ai-mcp.nix, so opencode
+    # funes + fff come from the shared registry in ai-mcp.nix, so opencode
     # gets identical servers. `mcpServers` still works for Claude-only ones.
     enableMcpIntegration = true;
 

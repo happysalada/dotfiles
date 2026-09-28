@@ -64,8 +64,14 @@ with pkgs;
 
   # ---- not in nixpkgs, built from packages/ai/ ----
 
-  (callPackage ./ai/mempalace.nix { }) # local memory palace, MCP server is
-  # `mempalace-mcp`. Pure-python + chromadb, all of it already in nixpkgs.
+  (callPackage ./ai/funes.nix { }) # memory of past agent sessions, MCP server
+  # is `funes mcp` (registered in homes/programs/ai-mcp.nix). Local Lance index
+  # plus pinned embedding/reranking models it downloads on first run.
+  #
+  # Do NOT run `funes add <agent>`, `funes update` or the curl installer - the
+  # first writes hooks and MCP entries into the generated agent configs, the
+  # others target the read-only store. And never `funes push`: it publishes
+  # the memory to the Hugging Face Hub.
 
   (callPackage ./ai/symposium.nix { }) # `cargo agents`: matches the workspace
   # dependency graph against plugin manifests and installs the skills, hooks and

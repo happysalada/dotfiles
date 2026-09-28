@@ -24,7 +24,7 @@ python3Packages.buildPythonApplication {
     owner = "jordan-gibbs";
     repo = "hyperresearch";
     rev = "6bae23c735c51b5df73cd1d89010588301dc8804";
-    hash = lib.fakeHash;
+    hash = "sha256-KEtu7dkfbJpIgWZG0Ksp993oo0LksLqOKZYD5cF8hLc=";
   };
 
   build-system = [ python3Packages.hatchling ];
@@ -43,7 +43,7 @@ python3Packages.buildPythonApplication {
   # Only the opt-in `crawl4ai` web provider imports it, and that provider also
   # wants Playwright's downloaded Chromium, which NixOS cannot run. The default
   # `builtin` provider needs neither.
-  pythonRemoveDeps = [ "Crawl4AI" ];
+  pythonRemoveDeps = [ "crawl4ai" ];
 
   # Upstream's skill points at pip and knows only Claude Code and Codex.
   postInstall = ''

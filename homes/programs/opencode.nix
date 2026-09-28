@@ -33,7 +33,7 @@ in
       inherit (pkgs.opencode) version meta;
     };
 
-    # Pulls mempalace + fff from programs.mcp.servers.
+    # Pulls funes + fff from programs.mcp.servers.
     enableMcpIntegration = true;
 
     settings = {

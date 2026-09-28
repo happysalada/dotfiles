@@ -176,17 +176,17 @@
         {
           claude-code = ''
             There are exactly two memory systems on this box: `icm` and
-            mempalace. Claude Code's own native auto-memory is switched off, so
+            funes. Claude Code's own native auto-memory is switched off, so
             do not look for it and do not write to it.
           '';
           opencode = ''
             There are exactly two memory systems on this box: `icm` and
-            mempalace. Claude Code's own native auto-memory is switched off, so
+            funes. Claude Code's own native auto-memory is switched off, so
             do not look for it and do not write to it.
           '';
           codex = ''
             There are exactly two memory systems on this box: `icm` and
-            mempalace. Codex's own `memories` feature is left at its default of
+            funes. Codex's own `memories` feature is left at its default of
             off, for the reason Claude Code's native auto-memory is: a third
             store, invisible to the other two tools, covering ground they
             already cover between them.
@@ -216,8 +216,8 @@
       memorySplit = ''
         ${memoryIntro}
         They are split by *retrieval shape*, not by subject. The same topic
-        can legitimately have an icm fact and a mempalace body of context;
-        what must not happen is the same sentence living in both.
+        can legitimately have an icm fact and the funes sessions it came
+        from; what must not happen is icm restating a session verbatim.
 
         **icm** - narrow, keyed, global, cheap.
         One fact per entry, phrased as a sentence. Shared across every tool
@@ -226,30 +226,28 @@
         in an unrelated project next month: a resolved root cause, a
         settled decision, a stated preference.
 
-        **mempalace** - broad, semantic, corpus-scoped, pull-only.
-        Mined in bulk from files and transcripts rather than hand-authored a
-        fact at a time. Write here by pointing it at material
-        (`mempalace mine`), not by transcribing individual facts. Query it
-        when the question is fuzzy, is about this corpus, and only makes
-        sense with surrounding context.
+        **funes** - broad, semantic, session history, pull-only.
+        Indexed from past Claude Code and Codex transcripts, never written
+        by hand. Query it with `recall` when the question is "what did we
+        decide, find or try before" and the answer only makes sense with
+        the session around it; `get` returns a cited turn in full.
 
         ### Rules
 
-        1. **One entry point per fact.** Before storing, ask which of the
-           two shapes it is. If you can say it in one sentence that would
-           still make sense in another repo, it is icm. If it only means
-           something next to the material it came from, it is mempalace.
-           Never write both.
+        1. **Only icm is written by hand.** funes is filled from
+           transcripts, so what was said in a session is already there.
+           Store in icm only the one-sentence version that would still
+           make sense in another repo.
         2. **Read cheapest-first.** `icm recall` is one command against a
-           local index; try it first. Reach for mempalace only when icm
-           comes back empty *and* the question is genuinely semantic. Do not
-           query both to be thorough - that is two lookups to answer one
-           question.
+           local index; try it first. Reach for funes only when icm
+           comes back empty *and* the question is about past sessions. Do
+           not query both to be thorough - that is two lookups to answer
+           one question.
         3. **Only one system may inject automatically.** icm's session-start
-           wake-up pack owns that slot. mempalace is pull-only by design:
-           it has no hooks installed, and it should not get any. If you find
-           yourself wanting automatic mempalace injection, that is a request
-           to change the nix config, not something to arrange at runtime.
+           wake-up pack owns that slot. funes is pull-only: its hook only
+           indexes, it never adds to the context. If you find yourself
+           wanting automatic funes injection, that is a request to change
+           the nix config, not something to arrange at runtime.
         4. **Recall is not free and not authoritative.** A stored fact
            reflects what was true when it was written. If it names a file, a
            flag or a version, check that it still holds before acting on it.
@@ -462,11 +460,13 @@
       tree is small, or when the exact regex semantics matter - fff ranks, and
       ranking is the wrong tool when you need every single match.
 
-      ### mempalace - long-term memory (MCP)
+      ### funes - session memory (MCP)
 
-      Exposed as MCP tools. Stores conversation and project knowledge locally
-      (SQLite + a local embedding model, no API key, nothing leaves the
-      machine).
+      Exposed as MCP tools (`recall`, `get`) and a `funes` CLI. Indexes past
+      agent sessions locally (Lance + pinned local embedding and reranking
+      models, no API key). Nothing leaves the machine unless `funes push`
+      runs - never run it, nor `funes add` or `funes update`, which write
+      into generated config or the read-only store.
 
       ${memorySplit}
       When recalling, one lookup in the most likely store is enough; do not

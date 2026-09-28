@@ -73,7 +73,7 @@ in
     enable = true;
     package = pkgs.codex;
 
-    # Pulls mempalace + fff from programs.mcp.servers.
+    # Pulls funes + fff from programs.mcp.servers.
     enableMcpIntegration = true;
 
     # NOTE: config.toml becomes a mode-444 symlink into the nix store, same as

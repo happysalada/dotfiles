@@ -148,6 +148,9 @@ in
     grm = "git rebase master";
     # misc
     st = "systemctl-tui";
+    # codex for hyperresearch: `$deep-research` fetches sources, and the default
+    # workspace-write sandbox in codex.nix has no network.
+    codex-research = "codex -c sandbox_workspace_write.network_access=true";
     # GitHub hides "Releases only" watches from its API; this mines them out of
     # notification history and resets them. `list` first, then `reset --apply`.
     gh-release-unwatch = "nu ${./gh-release-unwatch.nu}";

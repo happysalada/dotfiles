@@ -13,7 +13,7 @@
 let
   # Same callPackage call as packages/ai.nix, so it is the same store path -
   # listing it twice does not duplicate anything.
-  mempalace = pkgs.callPackage ../../packages/ai/mempalace.nix { };
+  funes = pkgs.callPackage ../../packages/ai/funes.nix { };
 in
 {
   programs.mcp = {
@@ -22,10 +22,10 @@ in
     # All speak stdio and are pinned to absolute store paths, so they do not
     # depend on PATH when the agent spawns them.
     servers = {
-      mempalace = {
-        # Defaults to stdio and ~/.mempalace; both are what we want.
-        command = "${mempalace}/bin/mempalace-mcp";
-        args = [ ];
+      funes = {
+        # No memory argument: recall reads the local memory, never the Hub.
+        command = lib.getExe funes;
+        args = [ "mcp" ];
       };
 
       fff = {
