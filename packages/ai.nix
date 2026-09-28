@@ -119,14 +119,13 @@ with pkgs;
   # Do NOT run `/plugin install revdiff@revdiff`, `codex plugin add` or its
   # opencode setup.sh - each writes into config generated here.
 
-  (callPackage ./ai/deeptutor.nix { }) # DeepTutor: tutoring app with RAG
-  # knowledge bases, quizzes and guided reading. `deeptutor start` serves the
-  # API on :8001 and the web UI on :3782; `deeptutor chat` is the terminal REPL.
-  # State goes under ./data of the directory you start it in, unless
-  # DEEPTUTOR_HOME or --home says otherwise. Not in nixpkgs (checked 2026-09-27).
+  (callPackage ./ai/hyperresearch.nix { }) # deep research pipeline with a
+  # persistent source vault. Its `deep-research` skill is registered for all
+  # three agents in homes/programs/ai-skills.nix; the pipeline itself installs
+  # per project on first use. Not in nixpkgs (checked 2026-09-28).
   #
-  # Do NOT use the in-app updater - it runs `pip install -U` against the
-  # read-only store. Bump the version in deeptutor.nix instead.
+  # Do NOT run `hyperresearch install --global`, `/plugin install`, `codex plugin
+  # add` or `npx skills add` - each writes into config generated here.
 
   nono # capability-based sandbox for agents: `nono run -- claude`.
   # NOTE: nixpkgs disables the command_policies tests because nono's ELF

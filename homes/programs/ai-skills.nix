@@ -84,6 +84,7 @@ let
   # Built into its package with the script paths pinned to the store, so the
   # skill and the binary it launches can never be different versions.
   revdiff = pkgs.callPackage ../../packages/ai/revdiff.nix { };
+  hyperresearch = pkgs.callPackage ../../packages/ai/hyperresearch.nix { };
 
   # Both modules resolve a store-path string to a whole skill directory.
   fromRepo =
@@ -100,4 +101,5 @@ fromRepo scientific-agent-skills quantitative
 // local
 // {
   revdiff = "${revdiff}/share/revdiff/skill";
+  deep-research = "${hyperresearch}/share/hyperresearch/skill";
 }

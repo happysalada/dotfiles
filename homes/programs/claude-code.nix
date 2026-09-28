@@ -155,6 +155,11 @@ in
       # and diffable in a way neither of the other two are.
       autoMemoryEnabled = false;
 
+      # Not auto: its classifier is a server round-trip per call, and an outage
+      # blocks every tool that is not allowlisted below. The deny list still applies
+      # in this mode.
+      permissions.defaultMode = "bypassPermissions";
+
       # The Git section of ai-context.nix, enforced rather than merely asked
       # for - the same denies opencode.nix already carries in permission.bash.
       # Deny beats allow and beats a narrower rule, and claude-code matches each
@@ -192,6 +197,45 @@ in
         # Read-only search. Unlisted, every call waits on the auto-mode
         # classifier, and a classifier outage blocks it outright.
         "mcp__plugin_hm_fff"
+        # Web research, same reason: fetch and search only, nothing written.
+        "mcp__plugin_hm_crw"
+        "WebSearch"
+        "WebFetch"
+        # Git reads, same reason. Writes are in deny above.
+        "Bash(git status*)"
+        "Bash(git diff*)"
+        "Bash(git log*)"
+        "Bash(git show*)"
+        "Bash(git -C * status*)"
+        "Bash(git -C * diff*)"
+        "Bash(git -C * log*)"
+        "Bash(git -C * show*)"
+        # Packaging loop: builds are sandboxed and only write the store and
+        # ./result. nix run/shell/develop and flake update stay unlisted - they
+        # run fetched code or rewrite flake.lock.
+        "Bash(nix build *)"
+        "Bash(nix eval *)"
+        "Bash(nix log *)"
+        "Bash(nix flake prefetch *)"
+        "Bash(nix flake metadata *)"
+        "Bash(nix flake show *)"
+        "Bash(nix store prefetch-file *)"
+        "Bash(nix hash *)"
+        "Bash(nix path-info *)"
+        "Bash(nix why-depends *)"
+        "Bash(nix derivation show *)"
+        "Bash(nix search *)"
+        "Bash(nix-prefetch-url *)"
+        "Bash(nix-locate *)"
+        # Read-only file inspection, e.g. of a prefetched source in the store.
+        "Bash(ls *)"
+        "Bash(cat *)"
+        "Bash(head *)"
+        "Bash(tail *)"
+        "Bash(wc *)"
+        "Bash(tree *)"
+        "Bash(fd *)"
+        "Bash(jg *)"
         # Read-only diagnostics, same reason.
         "Bash(rg *)"
         "Bash(bluetoothctl show*)"

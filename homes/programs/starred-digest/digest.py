@@ -43,7 +43,6 @@ STATE_DIR = (
 def starred_digest(
     window_days: int = 7,
     top_n: int = 15,
-    max_summaries: int = 80,
     model: str = "mistral-nemo",
 ) -> str:
     """Fetch every starred repo, pick the highlights, write the digest."""
@@ -67,7 +66,7 @@ def starred_digest(
         len(previous),
     )
 
-    summaries = summarize(ranked, model, max_summaries)
+    summaries = summarize(ranked, model)
     path = write_digest(
         week, ranked, fresh, summaries, top_n, window_days, bool(previous)
     )
@@ -190,7 +189,8 @@ def to_repo(edge: dict) -> Repo:
         tag=release.get("tagName"),
         release_name=release.get("name"),
         release_at=release.get("publishedAt"),
-        release_body=release.get("description") or "",
+        # CRLF defeats every `$` in the (?m) patterns that clean the notes.
+        release_body=(release.get("description") or "").replace("\r\n", "\n"),
         release_url=release.get("url"),
     )
 
@@ -380,7 +380,7 @@ def newly_starred(repos: list[Repo], cutoff: dt.datetime) -> list[Repo]:
 Summaries = dict[str, str]  # Repo.name -> one line about what the release changed
 
 
-def summarize(highlights: list[Highlight], model: str, limit: int) -> Summaries:
+def summarize(highlights: list[Highlight], model: str) -> Summaries:
     """One line per release, describing the release rather than the repository.
 
     Every release gets its own call. Batching fifteen into one prompt and asking
@@ -388,12 +388,14 @@ def summarize(highlights: list[Highlight], model: str, limit: int) -> Summaries:
     simply ignored the format - it answered with markdown sections, nothing
     parsed, and every bullet silently fell back to the repo blurb. One release
     per call needs no format at all: the reply *is* the sentence.
+
+    No cap on how many: a call takes half a second, and a capped tail fell back
+    to headlines that were mostly "What's Changed".
     """
     log = get_run_logger()
     summaries: Summaries = {}
-    considered = highlights[:limit]
     from_commits = 0
-    for highlight in considered:
+    for highlight in highlights:
         asked = summary_prompt(highlight)
         if asked is None:
             continue
@@ -412,7 +414,7 @@ def summarize(highlights: list[Highlight], model: str, limit: int) -> Summaries:
     log.info(
         "summarised %d of %d releases (%d from commits)",
         len(summaries),
-        len(considered),
+        len(highlights),
         from_commits,
     )
     return summaries
@@ -696,7 +698,9 @@ def write_digest(
         ]
     if fresh:
         lines += ["", "## Newly starred", ""] + [
-            f"- [{r.name}]({r.url}) - {r.description[:160]}" for r in fresh
+            f"- [{r.name}]({r.url})"
+            + (f" - {clip(r.description)}" if r.description else "")
+            for r in fresh
         ]
 
     STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -724,11 +728,24 @@ def release_headline(repo: Repo) -> str:
     Deliberately never the repo description: a digest that tells you what a
     project is has told you the one thing you already knew when you starred it.
     """
-    if repo.release_name and repo.release_name.strip() not in ("", repo.tag):
-        return repo.release_name.strip()[:160]
-    notes = clean_notes(repo.release_body, limit=400)
+    name = (repo.release_name or "").strip()
+    if len(re.findall(r"[A-Za-z]{2,}", DATE.sub("", VERSION.sub("", name)))) >= 3:
+        return clip(name)
+    notes = clean_notes(SECTION_HEADING.sub("", repo.release_body), limit=400)
     first = next((ln.strip(" -*+") for ln in notes.splitlines() if ln.strip()), "")
-    return first[:160] or "no release notes"
+    return clip(first) or "no release notes"
+
+
+# "What's Changed", "### Added", "**Features**": a section title, not a change.
+SECTION_HEADING = re.compile(r"(?m)^(?:#{1,6}\s.*|\*\*[^*\n]+\*\*:?[ \t]*)$")
+DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def clip(text: str, limit: int = 160) -> str:
+    """Cut at a word boundary, so a long line reads as cut rather than broken."""
+    if len(text) <= limit:
+        return text
+    return text[:limit].rsplit(" ", 1)[0].rstrip(" ,;:") + "…"
 
 
 def fmt_delta(delta: int | None) -> str:
