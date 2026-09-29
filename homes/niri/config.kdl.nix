@@ -53,6 +53,16 @@ in
 
       mouse {
           accel-profile "flat"
+          // Every wheel notch arrives as a discrete v120 step and the *app*
+          // decides how far a step travels, so libinput's wheel "resolution"
+          // is not the lever here - this factor is. niri applies it to the
+          // wheel axis source for both the continuous delta and the v120
+          // step, so 0.5 halves the distance per notch instead of dropping
+          // notches. Raise it back toward 1.0 if scrolling feels sluggish.
+          // Touchpads keep their own independent factor, and a mouse-class
+          // device that libinput reports as a trackball/trackpoint ignores
+          // this entirely.
+          scroll-factor 0.5
       }
 
       // Focus follows the mouse only when the pointer actually moves onto a
