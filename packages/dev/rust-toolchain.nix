@@ -47,6 +47,16 @@ with pkgs;
   # cargo-semver-checks # whether a change to a published crate is breaking,
   # before the version number is picked.
 
+  # ---- the compile step ----
+  #
+  # Compilation caching. Without it, every `cargo clean`, every fresh clone and
+  # every wiped target/ recompiles the whole dependency graph, which is the
+  # single largest cost in the edit-build-run loop on a machine this fast.
+  #
+  # Selected in homes/programs/cargo.nix via [build] rustc-wrapper - being on
+  # PATH alone changes nothing, the same trap as mold below.
+  sccache
+
   # ---- the link step ----
   #
   # rustc emits object files and then shells out to a C compiler to link them,

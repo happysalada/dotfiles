@@ -116,28 +116,18 @@ in
     settings = {
       model = "sonnet";
       theme = "dark";
-      # `tui` only takes "default" or "fullscreen" ("inline" is a settings
-      # error), and neither is an append-to-scrollback mode: both repaint the
-      # frame in place, and long output goes to Claude Code's own pager
-      # ("↓ 393 more below") rather than into the terminal. So `default` avoids
-      # the alternate screen but the pane's scrollback still only collects
-      # redrawn frames - scrolling up in Zellij shows a broken replay, not the
-      # conversation. Measured: 11 cursor-up + 9 erase-line sequences on startup
-      # alone, and 40 lines (banner twice) in the pane after one command.
-      tui = "default";
-
-      # Screen-reader mode is the way out. It is the one renderer that emits
-      # plain append-only text - no alternate screen, no mouse capture, and no
-      # line erasing, so nothing but the status line ever redraws - which means
-      # the conversation lands in Zellij's per-pane scrollback and Ctrl+S
-      # scrolls it. Same command in this mode: 420 lines of real history, with
-      # scroll-to-top reaching line 1.
+      # `tui` takes "default" or "fullscreen". Fullscreen is the alternate
+      # screen, which has no scrollback at all in Zellij; `default` appends the
+      # transcript to the terminal, so the pane's scrollback does hold the
+      # conversation - measured, 49 of 50 lines of a local command's output
+      # landed there. What stays out of reach in this mode is Claude Code's own
+      # pager for long panels (release notes, help), which repaints in place.
       #
-      # What it costs: this is the UI a screen reader needs, so menus become
-      # number pickers ("Select with numbers [1-406]") and there is no live
-      # drawn input box. Slash commands, hooks and the starship status line all
-      # still work. Drop this key to get the drawn TUI back.
-      axScreenReader = true;
+      # `axScreenReader` is the append-only renderer - it puts even those panels
+      # in the scrollback (420 lines from one command, verified) - but it is the
+      # screen-reader UI: menus become number pickers ("Select with numbers
+      # [1-406]"), which is not worth it. Not enabled.
+      tui = "default";
       effortLevel = "high";
       agentPushNotifEnabled = true;
 

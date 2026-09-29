@@ -25,6 +25,20 @@
       pane_frames = false;
       default_shell = "nu";
       default_layout = "compact";
+
+      # Deliberately left at the default (off). On, Zellij captures the wheel
+      # and scrolls its own per-pane buffer; off, the wheel goes to ghostty,
+      # whose buffer holds the frames Zellij painted. That matters because a
+      # claude pane has no pane buffer to scroll: Claude's TUI keeps the whole
+      # conversation in a screen-sized viewport and repaints it, so the terminal
+      # only ever sees one screenful. Measured: Ctrl+S does enter scroll mode
+      # (the bar says SCROLL) but the pane holds ~29 lines even after resuming a
+      # 1568-line transcript. Capturing the wheel here would therefore trade the
+      # ghostty frames that do scroll for an empty zellij buffer. Panes whose app
+      # does append - a shell, reasonix (see packages/ai/reasonix.nix) - grow a
+      # real buffer, and Ctrl+S scrolls those as expected.
+      #
+      # mouse_mode = true;
       ui = {
         pane_frames = {
           hide_session_name = true;

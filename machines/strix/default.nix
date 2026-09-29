@@ -549,7 +549,8 @@
           ../../homes/programs/crw.nix
           # ~/.symposium/config.toml, so `cargo agents init` never has to run.
           ../../homes/programs/symposium.nix
-          # ~/.cargo/config.toml, which is what makes rustc link with mold.
+          # ~/.cargo/config.toml, which is what makes rustc cache through sccache
+          # and link with mold.
           ../../homes/programs/cargo.nix
           # ctrl-space command search. Seeds its own store, so it is a module
           # rather than a programs entry.
