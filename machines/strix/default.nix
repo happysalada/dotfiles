@@ -552,6 +552,9 @@
           ../../homes/programs/intelli-shell
           # Monday-morning digest of releases in my starred repos.
           ../../homes/programs/starred-digest
+          # The pueued user service and ~/.config/pueue/pueue.yml, so a queue
+          # outlives the terminal that started it.
+          ../../homes/programs/pueue.nix
         ];
 
         home = {

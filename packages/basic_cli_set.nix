@@ -38,6 +38,9 @@ with pkgs;
   uutils-coreutils
   skim # search mode for atuin
   fzf # zoxide's `zi` interactive picker shells out to fzf specifically
+  # the client only - strix gets pueued and ~/.config/pueue/pueue.yml from
+  # homes/programs/pueue.nix; bee and hetz are not driving queues from a
+  # desktop, so they need nothing beyond the CLI.
   pueue
   # awscli2 # used to get logs out of r2
   # rustypaste # file sharing service
