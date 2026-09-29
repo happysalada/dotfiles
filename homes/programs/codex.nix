@@ -81,8 +81,9 @@ in
     # enable` cannot persist their choice - every change comes through here plus
     # a rebuild. `codex update` fails for the same reason; bump nixpkgs instead.
     settings = {
-      # GPT-6 Sol is OpenAI's default model for coding and agentic work.
-      model = "gpt-6-sol";
+      # GPT-6 Luna is the faster/cheaper tier of the GPT-6 family; Sol and
+      # Astra are the quality-first ones.
+      model = "gpt-6-luna";
       model_reasoning_effort = "high";
 
       # Matches claude-code's default posture: edits inside the workspace go
@@ -105,7 +106,7 @@ in
       agents = {
         enabled = true;
         max_concurrent_threads_per_session = 4;
-        default_subagent_model = "gpt-5.6-terra";
+        default_subagent_model = "gpt-6-luna";
         default_subagent_reasoning_effort = "medium";
       };
 

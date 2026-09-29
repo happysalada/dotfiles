@@ -75,8 +75,8 @@ let
   # The one place the tools differ. Sonnet is the floor for Claude.
   models = {
     codex = {
-      fast = "gpt-5.6-terra";
-      strong = "gpt-5.6-sol";
+      fast = "gpt-6-luna";
+      strong = "gpt-6-sol";
     };
     opencode = {
       fast = "openai/gpt-5.6-terra";

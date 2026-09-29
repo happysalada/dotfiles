@@ -216,3 +216,7 @@ entities.json
 .claude/
 research/
 CLAUDE.md
+.agents
+.codex
+AGENTS.md
+.reasonix
