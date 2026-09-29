@@ -1,9 +1,9 @@
-# Subagent roles shared by codex, opencode and claude-code. No tool reads
-# another's agent format, so each tool's files are rendered from one role.
+# Subagent roles shared by codex, opencode, claude-code and reasonix. No tool
+# reads another's agent format, so each tool's files are rendered from one role.
 # Every role inherits the full toolset; its prompt is what keeps it in lane.
 { lib, pkgs }:
 let
-  # tool :: "claude-code" | "opencode" | "codex"
+  # tool :: "claude-code" | "opencode" | "codex" | "reasonix"
   mkAgents = { tool }: lib.mapAttrs render.${tool} roles;
 
   roles = {
@@ -70,9 +70,34 @@ let
         inherit (role) description effort;
         model = models.claude-code.${role.tier};
       } role.prompt;
+
+    # reasonix has no separate agent format of its own: a subagent profile *is*
+    # a Skill file carrying `runAs: subagent`, which is exactly what its own
+    # `reasonix subagent create` writes. homes/programs/reasonix.nix puts the
+    # three under ~/.reasonix/skills/, the global profile root.
+    #
+    # `invocation: manual` keeps them out of the session-context Skills catalog
+    # - the same description-listing budget ai-skills.nix is built around - so a
+    # profile costs context only when something actually spawns it.
+    #
+    # No allowed-tools key, deliberately: a profile-level allowlist would be a
+    # second place for the boundary to drift out of step with the prompt, and no
+    # other tool's role carries one either.
+    reasonix =
+      name: role:
+      frontmatter {
+        inherit name;
+        inherit (role) description;
+        invocation = "manual";
+        runAs = "subagent";
+        model = models.reasonix.${role.tier};
+        effort = efforts.reasonix.${role.effort};
+      } role.prompt;
   };
 
-  # The one place the tools differ. Sonnet is the floor for Claude.
+  # The one place the tools differ. Sonnet is the floor for Claude. Reasonix's
+  # two names are the `[[providers]]` names in homes/programs/reasonix.nix, not
+  # models.dev ids - it is pointed at DeepSeek directly.
   models = {
     codex = {
       fast = "gpt-6-luna";
@@ -85,6 +110,23 @@ let
     claude-code = {
       fast = "sonnet";
       strong = "opus";
+    };
+    reasonix = {
+      fast = "deepseek-flash";
+      strong = "deepseek-pro";
+    };
+  };
+
+  # reasonix's effort enum is per provider, and the DeepSeek providers in
+  # homes/programs/reasonix.nix declare disabled|low|high|max - there is no
+  # "medium", and a value outside `supported_efforts` is a doctor warning
+  # rather than an error. So the role's effort maps by relative position: the
+  # fast tier gets the cheap thinking level, the strong tier the provider
+  # default. Only reasonix needs the translation; the rest take it verbatim.
+  efforts = {
+    reasonix = {
+      medium = "low";
+      high = "high";
     };
   };
 
