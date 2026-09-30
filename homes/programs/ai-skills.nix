@@ -31,7 +31,8 @@ let
   #
   # Left out: using-git-worktrees and finishing-a-development-branch drive the
   # agent to stage and commit, which the Git section of ai-context.nix forbids
-  # outright. executing-plans goes with them - it carries a "REQUIRED SUB-SKILL"
+  # outright, and to make worktrees, which it allows only when asked.
+  # executing-plans goes with them - it carries a "REQUIRED SUB-SKILL"
   # pointer into that pair, so taking it would smuggle the commit workflow back
   # in through a dangling reference. The five below reference only each other.
   #
@@ -65,8 +66,10 @@ let
 
   # Ours. writing-plans is upstream's, edited to strip every instruction to
   # commit and to end each task at a review checkpoint instead - the one change
-  # that makes it usable under the Git rules. ./skills/ is where hand-written
-  # skills go; NOTICE records what was changed and carries upstream's MIT.
+  # that makes it usable under the Git rules. diff-metrics is ours outright: it
+  # measures a change with scb-check, bca and lizard. ./skills/ is where
+  # hand-written skills go; NOTICE records what was changed and carries
+  # upstream's MIT.
   # orx is the shim `orx install-skills` would write into ~/.claude/skills/,
   # carried here instead because that directory is generated. It is a pointer,
   # not a manual: it tells the agent to run `orx skill`, which prints the real
@@ -79,6 +82,7 @@ let
   local = {
     writing-plans = ./skills/writing-plans;
     orx = ./skills/orx;
+    diff-metrics = ./skills/diff-metrics;
   };
 
   # Built into its package with the script paths pinned to the store, so the
