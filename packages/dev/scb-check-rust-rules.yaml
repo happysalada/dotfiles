@@ -1,0 +1,67 @@
+# Rust slop rules for scb-check, in the same shape as its bundled
+# resources/slop_rules/*.yaml: each document is an ast-grep rule with a
+# `language`, and scb-check concatenates them into the single file it passes to
+# ast-grep. Copied into the wheel's resources directory by scb-check.nix.
+#
+# `severity: warning` on purpose - scb-check drops `info` findings unless
+# `--include-all` is passed, and these should count in the default run.
+# `metadata.weight`/`category` mirror the bundled rules; the only metadata key
+# the loader acts on is `min_file_count`, which is why none is set here.
+---
+id: rust-bool-if-expression
+language: rust
+severity: warning
+message: "`if $C { true } else { false }` - return the condition directly"
+metadata:
+  weight: 1
+  category: slop
+rule:
+  pattern: "if $C { true } else { false }"
+---
+id: rust-negated-bool-if-expression
+language: rust
+severity: warning
+message: "`if $C { false } else { true }` - return the negated condition"
+metadata:
+  weight: 1
+  category: slop
+rule:
+  pattern: "if $C { false } else { true }"
+---
+id: rust-len-comparison
+language: rust
+severity: warning
+message: "comparing `len()` against zero - use `is_empty()`"
+metadata:
+  weight: 1
+  category: slop
+rule:
+  any:
+    - pattern: "$X.len() == 0"
+    - pattern: "$X.len() != 0"
+    - pattern: "$X.len() > 0"
+    - pattern: "0 == $X.len()"
+    - pattern: "0 < $X.len()"
+---
+id: rust-manual-min-max
+language: rust
+severity: warning
+message: "manual min/max via if - use `max()` / `min()`"
+metadata:
+  weight: 1
+  category: slop
+rule:
+  any:
+    - pattern: "if $A > $B { $M = $A } else { $M = $B }"
+    - pattern: "if $A < $B { $M = $A } else { $M = $B }"
+---
+id: rust-push-loop
+language: rust
+severity: warning
+message: "loop that only pushes - use `extend`/`map`"
+metadata:
+  weight: 1
+  category: slop
+rule:
+  kind: for_expression
+  pattern: "for $I in $IT { $V.push($E); }"

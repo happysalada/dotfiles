@@ -22,6 +22,13 @@
       space.space = "file_picker";
       space.w = ":w";
       space.q = ":q";
+      # `bca report` walks the cwd rather than the buffer, and bca emits
+      # markdown - which is what the `:sh` popup renders.
+      space.c = ":sh bca report -O markdown";
+      # Same cwd scope as bca, worst CCN first in clang's warning format. At
+      # lizard's own CCN 15 a healthy project prints nothing; `-C <n>` lowers
+      # that, and `%{buffer_name}` scopes it to the buffer instead of the tree.
+      space.l = ":sh lizard -w -s cyclomatic_complexity .";
       # jumplist navigation, in place of goto_file
       g.f = "jump_forward";
       g.b = "jump_backward";
@@ -166,6 +173,48 @@
           "ruff"
         ];
         auto-format = true;
+      }
+      {
+        name = "rust";
+        # Replaces helix's built-in rust debugger, `lldb-dap`. codelldb's stdio
+        # mode is its no-argument default - a port is only used when --port or
+        # --connect is passed - which skips helix's 500ms tcp connect delay and
+        # its bind-close-respawn port race. The store path is because it is not
+        # on PATH; helix's stdio path resolves it through `which`, as it does
+        # for the language servers above.
+        #
+        # No "binary (terminal)" template on purpose. That needs runInTerminal,
+        # which helix refuses with "No external terminal defined" unless an
+        # [editor] terminal is configured - and falling back to codelldb's
+        # default console terminal streams the output through DAP anyway.
+        debugger = {
+          name = "codelldb";
+          transport = "stdio";
+          command = "${pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter}/bin/codelldb";
+          templates = [
+            {
+              name = "binary";
+              request = "launch";
+              completion = [
+                {
+                  name = "binary";
+                  completion = "filename";
+                }
+              ];
+              args = {
+                program = "{0}";
+              };
+            }
+            {
+              name = "attach";
+              request = "attach";
+              completion = [ "pid" ];
+              args = {
+                pid = "{0}";
+              };
+            }
+          ];
+        };
       }
     ];
   };
