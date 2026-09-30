@@ -35,8 +35,9 @@
       # (the bar says SCROLL) but the pane holds ~29 lines even after resuming a
       # 1568-line transcript. Capturing the wheel here would therefore trade the
       # ghostty frames that do scroll for an empty zellij buffer. Panes whose app
-      # does append - a shell, reasonix (see packages/ai/reasonix.nix) - grow a
-      # real buffer, and Ctrl+S scrolls those as expected.
+      # does append - a shell, reasonix (see the reasonix wrapper in
+      # machines/strix/default.nix) - grow a real buffer, and Ctrl+S scrolls
+      # those as expected.
       #
       # mouse_mode = true;
       ui = {

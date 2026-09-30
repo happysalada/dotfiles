@@ -79,7 +79,8 @@ in
     # NOTE: config.toml becomes a mode-444 symlink into the nix store, same as
     # ~/.claude/settings.json. So `/model`, `/approvals` and `codex features
     # enable` cannot persist their choice - every change comes through here plus
-    # a rebuild. `codex update` fails for the same reason; bump nixpkgs instead.
+    # a rebuild. `codex update` fails for the same reason; bump the llm-agents
+    # input instead.
     settings = {
       # GPT-6 Luna is the faster/cheaper tier of the GPT-6 family; Sol and
       # Astra are the quality-first ones.

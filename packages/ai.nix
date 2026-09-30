@@ -14,9 +14,13 @@ with pkgs;
   # on bin/codex, and `codex update` fails the same way, which is why
   # check_for_update_on_startup is false there.
   #
-  # nixpkgs tracks upstream closely but can lag by a few days. `claude update`
-  # is a no-op here (the store is read-only) - bump nixpkgs instead, or run it
-  # off mise/npm if you need same-day releases.
+  # All three, and every other agent CLI below that numtide/llm-agents.nix
+  # packages, come from that flake rather than nixpkgs - the overlay in
+  # machines/strix/default.nix is where those names are bound, and flake.nix
+  # says why. Its releases track the tools as they ship, where nixpkgs lags by
+  # days. `claude update` is still a no-op here (the store is read-only) -
+  # bump the llm-agents input instead, or run it off mise/npm if you need
+  # same-day releases.
 
   bubblewrap # Linux sandbox backend used by codex.
   nodejs-slim # Runtime for bundled codex system skills.
@@ -31,15 +35,15 @@ with pkgs;
 
   rtk # CLI output compressor: `rtk git status`, `rtk test`, `rtk grep`.
   # Wrapped as a PreToolUse/Bash hook so bash output is filtered before it
-  # reaches the context. nixpkgs 0.45.0 == upstream v0.45.0 (current).
+  # reaches the context. llm-agents 0.50.0 - nixpkgs has 0.49.0.
 
   icm # persistent cross-session memory (`icm store` / `icm recall`), SQLite +
-  # optional onnxruntime embeddings. nixpkgs 0.10.53, upstream icm-v0.10.61 -
-  # eight patch releases behind.
+  # optional onnxruntime embeddings. llm-agents 0.10.65 - nixpkgs has 0.10.63.
 
   graphify # builds a queryable knowledge graph of a repo (`graphify update .`,
   # `graphify query`). Complements ast-grep: ast-grep matches syntax, graphify
-  # answers cross-file "what talks to what". nixpkgs 0.9.28, upstream v0.9.48.
+  # answers cross-file "what talks to what". Not in llm-agents, so this one
+  # stays on nixpkgs - 0.9.66 at this pin.
 
   # ---- file search ----
 
@@ -66,10 +70,6 @@ with pkgs;
   # this repo generates. nixpkgs 0.74.0 == upstream v0.74.0 (current).
 
   # ---- not in nixpkgs, built from packages/ai/ ----
-
-  (callPackage ./ai/reasonix.nix { }) # DeepSeek-native coding agent. Its
-  # provider key is decrypted directly to ~/.reasonix/.env by the strix Home
-  # Manager config. Do not run `reasonix upgrade`: bump this package instead.
 
   (callPackage ./ai/funes.nix { }) # memory of past agent sessions, MCP server
   # is `funes mcp` (registered in homes/programs/ai-mcp.nix). Local Lance index
@@ -105,24 +105,6 @@ with pkgs;
   # into ~/.claude/settings.json and prose into ~/.claude/CLAUDE.md, the two
   # generated files. The equivalent wiring is declared in nix already.
 
-  (callPackage ./ai/openresearch.nix { }) # `orx`: runs claude-code/codex/
-  # opencode as parallel sessions over one repo, each in its own worktree, and
-  # records every run in a git-native experiment tree pinned to the commit it
-  # ran against. `orx up` serves a dashboard on 127.0.0.1:4791 over local
-  # SQLite. Also ships key-free paper retrieval - `orx discover` (alphaXiv
-  # full-text BM25 with page snippets, OpenAlex, bioRxiv) and `orx paper --full`
-  # for extracted full text, which SearXNG's research category cannot give.
-  #
-  # Overlaps worktrunk above on parallel worktrees; the experiment tree is the
-  # part neither that nor graphify does. Not in nixpkgs (checked 2026-09-05),
-  # and upstream cuts a release most days, so this pin goes stale fast.
-  #
-  # Telemetry is structurally off here: build.rs only stamps the production
-  # channel inside alphaXiv's own CI, so a source build reports
-  # "off (development build)". Do NOT run `orx install-skills` or `orx update` -
-  # the first writes a skill into ~/.claude/, the second targets the read-only
-  # store.
-
   (callPackage ./ai/revdiff.nix { }) # diff review TUI: comment on lines, quit,
   # and the comments come back to the agent as `## file:line` markdown. Its
   # skill is registered for all three agents in homes/programs/ai-skills.nix,
@@ -140,9 +122,57 @@ with pkgs;
   # Do NOT run `hyperresearch install --global`, `/plugin install`, `codex plugin
   # add` or `npx skills add` - each writes into config generated here.
 
+  # ---- from the numtide/llm-agents flake ----
+  # These four, plus the claude-code, codex, opencode, rtk and icm entries
+  # above, are the flake's packages: the overlay in machines/strix/default.nix
+  # is where they are bound to these names, and its cache is a substituter
+  # there, so none of them compile on this machine. Nono is in nixpkgs too, but
+  # the flake's copy is newer; the rest are in nixpkgs nowhere.
+
+  reasonix # DeepSeek-native coding agent. Its provider key is decrypted
+  # directly to ~/.reasonix/.env by the strix Home Manager config, and the
+  # overlay wraps the binary with the two env defaults this machine wants
+  # there. Was packages/ai/reasonix.nix, pinned at 1.39.2; the flake has
+  # 1.39.6. Do NOT run `reasonix upgrade`: bump the llm-agents input instead.
+
+  openresearch # `orx`: runs claude-code/codex/opencode as parallel sessions over
+  # one repo, each in its own worktree, and records every run in a git-native
+  # experiment tree pinned to the commit it ran against. `orx up` serves a
+  # dashboard on 127.0.0.1:4791 over local SQLite. Also ships key-free paper
+  # retrieval - `orx discover` (alphaXiv full-text BM25 with page snippets,
+  # OpenAlex, bioRxiv) and `orx paper --full` for extracted full text, which
+  # SearXNG's research category cannot give.
+  #
+  # Overlaps worktrunk above on parallel worktrees; the experiment tree is the
+  # part neither that nor graphify does. Was packages/ai/openresearch.nix at
+  # 0.1.120; the flake has 0.2.10, so the CLI has had a minor release since
+  # anything here was run against it. Their expression wraps git, ssh,
+  # coreutils, procps, gnutar and xdg-utils onto PATH - a superset of the
+  # git+ssh wrapper this repo carried - and sets ORX_NO_UPDATE_CHECK, so
+  # nothing needed re-applying. Do NOT run `orx install-skills` or `orx update`:
+  # the first writes a skill into ~/.claude/, the second targets the read-only
+  # store.
+
+  terminal-browser # a real Chromium in a terminal pane, over the kitty graphics
+  # protocol - ghostty speaks it, so `open --split right` puts a live page beside
+  # the conversation, and `terminal-browser action` is an agent-browser
+  # compatible CLI onto that same visible tab. Its skill is registered in
+  # homes/programs/ai-skills.nix.
+  #
+  # The Electron it bundles is a zenbu-labs fork with terminal rendering
+  # patches, so nixpkgs' electron is not a substitute and a local build would
+  # mean carrying the fork - upstream's expression is used as-is.
+  #
+  # Do NOT run `terminal-browser setup` (installs the agent skills into the
+  # generated config, which ai-skills.nix already does) or `terminal-browser
+  # upgrade` (targets the read-only store).
+
   nono # capability-based sandbox for agents: `nono run -- claude`.
-  # NOTE: nixpkgs disables the command_policies tests because nono's ELF
-  # resolver cannot find libc.so.6 for libgcc_s.so.1 - that feature is
-  # effectively broken on NixOS. Filesystem/network confinement still works.
-  # nixpkgs 0.71.0, upstream v0.74.0.
+  # llm-agents 0.79.0; nixpkgs has 0.74.0, which is why this moved. That
+  # derivation runs no tests at all, so the note that used to be here - that
+  # nixpkgs skips nono's command_policies tests because its ELF resolver cannot
+  # find libc.so.6 for libgcc_s.so.1, leaving that feature broken on NixOS - is
+  # about the nixpkgs build. Whether 0.79.0 fixed the feature itself has not
+  # been re-measured here. Filesystem/network confinement, which is what this
+  # is used for, is unaffected either way.
 ]

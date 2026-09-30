@@ -21,6 +21,11 @@
 # and every change has to come through here plus a rebuild. The first activation
 # renames the hand-written config.toml to config.toml.hm-bak rather than
 # deleting it.
+#
+# All three are rendered a second time under ~/.reasonix-nono, for the
+# `nono-reasonix` launcher in homes/programs/nono.nix, which sets REASONIX_HOME
+# to it. That home differs in one value: `[sandbox] bash = "off"`. See the
+# `sandboxed` binding below for why it cannot stay "enforce" there.
 {
   config,
   pkgs,
@@ -86,9 +91,9 @@ let
   # copy is of the whole directory, not of the file alone: several of these
   # skills ship scripts/ and references/ beside their SKILL.md.
   #
-  # Note the two skills that come from a package rather than from a source tree
-  # (revdiff and hyperresearch's deep-research) are read out of their built
-  # store paths here, so this evaluation depends on them.
+  # Note the skills that come from a package rather than from a source tree
+  # (revdiff, hyperresearch's deep-research and terminal-browser) are read out of
+  # their built store paths here, so this evaluation depends on them.
   renderSkill =
     name: src:
     if !(lib.hasInfix "allowed-tools:" (builtins.readFile "${src}/SKILL.md")) then
@@ -202,7 +207,7 @@ let
   #   - check_updates is off, for the same reason codex.nix sets
   #     check_for_update_on_startup = false and opencode.nix sets
   #     autoupdate = false: the store path is read-only, so an update can only
-  #     be a nag. Bump packages/ai/reasonix.nix instead.
+  #     be a nag. Bump the llm-agents input instead.
   #   - desktop telemetry/metrics are off, matching both the CLI metrics setting
   #     below and the REASONIX_TELEMETRY=0 the package wrapper sets.
   desktop = {
@@ -288,9 +293,9 @@ let
 
     # Content-free CLI usage metrics, off. `auto` - the default - turns them on
     # whenever the terminal is interactive, which is how this tool is used here.
-    # The package wrapper already sets REASONIX_TELEMETRY=0 in
-    # packages/ai/reasonix.nix; this is the same switch for when it is launched
-    # some other way.
+    # The overlay's reasonix wrapper already sets REASONIX_TELEMETRY=0 in
+    # machines/strix/default.nix; this is the same switch for when it is
+    # launched some other way.
     telemetry.cli_metrics = "off";
 
     # Proxy settings are inert while proxy_mode is auto/env - carried because
@@ -415,32 +420,55 @@ let
     };
   }
   // lib.optionalAttrs (plugins != [ ]) { inherit plugins; };
+
+  # The ~/.reasonix-nono copy of `settings` - identical but for one value, which
+  # is the entire reason that home exists. nono's Landlock ruleset grants
+  # /proc/<pid> read-only, and bubblewrap has to write /proc/self/uid_map, so
+  # `bash = "enforce"` cannot start inside a nono session: it fails with "bwrap:
+  # setting up uid map: Permission denied", and reasonix then refuses to run bash
+  # rather than falling back to an unconfined shell. The launcher in
+  # homes/programs/nono.nix points REASONIX_HOME here, which is what leaves plain
+  # `reasonix` with the jail it has always had.
+  sandboxed = settings // {
+    sandbox = settings.sandbox // {
+      bash = "off";
+    };
+  };
+
+  instructions = pkgs.writeText "REASONIX.md" (aiContext.mkContext { tool = "reasonix"; });
+
+  # The global Skill root is also reasonix's profile root, which is why the roles
+  # land beside the skills - see the reasonix renderer in ai-agents.nix.
+  #
+  # Rendered twice, for the two homes: ~/.reasonix for typing `reasonix`, and
+  # ~/.reasonix-nono for `nono-reasonix`, which differs in `sandbox.bash` alone.
+  renderHome =
+    dir: cfg:
+    {
+      "${dir}/config.toml".source = (pkgs.formats.toml { }).generate "reasonix-config" cfg;
+    }
+    // lib.mapAttrs' (
+      name: text: lib.nameValuePair "${dir}/skills/${name}/SKILL.md" { inherit text; }
+    ) (aiAgents.mkAgents { tool = "reasonix"; })
+    // lib.mapAttrs' (
+      name: src: lib.nameValuePair "${dir}/skills/${name}" { source = renderSkill name src; }
+    ) aiSkills;
 in
 {
-  # The global Skill root is also reasonix's profile root, which is why the
-  # roles land beside the skills - see the reasonix renderer in ai-agents.nix.
-  home.file = {
-    ".reasonix/config.toml".source = (pkgs.formats.toml { }).generate "reasonix-config" settings;
-  }
-  // lib.mapAttrs' (
-    name: text: lib.nameValuePair ".reasonix/skills/${name}/SKILL.md" { inherit text; }
-  ) (aiAgents.mkAgents { tool = "reasonix"; })
-  // lib.mapAttrs' (
-    name: src: lib.nameValuePair ".reasonix/skills/${name}" { source = renderSkill name src; }
-  ) aiSkills;
+  home.file = renderHome ".reasonix" settings // renderHome ".reasonix-nono" sandboxed;
 
   # The instructions file cannot be a home.file entry: that symlinks it into the
   # store, and reasonix ignores an instruction document whose symlink resolves
   # outside its own home ("rejected instruction document ... outside boundary").
   # A symlink to a file inside ~/.reasonix loads and a store symlink does not -
-  # measured, not assumed. So this one is installed as a real file instead, at
-  # the same 444 the store would give it, and rewritten on every activation.
+  # measured, not assumed. So these are installed as real files instead, at the
+  # same 444 the store would give them, and rewritten on every activation. Both
+  # homes, because "its own home" is now whichever REASONIX_HOME names.
   #
   # Nothing else here has that problem: the config loads from a store symlink,
   # and so do the skill directories.
   home.activation.reasonixInstructions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD install -m 444 -D $VERBOSE_ARG ${
-      pkgs.writeText "REASONIX.md" (aiContext.mkContext { tool = "reasonix"; })
-    } "$HOME/.reasonix/REASONIX.md"
+    $DRY_RUN_CMD install -m 444 -D $VERBOSE_ARG ${instructions} "$HOME/.reasonix/REASONIX.md"
+    $DRY_RUN_CMD install -m 444 -D $VERBOSE_ARG ${instructions} "$HOME/.reasonix-nono/REASONIX.md"
   '';
 }

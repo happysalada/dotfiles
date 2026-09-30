@@ -96,7 +96,8 @@
           reasonix = ''
             Credentials are the one file in the Reasonix home nix does not write
             either: `~/.reasonix/.env` is a symlink to the agenix-decrypted
-            `DEEPSEEK_API_KEY`. There is no login command and no key in
+            `DEEPSEEK_API_KEY`, and `~/.reasonix-nono/.env` is the same secret
+            for the sandboxed launcher. There is no login command and no key in
             `~/.reasonix/config.toml` - a provider there only names the variable
             (`api_key_env`). If a session is unauthenticated, the secret or its
             `secrets/agenix-rules.nix` rule is what to look at, never a key
@@ -406,10 +407,11 @@
       Creating a branch is fine if I ask for it. Reading git state (`git status`,
       `git diff`, `git log`) is always fine.
 
-      **No worktrees.** Edit the files in the checkout I am already in. Do not run
-      `git worktree add`, and do not reach for a worktree tool if your harness
-      offers one - a worktree hides the change from me and dies with the session,
-      which is the opposite of what the rules above are for. If your harness
+      **Worktrees only when I ask for one, never by default.** Edit the files in
+      the checkout I am already in. Do not run `git worktree add`, and do not
+      reach for a worktree tool if your harness offers one - a worktree hides the
+      change from me and dies with the session, so making one is my call, not
+      yours. When I do ask for one, say which path it is at. If your harness
       refuses to edit outside a worktree, say so and stop rather than working
       around it.
 
@@ -691,8 +693,32 @@
       Suggest it for running untrusted or generated code; do not wrap ordinary
       commands in it by default.
 
+      Three launchers wrap the agents themselves, as sandboxed alternatives to
+      the plain binaries rather than replacements:
+
+      - `nono-claude`, `nono-codex`, `nono-reasonix`
+
+      They exist because nono confines a *process tree*: the process you type and
+      every descendant of it, subagents included, under one profile - there is
+      nothing per-subagent to configure. Two things follow that are worth
+      knowing before suggesting one. Each launcher grants read-write on the
+      directory you type it from, so type it in a repository and not in `$HOME`.
+      And a child cannot widen what its parent was given, so an agent started
+      inside one of these cannot spawn another agent outside it.
+
+      `nono-reasonix` runs with `REASONIX_HOME=~/.reasonix-nono`, a second
+      rendered home whose config differs from `~/.reasonix/config.toml` in one
+      value: reasonix's own `bubblewrap` jail cannot start inside a nono session,
+      so `[sandbox] bash` is `"off"` there. Plain `reasonix` is unchanged and
+      keeps its jail.
+
+      Definitions are in `homes/programs/nono.nix`; profiles at
+      `~/.config/nono/profiles/<name>.json`, generated - a read-only store
+      symlink, so `nono profile promote` cannot write one.
+
       Caveat on NixOS: nono's ELF resolver fails to find `libc.so.6` for
-      `libgcc_s.so.1`, so its `command_policies` feature does not work here.
-      Filesystem and network confinement are unaffected.
+      `libgcc_s.so.1`, so its `command_policies` feature does not work here -
+      any profile carrying it fails to start. Filesystem, network and credential
+      confinement are unaffected; only per-command differentiation is missing.
     '';
 }

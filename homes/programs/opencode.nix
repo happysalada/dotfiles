@@ -57,7 +57,7 @@ in
       };
 
       # `opencode upgrade` cannot write to a read-only store path; left on it
-      # nags every launch and then fails. Bump nixpkgs instead.
+      # nags every launch and then fails. Bump the llm-agents input instead.
       autoupdate = false;
 
       # Uploads the transcript to opencode's servers for a public link.

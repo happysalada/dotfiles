@@ -4,7 +4,7 @@
   nixos-hardware,
   rust-overlay,
   nix-index-database,
-  opencode-v2,
+  llm-agents,
 }:
 [
   (
@@ -392,10 +392,25 @@
           substituters = [
             "https://cache.nixos.org"
             "https://nix-community.cachix.org"
+
+            # numtide's cache. Its key names niks3.numtide.com even though the
+            # URL is cache.numtide.com - the key name is what the signature
+            # carries, so that string is what has to be trusted. The llm-agents
+            # flake declares both in its own nixConfig, but that only applies
+            # when you build that flake directly, so they are declared here.
+            #
+            # It carries their packages built against nixpkgs-unstable's current
+            # HEAD, not only against their own pin, which is what lets the
+            # llm-agents overlay in the nixpkgs block above follow nixpkgs and
+            # still substitute: codex, reasonix, openresearch, rtk, icm, nono,
+            # opencode2 and claude-code all come down as downloads. A miss would
+            # not break anything, it would build that one package here.
+            "https://cache.numtide.com"
           ];
           trusted-public-keys = [
             "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
             "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+            "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
           ];
         };
         extraOptions = ''
@@ -446,18 +461,83 @@
           # than built, so this costs a download, not a compile.
           rust-overlay.overlays.default
 
-          # V2's flake ships a stale dependency hash and V1 completion hook.
-          (_final: _prev: {
-            opencode =
-              (opencode-v2.packages.x86_64-linux.opencode.override {
-                node_modules = opencode-v2.packages.x86_64-linux.opencode.node_modules.override {
-                  hash = "sha256-gvpzGXJG5vQKLCUarV2aSwOg8hvU4Sy3PlJF89XDQkU=";
+          # Every agent CLI this machine runs, from numtide/llm-agents.nix
+          # (flake.nix explains why the flake is used). This is the only place it
+          # is read: it shadows the nixpkgs names - claude-code, codex, rtk, icm,
+          # nono - so homes/programs/*.nix and packages/ai.nix go on saying
+          # pkgs.claude-code and pkgs.rtk without knowing where they came from.
+          #
+          # `opencode` is that flake's `opencode2`. Upstream v2's binary really is
+          # called `opencode`, which llm-agents renames so it can coexist with
+          # v1's; only v2 is used here, and the HM module, the serve unit, the
+          # state directory and the agent instructions all say `opencode`, so the
+          # symlink buys the name back. A symlinkJoin rather than an
+          # overrideAttrs: an override would rebuild llm-agents' cached path,
+          # this keeps its patched binary and only adds a link.
+          #
+          # `reasonix` is the one package that is overridden, and not by
+          # rebuilding it either - see the wrapper below for the two env defaults
+          # this machine wants and llm-agents does not set.
+          (
+            final: _prev:
+            let
+              sys = final.stdenv.hostPlatform.system;
+              lm = llm-agents.packages.${sys};
+            in
+            {
+              claude-code = lm.claude-code;
+              codex = lm.codex;
+              opencode2 = lm.opencode2;
+              rtk = lm.rtk;
+              icm = lm.icm;
+              nono = lm.nono;
+              terminal-browser = lm.terminal-browser;
+              openresearch = lm.openresearch;
+
+              opencode = final.symlinkJoin {
+                name = "opencode-${lm.opencode2.version}";
+                paths = [ lm.opencode2 ];
+                postBuild = ''ln -s opencode2 "$out/bin/opencode"'';
+                inherit (lm.opencode2) version;
+                meta = lm.opencode2.meta // {
+                  mainProgram = "opencode";
                 };
-              }).overrideAttrs
-                {
-                  postInstall = "";
-                };
-          })
+              };
+
+              # llm-agents wraps reasonix with codegraph, ripgrep and bubblewrap
+              # on PATH but leaves the environment alone. Two defaults go on top:
+              #
+              # REASONIX_TELEMETRY=0 is this machine's standing choice - see
+              # homes/programs/ai-context.nix for the other tools it is set for.
+              #
+              # TERMUX_VERSION=1 is not about Termux. reasonix has exactly one
+              # renderer that stays out of the alternate screen and appends to the
+              # terminal's own scrollback, and that is the one it picks when it
+              # detects Termux. Unset, a zellij pane running reasonix has no
+              # scrollback at all: the pane keeps alt-screen content only, so
+              # Ctrl+S and the wheel stop at the top of the current frame. Set,
+              # reasonix renders inline and leaves the mouse to the pane. 1.39.6
+              # still has no flag for it - checked, `reasonix --help` offers
+              # neither that nor a [ui] key - and `TERMUX_VERSION= reasonix` opts
+              # a single run back out. Delete this when reasonix grows the real
+              # switch (codex's --no-alt-screen is the shape to ask for).
+              #
+              # Wrapped as a symlinkJoin rather than an overrideAttrs so the Go
+              # binary stays the one llm-agents built, which substitutes; an
+              # override would recompile it on this machine on every bump.
+              reasonix = final.symlinkJoin {
+                name = "reasonix-${lm.reasonix.version}";
+                paths = [ lm.reasonix ];
+                nativeBuildInputs = [ final.makeBinaryWrapper ];
+                postBuild = ''
+                  wrapProgram "$out/bin/reasonix" \
+                    --set-default REASONIX_TELEMETRY 0 \
+                    --set-default TERMUX_VERSION 1
+                '';
+                inherit (lm.reasonix) version meta;
+              };
+            }
+          )
 
           (final: prev: {
             pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
@@ -543,6 +623,10 @@
           # plugins for the fourth agent. Last of the four on purpose: it reads
           # programs.mcp.servers, including crw's entry below.
           ../../homes/programs/reasonix.nix
+          # Sandboxed launchers over those three, nono-claude / nono-codex /
+          # nono-reasonix. After them on purpose: it reads
+          # programs.claude-code.finalPackage and programs.codex.package.
+          ../../homes/programs/nono.nix
           # Serves that same opencode over the mesh, for the phone.
           ../../homes/programs/opencode-server.nix
           # Registers its own MCP server next to the units it talks to.
@@ -600,6 +684,15 @@
         age.secrets.deepseek-api-key = {
           file = ../../secrets/deepseek.api.key.age;
           path = "${config.home.homeDirectory}/.reasonix/.env";
+        };
+
+        # The same ciphertext again, for the second Reasonix home that
+        # `nono-reasonix` runs with (homes/programs/nono.nix). Separate entry
+        # rather than a symlink between the two so that neither home depends on
+        # the other existing.
+        age.secrets.deepseek-api-key-nono = {
+          file = ../../secrets/deepseek.api.key.age;
+          path = "${config.home.homeDirectory}/.reasonix-nono/.env";
         };
 
         news.display = "silent";

@@ -106,4 +106,11 @@ fromRepo scientific-agent-skills quantitative
 // {
   revdiff = "${revdiff}/share/revdiff/skill";
   deep-research = "${hyperresearch}/share/hyperresearch/skill";
+
+  # The `codex` variant of upstream's skill rather than `default`, for the same
+  # reason revdiff takes its codex one: it is the only variant that carries the
+  # paragraph about running the CLI with escalated permissions, which holds under
+  # codex's sandbox here too. `terminal-browser setup` would install this same
+  # file into the agents' generated skill directories - declared here instead.
+  terminal-browser = "${pkgs.terminal-browser}/lib/terminal-browser/skills/codex/terminal-browser";
 }
