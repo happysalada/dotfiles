@@ -209,9 +209,6 @@ erl_crash.dump
 .extra
 backup/
 
-# MemPalace per-project files (issue #185)
-mempalace.yaml
-entities.json
 .hyperresearch/
 .claude/
 research/
