@@ -106,5 +106,24 @@ in
       name = "system";
       mode = "system";
     };
+
+    # herdr's TUI plugin. `herdr integration install opencode` writes this key
+    # into this same file, which is a store symlink, so that command fails - see
+    # the note in packages/ai.nix.
+    plugins = [ "./herdr-opencode" ];
   };
+
+  # The plugin sources the herdr derivation ships, at the paths its installer
+  # uses. `tui.js` is the entrypoint opencode resolves from the registered V2
+  # directory and it re-exports the session reporter beside it;
+  # plugins/herdr-agent-state.js is the state reporter opencode loads by
+  # directory, and the file whose version marker `herdr integration status`
+  # reads. The V1 registration (tui.jsonc -> ./herdr-tui-session.js) is left
+  # out deliberately: this machine runs V2 only.
+  xdg.configFile."opencode/herdr-opencode/tui.js".source =
+    "${pkgs.herdr}/share/herdr/integrations/opencode/tui.js";
+  xdg.configFile."opencode/herdr-tui-session.js".source =
+    "${pkgs.herdr}/share/herdr/integrations/opencode/herdr-tui-session.js";
+  xdg.configFile."opencode/plugins/herdr-agent-state.js".source =
+    "${pkgs.herdr}/share/herdr/integrations/opencode/herdr-agent-state.js";
 }

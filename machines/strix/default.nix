@@ -355,6 +355,14 @@
           cryptsetup
           agenix.packages.x86_64-linux.default
         ];
+
+        # /etc/set-environment, so the desktop session and sudo get helix too:
+        # neither reads nushell's env.nu, and a tool with an `EDITOR-or-vi`
+        # default would open vim. nixpkgs only ships nano here, by mkDefault.
+        variables = {
+          EDITOR = "hx";
+          VISUAL = "hx";
+        };
       };
 
       fonts.packages = import ../../packages/fonts.nix { inherit pkgs; };
@@ -464,8 +472,9 @@
           # Every agent CLI this machine runs, from numtide/llm-agents.nix
           # (flake.nix explains why the flake is used). This is the only place it
           # is read: it shadows the nixpkgs names - claude-code, codex, rtk, icm,
-          # nono - so homes/programs/*.nix and packages/ai.nix go on saying
-          # pkgs.claude-code and pkgs.rtk without knowing where they came from.
+          # nono, tuicr, herdr - so homes/programs/*.nix and packages/ai.nix go on
+          # saying pkgs.claude-code and pkgs.rtk without knowing where they came
+          # from.
           #
           # `opencode` is that flake's `opencode2`. Upstream v2's binary really is
           # called `opencode`, which llm-agents renames so it can coexist with
@@ -493,6 +502,31 @@
               nono = lm.nono;
               terminal-browser = lm.terminal-browser;
               openresearch = lm.openresearch;
+              tuicr = lm.tuicr;
+              ccusage = lm.ccusage;
+              codegraph = lm.codegraph;
+              jscpd = lm.jscpd;
+              semble = lm.semble;
+              plannotator-tui = lm.plannotator-tui;
+              agent-browser = lm.agent-browser;
+
+              # llm-agents' herdr, relinked with lld - the one binding in this
+              # block that is not their derivation untouched. Theirs does not link
+              # on this machine: rustc passes `-Wl,--eh-frame-hdr`, and ld.bfd then
+              # rejects the FDEs in the vendored zig-built libghostty-vt with
+              # ".eh_frame_hdr refers to overlapping FDEs". mold gets past that and
+              # then refuses zig's compiler_rt.o outright (undefined symbols with
+              # no name at all). lld links it and keeps the .eh_frame_hdr table;
+              # turning the header off links too, but throws that table away.
+              #
+              # Overriding costs no substitution: this output path is not in
+              # numtide's cache either way, which is the same reason there is
+              # nothing to preserve here the way the reasonix wrapper preserves
+              # theirs. Delete it when their derivation links on its own.
+              herdr = lm.herdr.overrideAttrs (old: {
+                nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.lld ];
+                RUSTFLAGS = "-C link-arg=-fuse-ld=lld";
+              });
 
               opencode = final.symlinkJoin {
                 name = "opencode-${lm.opencode2.version}";
@@ -535,6 +569,28 @@
                     --set-default TERMUX_VERSION 1
                 '';
                 inherit (lm.reasonix) version meta;
+              };
+
+              # mcptoon installs an agent-visible skill for every coding agent it
+              # detects, and its config module does that on *import* - so any
+              # invocation, `mcptoon --help` included, drops a SKILL.md into
+              # ~/.claude/skills, ~/.codex/skills, ~/.agents/skills and friends,
+              # all of which this repo generates. Measured, not assumed: a run
+              # against a scratch HOME created six of them before printing help.
+              #
+              # Its own escape hatch is MCPTOON_SKIP_SELF_HEAL, so the wrapper
+              # forces it rather than defaulting it - a guard a stray environment
+              # variable can lift is not a guard. The store binary is still there
+              # unwrapped if the skill install is ever wanted deliberately.
+              mcptoon = final.symlinkJoin {
+                name = "mcptoon-${lm.mcptoon.version}";
+                paths = [ lm.mcptoon ];
+                nativeBuildInputs = [ final.makeBinaryWrapper ];
+                postBuild = ''
+                  wrapProgram "$out/bin/mcptoon" \
+                    --set MCPTOON_SKIP_SELF_HEAL 1
+                '';
+                inherit (lm.mcptoon) version meta;
               };
             }
           )
@@ -644,6 +700,9 @@
           # The pueued user service and ~/.config/pueue/pueue.yml, so a queue
           # outlives the terminal that started it.
           ../../homes/programs/pueue.nix
+          # The ccusage prompt segment. Separate from homes/common.nix's starship
+          # block because it needs a package only strix has.
+          ../../homes/programs/ccusage.nix
         ];
 
         home = {

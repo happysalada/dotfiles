@@ -123,11 +123,14 @@ with pkgs;
   # add` or `npx skills add` - each writes into config generated here.
 
   # ---- from the numtide/llm-agents flake ----
-  # These four, plus the claude-code, codex, opencode, rtk and icm entries
+  # These six, plus the claude-code, codex, opencode, rtk and icm entries
   # above, are the flake's packages: the overlay in machines/strix/default.nix
   # is where they are bound to these names, and its cache is a substituter
-  # there, so none of them compile on this machine. Nono is in nixpkgs too, but
-  # the flake's copy is newer; the rest are in nixpkgs nowhere.
+  # there, so almost none of them compile on this machine - herdr is the
+  # exception and its entry says why. Nono and herdr are in nixpkgs too, but
+  # both of the flake's copies are newer; tuicr is there at the same version,
+  # and its entry below says why it comes from here anyway. The rest are in
+  # nixpkgs nowhere.
 
   reasonix # DeepSeek-native coding agent. Its provider key is decrypted
   # directly to ~/.reasonix/.env by the strix Home Manager config, and the
@@ -175,4 +178,150 @@ with pkgs;
   # about the nixpkgs build. Whether 0.79.0 fixed the feature itself has not
   # been re-measured here. Filesystem/network confinement, which is what this
   # is used for, is unaffected either way.
+
+  tuicr # code review in the terminal: one GitHub-style continuous diff over
+  # every changed file, line/range/file/review comments, vim keybindings, and
+  # sessions that survive a restart. Reads git, jj and Mercurial, so `tuicr -w`
+  # reviews uncommitted changes whichever a repo uses, and it pushes a real
+  # review back through the forge's own CLI - `gh`, which
+  # packages/basic_cli_set.nix already installs; `glab`, `bkt` and `tea` are not
+  # installed, so GitHub is the forge that works here.
+  #
+  # The same job as revdiff above, pointed the other way: revdiff hands an agent
+  # `## file:line` markdown to act on, while tuicr is the human's tool and a
+  # comment goes to the forge rather than into the conversation.
+  #
+  # nixpkgs has 0.27.0 too - same version, same source hash - so what this entry
+  # buys is the flake's release tracking, not a newer binary today. llm-agents
+  # also builds it with doCheck off rather than running the suite, and their
+  # cache answers for the output path (queried directly), so once the
+  # substituter in machines/strix/default.nix is live this is a download and not
+  # a local rust build.
+  #
+  # Config is ~/.config/tuicr/config.toml and saved reviews land under
+  # ~/.local/share/tuicr/reviews; this repo writes neither. Do NOT run `tuicr
+  # update`: from a store path it resolves itself to InstallMethod::Nix and runs
+  # `nix profile upgrade '.*tuicr.*'`, which no profile here owns. Bump the
+  # llm-agents input instead, as for everything else in this section.
+
+  herdr # agent multiplexer: a background server owns the real terminals, and a
+  # pane running an agent is marked idle, working or blocked from what it draws
+  # on screen. Local and saved SSH machines sit in one TUI, and the CLI and
+  # socket API are the same surface an agent drives - split a pane, prompt a
+  # neighbour, wait until it is genuinely blocked instead of firing keystrokes.
+  #
+  # It does not wrap or replace the agents above, it owns their terminals, which
+  # is why its integrations are declared where those agents are configured
+  # (claude-code.nix, codex.nix, opencode.nix) rather than here, out of the hook
+  # and plugin sources the derivation installs under share/herdr/integrations.
+  # Do NOT run `herdr integration install <agent>`: it writes
+  # ~/.claude/settings.json, ~/.codex/hooks.json and opencode's cli.json, all
+  # generated read-only store symlinks, so the write fails.
+  #
+  # The only package here that compiles locally, and the only one whose
+  # derivation is not llm-agents' untouched: their link fails on this machine and
+  # the overlay relinks it with lld - that comment, with the two linker failures
+  # it sidesteps, is in machines/strix/default.nix. It is also missing from the
+  # numtide cache at this pin: `nix build --dry-run` wants five derivations and a
+  # 101 MB Zig 0.16.0, because herdr renders panes with a vendored libghostty-vt
+  # it builds through zig. Their own nixpkgs pin does have a cached build, so the
+  # gap is pin coverage. nixpkgs has 0.9.1 where the flake has 0.9.3.
+  #
+  # Its skill is registered in homes/programs/ai-skills.nix. Do NOT run `herdr
+  # update`: it recognizes a store path and says Nix installs update through Nix,
+  # so this is another llm-agents bump. `[update] version_check` defaults on with
+  # no environment override, and silencing it needs a generated
+  # ~/.config/herdr/config.toml - which herdr's own Settings UI also writes, so
+  # that file is left alone until the check actually annoys.
+
+  codegraph # semantic code intelligence: `codegraph init` builds an index for a
+  # project, then query/explore/sync read it. It was already reaching this
+  # machine before this entry - llm-agents' reasonix depends on it, so the copy
+  # on reasonix's PATH is the flake's - but only inside reasonix's own process.
+  # Taking the flake's copy for PATH too means one store path serves both rather
+  # than a second, nixpkgs-built copy: nixpkgs has 1.6.0 as well, the same
+  # version, so the only difference today is which derivation it is.
+  #
+  # The index is per project and lives in `.codegraph/` inside the repo, which
+  # `codegraph init` creates - so a repo that wants it wants that path ignored.
+  # Nothing here runs init.
+
+  ccusage # what the coding agents have actually spent, read from the logs they
+  # already write on this machine. Claude Code, Codex and OpenCode are all
+  # supported; reasonix is not one of its sources. Nothing is uploaded, and the
+  # cost it prints is API-equivalent rather than money - these agents run on
+  # subscriptions, which is exactly why its numbers are worth looking at.
+  #
+  # Wired into the prompt: homes/programs/ccusage.nix renders the active Claude
+  # usage block (notional cost and time until it resets) as a starship segment.
+  # `ccusage daily --json -O` is the cross-agent report to run by hand, and
+  # `ccusage statusline` is its own Claude Code hook mode if that is ever wanted
+  # instead of the segment.
+
+  semble # semantic code search - meaning, not lexical. `semble search "<query>"`
+  # returns ranked snippets, and it indexes an average repo in about half a
+  # second on CPU with no API key. The gap it fills: fff above is fuzzy and
+  # frequency-ranked, ripgrep is lexical, ast-grep is structural, and none of
+  # them answer "how is authentication handled?".
+  #
+  # Registered as an MCP server for every agent in homes/programs/ai-mcp.nix,
+  # which is why this entry adds nothing per-agent. First use downloads a small
+  # embedding model from Hugging Face and caches it; after that it is offline.
+  # Do NOT run `semble install`: it writes MCP config and sub-agent files for
+  # each agent it finds, which is what ai-mcp.nix already declares.
+
+  jscpd # copy-paste detection. Overlaps scb-check's `clone_loc`, but where that
+  # is one aggregate number jscpd names the pairs: each clone carries first and
+  # second file with start/end lines, a kind (exact, renamed, similar, gap, ast,
+  # semantic) and a token count. `--baseline-from-ref <ref>` re-scans a git ref's
+  # tree and marks clones absent from it with `isNew`, so a diff-scoped "did this
+  # change add duplication" is one scan rather than two.
+  #
+  # Wired into the diff-metrics skill (homes/programs/skills/diff-metrics), which
+  # is where a change is measured. Note it has no grammar for nix or nushell -
+  # supported formats include rust, python, ts and go - so in this repo it only
+  # sees the python, bash, json and markdown files, and data files it does parse
+  # inflate the percentage. Use it on the code repos, not on nix.
+
+  plannotator-tui # annotate markdown in the terminal and hand the review back
+  # as numbered feedback. The gap it fills: revdiff and tuicr above review code,
+  # and what these agents produce first - `writing-plans` plans, hyperresearch
+  # reports, `openspec` specs - is markdown that had no review step at all.
+  #
+  # `plannotator-tui <file.md>` opens it, `plannotator-tui last --host claude`
+  # picks the agent's most recent reply to annotate, and `--export <file.md>`
+  # prints the numbered feedback to paste back into a session. Its only delivery
+  # path into a live pane is `herdr open --deliver-to <pane>`, which now means
+  # something here since herdr is installed - the rest of us hand it over by
+  # pasting, since annotations live in ~/.plannotator rather than in the file.
+
+  agent-browser # headless browser automation CLI for agents: navigate, snapshot,
+  # click, fill, eval, against a real Chrome. Distinct from crw above, which
+  # fetches and converts pages for reading - this one drives a page.
+  # terminal-browser ships its own copy of this same tool under
+  # lib/terminal-browser/agent-browser and uses it for `terminal-browser action`,
+  # but that copy is not on PATH; this entry is the one every agent can reach.
+  #
+  # It needs a browser: `agent-browser install` downloads its own Chromium into
+  # its cache, or `--auto-connect` / `connect <port|url>` reuse one that is
+  # already running - packages/basic_cli_set.nix installs chromium. Its skills
+  # are documentation it prints on request (`agent-browser skills get core`), not
+  # something to install.
+
+  mcptoon # compresses MCP tool listings and results - `manifest --slim`, and
+  # `call <server> <tool> --toon` - which is the one context consumer rtk does
+  # not touch: rtk filters bash output, and MCP results arrive as tool results.
+  #
+  # The overlay wraps it with MCPTOON_SKIP_SELF_HEAL=1 for the reason recorded
+  # there: upstream installs a skill into every agent's config directory on any
+  # invocation. That also means its gateway mode is the do-not-run set here -
+  # `mcptoon quickstart`, `mcptoon discover --write` and `mcptoon skills sync`
+  # exist to take over agent MCP config, and homes/programs/ai-mcp.nix owns that.
+  # `mcptoon off` / `restore` / `uninstall` undo exactly those takeover writes,
+  # so they are for a machine that took it up, not this one.
+  #
+  # It keeps its own server list in ~/.mcptoon/config.json (MCPTOON_CONFIG_FILE
+  # moves it), and that file is what `mcptoon call` and `manifest` read - so the
+  # compression helpers reach whatever it lists until someone decides whether the
+  # registry in ai-mcp.nix should feed it. Nothing here writes that file.
 ]

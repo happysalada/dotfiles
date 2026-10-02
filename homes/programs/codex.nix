@@ -22,6 +22,14 @@
 let
   icm = lib.getExe pkgs.icm;
 
+  # herdr's Codex integration: the SessionStart hook that reports the session id
+  # to the local herdr socket, so herdr reopens this exact conversation after its
+  # server restarts. Same shape as the Claude Code one in claude-code.nix, and
+  # like it the path and the command string are what herdr looks for when it
+  # decides the integration is installed.
+  herdrCodexHook = "${config.home.homeDirectory}/.codex/herdr-agent-state.sh";
+  herdrCodexCommand = "bash '${herdrCodexHook}' session";
+
   # Global instructions, shared with claude-code and opencode.
   aiContext = import ./ai-context.nix { inherit lib; };
 
@@ -43,15 +51,18 @@ let
   ];
 
   # Codex hashes the normalized hook before allowing it to run. Generate the
-  # same hash so reviewed nix configuration is the trust boundary.
+  # same hash so reviewed nix configuration is the trust boundary. `groupIndex`
+  # is where the entry sits in its event's array - codex keys trust by position,
+  # so a second hook on the same event has to say so.
   trustedHook =
     {
       event,
       command,
       timeout ? 600,
+      groupIndex ? 0,
     }:
     {
-      name = "${config.home.homeDirectory}/.codex/hooks.json:${event}:0:0";
+      name = "${config.home.homeDirectory}/.codex/hooks.json:${event}:${toString groupIndex}:0";
       value.trusted_hash = "sha256:${
         builtins.hashString "sha256" (
           builtins.toJSON {
@@ -122,6 +133,17 @@ in
           event = "session_start";
           command = "${icm} hook start";
         })
+
+        # herdr's, as the second group in the same event - hence :1:0, and the
+        # 10s timeout the herdr installer uses. Without this hash codex reports
+        # the hook as untrusted and never runs it, and the prompt that would
+        # record trust cannot write this file.
+        (trustedHook {
+          event = "session_start";
+          command = herdrCodexCommand;
+          timeout = 10;
+          groupIndex = 1;
+        })
       ];
     };
 
@@ -135,7 +157,7 @@ in
     # filled icm with sentence fragments and restatements of the repo, which then
     # crowded the wake-up pack. Memories are stored by hand with `icm store`.
     hooks = {
-      SessionStart = cmd "${icm} hook start";
+      SessionStart = cmd "${icm} hook start" ++ cmd herdrCodexCommand;
     };
 
     # -> ~/.codex/rules/default.rules, the Git section of ai-context.nix
@@ -191,6 +213,12 @@ in
   home.file = {
     # Let the managed daemon launch the Nix package without enabling its updater.
     ".codex/packages/standalone/current/bin/codex".source = lib.getExe config.programs.codex.package;
+
+    # herdr's hook file, straight out of the herdr store path - same bytes and
+    # same version marker as the installer would write there. Its trust hash and
+    # its SessionStart entry are declared above; see packages/ai.nix for why
+    # `herdr integration install codex` must not be run.
+    ".codex/herdr-agent-state.sh".source = "${pkgs.herdr}/share/herdr/integrations/codex/herdr-agent-state.sh";
   }
   // lib.mapAttrs' (
     name: source: lib.nameValuePair ".codex/agents/${name}.toml" { inherit source; }

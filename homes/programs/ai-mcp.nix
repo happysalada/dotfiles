@@ -35,6 +35,20 @@ in
         command = lib.getExe pkgs.fff-mcp;
         args = [ ];
       };
+
+      # Semantic code search - the one search here that answers a question
+      # rather than matching a string: fff is fuzzy, ripgrep is lexical, ast-grep
+      # is structural. `semble-mcp` is the MCP entry point llm-agents' derivation
+      # exposes beside the `semble` CLI, so the server is a store path and needs
+      # nothing from PATH. Declaring it here covers all four agents at once.
+      #
+      # Not via `semble install`, which writes this same entry into each agent's
+      # own config - the files this repo generates - plus a sub-agent file. First
+      # use on a machine downloads a small embedding model and caches it.
+      semble = {
+        command = lib.getExe' pkgs.semble "semble-mcp";
+        args = [ ];
+      };
     };
   };
 }

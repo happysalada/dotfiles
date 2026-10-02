@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 let
   rtk = lib.getExe pkgs.rtk;
   icm = lib.getExe pkgs.icm;
@@ -7,6 +7,15 @@ let
   systemctl = "${pkgs.systemd}/bin/systemctl";
   systemdRun = "${pkgs.systemd}/bin/systemd-run";
   systemdInhibit = "${pkgs.systemd}/bin/systemd-inhibit";
+
+  # herdr's Claude Code integration: a SessionStart hook that reports the
+  # session id to the local herdr socket, so herdr can reopen this exact
+  # conversation after its server restarts. Both halves have to look like what
+  # `herdr integration install claude` writes - herdr decides an integration is
+  # installed by finding this file and this command string, and reports the
+  # version embedded in the file.
+  herdrClaudeHook = "${config.home.homeDirectory}/.claude/hooks/herdr-agent-state.sh";
+  herdrClaudeCommand = "bash '${herdrClaudeHook}' session";
 
   # Keep the laptop awake while Claude is actually working.
   #
@@ -312,7 +321,23 @@ in
         # injected once per session. This is the *only* automatic memory
         # injection that stays on - see the memory-split section in
         # ai-context.nix for why exactly one system may own this path.
-        SessionStart = [ (cmd "${icm} hook start") ];
+        SessionStart = [
+          (cmd "${icm} hook start")
+
+          # herdr's session-identity hook, described at herdrClaudeCommand above.
+          # The matcher and the timeout are part of the entry herdr writes, and
+          # it is silent outside herdr: the script returns unless HERDR_ENV=1.
+          {
+            matcher = "^(startup|resume|clear|compact|fork)$";
+            hooks = [
+              {
+                type = "command";
+                command = herdrClaudeCommand;
+                timeout = 10;
+              }
+            ];
+          }
+        ];
 
         # `icm hook prompt` (auto-recall) is deliberately off. It fires on
         # every single user prompt and its output is appended to the
@@ -404,4 +429,11 @@ in
     # -> ~/.claude/CLAUDE.md, same prose as opencode's AGENTS.md.
     context = aiContext.mkContext { tool = "claude-code"; };
   };
+
+  # The hook file itself, straight out of the herdr store path: same bytes and
+  # same version marker as the installer would write at that path, and only
+  # there - a store symlink, so `herdr integration install claude` cannot
+  # rewrite it. See the note in packages/ai.nix.
+  home.file.".claude/hooks/herdr-agent-state.sh".source =
+    "${pkgs.herdr}/share/herdr/integrations/claude/herdr-agent-state.sh";
 }

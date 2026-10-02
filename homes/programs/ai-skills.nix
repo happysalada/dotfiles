@@ -67,9 +67,10 @@ let
   # Ours. writing-plans is upstream's, edited to strip every instruction to
   # commit and to end each task at a review checkpoint instead - the one change
   # that makes it usable under the Git rules. diff-metrics is ours outright: it
-  # measures a change with scb-check, bca and lizard. ./skills/ is where
-  # hand-written skills go; NOTICE records what was changed and carries
-  # upstream's MIT.
+  # measures a change with scb-check, bca and lizard. condense-comments is ours
+  # too: it trims comment bloat, and the survey.nu beside it ranks where that
+  # bloat is. ./skills/ is where hand-written skills go; NOTICE records what was
+  # changed and carries upstream's MIT.
   # orx is the shim `orx install-skills` would write into ~/.claude/skills/,
   # carried here instead because that directory is generated. It is a pointer,
   # not a manual: it tells the agent to run `orx skill`, which prints the real
@@ -83,6 +84,7 @@ let
     writing-plans = ./skills/writing-plans;
     orx = ./skills/orx;
     diff-metrics = ./skills/diff-metrics;
+    condense-comments = ./skills/condense-comments;
   };
 
   # Built into its package with the script paths pinned to the store, so the
@@ -113,4 +115,11 @@ fromRepo scientific-agent-skills quantitative
   # codex's sandbox here too. `terminal-browser setup` would install this same
   # file into the agents' generated skill directories - declared here instead.
   terminal-browser = "${pkgs.terminal-browser}/lib/terminal-browser/skills/codex/terminal-browser";
+
+  # herdr's own skill: it teaches an agent running inside a herdr pane to drive
+  # that session through the CLI, and refuses to do anything outside one (it
+  # checks HERDR_ENV). The derivation ships the agent integrations but not this
+  # file, so it comes out of the release source the binary was built from - the
+  # same pin, so the two cannot drift.
+  herdr = "${pkgs.herdr.src}/skills/herdr";
 }
