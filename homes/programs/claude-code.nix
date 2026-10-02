@@ -185,6 +185,7 @@ in
         "Bash(graphify *)"
         "Bash(nono *)"
         "Bash(crw *)"
+        "Bash(mcptoon *)"
         # Read-only search. Unlisted, every call waits on the auto-mode
         # classifier, and a classifier outage blocks it outright.
         "mcp__plugin_hm_fff"

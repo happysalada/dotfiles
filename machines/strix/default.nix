@@ -31,10 +31,8 @@
         # the flows in homes/programs/starred-digest.
         ../../modules/prefect-local.nix
 
-        # Chorded text expansion on the Glove80: press two keys together and
-        # the whole word is typed. Scoped to that one keyboard, so it cannot
-        # fight Handy over the same exclusive evdev grab.
-        ../../modules/kanata.nix
+        # modules/kanata.nix is deliberately NOT imported: its chord processing
+        # reorders ordinary typing. The header of that file has the detail.
 
         # --- nixos-hardware -------------------------------------------------
         # there's no g834 profile upstream, so this is the g533zw profile
@@ -149,15 +147,15 @@
         loadModels = [ "mistral-nemo" ];
       };
 
-      services.ollaya = {
-        enable = true;
-        package = pkgs.ollaya.override {
-          onnxruntime = pkgs.onnxruntime.override { cudaSupport = true; };
-          llama-cpp = pkgs.llama-cpp.override { cudaSupport = true; };
-        };
-        loadModels = [ "winnow:e4b" ];
-        environmentVariables.OLLAYA_DEVICE = "auto";
-      };
+      # services.ollaya = {
+      #   enable = true;
+      #   package = pkgs.ollaya.override {
+      #     onnxruntime = pkgs.onnxruntime.override { cudaSupport = true; };
+      #     llama-cpp = pkgs.llama-cpp.override { cudaSupport = true; };
+      #   };
+      #   loadModels = [ "winnow:e4b" ];
+      #   environmentVariables.OLLAYA_DEVICE = "auto";
+      # };
 
       # asus: rgb off + battery charge limit
       services.asusd.enable = true;
@@ -257,6 +255,12 @@
       # when wtype is unusable, and this is what puts the daemon behind it up.
       hardware.uinput.enable = true;
       programs.ydotool.enable = true;
+
+      # LocalSend: the phone's counterpart to AirDrop. The module opens its one
+      # port (53317 TCP+UDP) on every interface, because discovery is UDP
+      # multicast and has to reach whatever wifi this laptop is on; every
+      # transfer still needs an accept here.
+      programs.localsend.enable = true;
 
       services.printing.enable = true;
 

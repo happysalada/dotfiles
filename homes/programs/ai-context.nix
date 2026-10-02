@@ -500,6 +500,49 @@
       ### rtk - bash output compression
 
       ${rtkSection}
+      ### mcptoon - MCP tool results and catalog
+
+      `rtk` filters bash output; MCP results arrive as tool results, so nothing
+      filters those - a long `crw_scrape` or a wide `fff` grep lands whole.
+      `mcptoon` calls the same servers from a shell and hands back a compressed
+      result, or the catalog without the schemas:
+
+      ```sh
+      mcptoon manifest --slim               # every tool, its params on one line
+      mcptoon search <query>                # which server has a tool for this
+      mcptoon inspect <server> <tool>       # the real schema before calling
+      mcptoon call <server> <tool> '{"k":"v"}' --toon
+      ```
+
+      Worth it when the result is large *and* multi-field - `--toon` cut a
+      `crw_search` result on this machine by 18%, and did nothing measurable to
+      a single long text field. Not worth it for one small call: the server
+      spawn costs more than the compression saves. `--slim` drops the parameter
+      descriptions `inspect` restores, so use it to find a tool, not to call one.
+
+      Its server list is its own, at `~/.mcptoon/config.json`. Nothing in nix
+      writes it, and it is not the file your client reads. Seed it once from the
+      registry the rest of the machine uses:
+
+      ```sh
+      mcptoon import --file ~/.config/mcp/mcp.json --write   # the stdio servers
+      mcptoon add <name> --http <url>                        # the HTTP ones
+      mcptoon update                                         # cache the tool surface
+      ```
+
+      Anything that rewrites *agent* config rather than mcptoon's own -
+      `quickstart`, `discover --write`, `skills sync`, `sync --self` and
+      `--takeover`, `off`/`restore`/`uninstall` - stays off-limits: that config
+      belongs to `homes/programs/ai-mcp.nix`.
+
+      Where bash is jailed it cannot run at all: mcptoon creates `~/.mcptoon` as
+      it starts, and codex's `workspace-write` sandbox and reasonix's bubblewrap
+      jail both leave `$HOME` read-only, so every invocation dies with
+      `OSError: [Errno 30] Read-only file system` before it reads an argument.
+      `MCPTOON_CONFIG_FILE` does not move that directory - it is derived from
+      `$HOME`. Use your own MCP tools where you are jailed, and treat wanting
+      the compression as a change to propose rather than to arrange at runtime.
+
       ### icm - cross-session memory
 
       `icm` persists facts between sessions. Useful, not mandatory - store
