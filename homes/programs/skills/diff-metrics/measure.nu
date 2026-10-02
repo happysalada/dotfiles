@@ -1,7 +1,14 @@
 #!/usr/bin/env nu
 # Diff-scoped code-quality report: the two SlopCodeBench metrics (verbosity and
 # structural erosion) before and after a change, plus per-metric complexity
-# deltas from bca and the worst functions touched, named by lizard.
+# deltas from bca, the worst functions touched, named by lizard, and duplication
+# this change introduced, named by jscpd.
+#
+# Duplication comes from jscpd rather than from scb-check's `clone_loc`: one scan
+# against the base ref's tree marks the clones that are new with `isNew`, and
+# each pair arrives with its file, line range and kind. `clone_loc` stays in the
+# table as the aggregate it is, so the two are read together - the aggregate for
+# the trend, jscpd for the pair to fix.
 #
 # The before side is materialised with `git archive <ref>`, never a worktree:
 # worktrees are opt-in, and `git archive` reads the object store without
@@ -41,6 +48,7 @@ def main [
       slop: (delta (scb $before) (scb $after))
       complexity: (complexity-diff $base $paths)
       worst_functions: (worst-touched $base $scope)
+      duplication: (duplication $base $after $tmp)
     }
 
     if $json { $payload | to json --indent 2 } else { render $payload }
@@ -95,8 +103,27 @@ def render [p: record] {
     "```"
     (if ($p.worst_functions | str trim) == "" { "(nothing over threshold)" } else { $p.worst_functions })
     "```"
+    ""
+    "### Duplication introduced by this change (jscpd)"
+    ""
+    (duplication-section $p.duplication)
   ] | str join (char nl)
   $body
+}
+
+# jscpd scans a subset of formats and has no grammar for nix or nushell, so the
+# denominators here are whatever it could parse - say which, rather than letting
+# a bare percentage imply the whole tree.
+def duplication-section [d: record] {
+  let head = if $d.new_clones == 0 {
+    $"No new clones. ($d.duplicated_lines) of ($d.lines) lines in ($d.sources) parsed files are in clones, which the diff did not add to."
+  } else {
+    $"($d.new_clones) new clone\(s\), ($d.new_duplicated_lines) lines, against ($d.base)."
+  }
+  let pairs = ($d.new_entries | each {|c|
+    $"- ($c.kind), ($c.lines) lines, ($c.tokens) tokens: `($c.first)` <-> `($c.second)`"
+  })
+  [$head] | append $pairs | str join (char nl)
 }
 
 def row [name: string, before: number, after: number] {
@@ -169,6 +196,47 @@ def changed [base: string, scope: list<string>] {
   }
 }
 
+# One scan, not two: `--baseline-from-ref` has jscpd build an ephemeral baseline
+# from the ref's own tree with this same configuration, so the subtraction
+# happens inside jscpd and every entry carries `isNew`. `.gitignore` is respected
+# by default, which matters for the same reason it does in scb-check - it keeps
+# `target/` and `node_modules/` out of the scan.
+def duplication [base: string, scope: string, tmp: string] {
+  let out = ($tmp | path join "jscpd")
+  mkdir $out
+  let r = (^jscpd -k 50 -r json -o $out --baseline-from-ref $base $scope | complete)
+  let report = ($out | path join "jscpd-report.json")
+  # jscpd exits non-zero when it finds clones, so the report file - not the exit
+  # code - is what says whether the run worked.
+  if not ($report | path exists) {
+    error make { msg: $"jscpd produced no report for ($scope): ($r.stderr | str trim)" }
+  }
+  let total = ((open $report).statistics.total? | default { })
+  let entries = (((open $report).duplicates? | default [ ]) | where {|c| ($c.isNew? | default false) })
+  {
+    base: $base
+    clones: ($total.clones? | default 0)
+    duplicated_lines: ($total.duplicatedLines? | default 0)
+    lines: ($total.lines? | default 0)
+    sources: ($total.sources? | default 0)
+    new_clones: ($total.newClones? | default 0)
+    new_duplicated_lines: ($total.newDuplicatedLines? | default 0)
+    # Capped: the point is to name the pair to fix, not to dump a report. The
+    # count above stays the real one.
+    new_entries: ($entries | first 10 | each {|c| {
+      kind: ($c.kind? | default "?")
+      lines: ($c.lines? | default 0)
+      tokens: ($c.tokens? | default 0)
+      first: (clone-site $c.firstFile)
+      second: (clone-site $c.secondFile)
+    } })
+  }
+}
+
+def clone-site [file: record] {
+  $"($file.name):($file.start)-($file.end)"
+}
+
 # ---------------------------------------------------------------------------
 # Plumbing
 
@@ -186,7 +254,7 @@ def materialize [base: string, scope: list<string>, dest: string] {
 }
 
 def require-tools [] {
-  let missing = ["git" "scb-check" "bca" "lizard" "tar"] | where {|t| (which $t | is-empty) }
+  let missing = ["git" "scb-check" "bca" "lizard" "jscpd" "tar"] | where {|t| (which $t | is-empty) }
   if not ($missing | is-empty) {
     error make { msg: $"not on PATH: ($missing | str join ', ')" }
   }

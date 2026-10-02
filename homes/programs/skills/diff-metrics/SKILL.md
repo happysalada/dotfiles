@@ -1,12 +1,12 @@
 ---
 name: diff-metrics
-description: Use when reviewing a change for quality regressions. Measures complexity deltas (lizard, bca) and the two SlopCodeBench metrics - verbosity and structural erosion - before and after a diff, so "this change is clean" is a number rather than an impression.
+description: Use when reviewing a change for quality regressions. Measures complexity deltas (lizard, bca), duplication introduced by the change (jscpd) and the two SlopCodeBench metrics - verbosity and structural erosion - before and after a diff, so "this change is clean" is a number rather than an impression.
 ---
 
 # Diff metrics
 
 Measures a change rather than a repository: the same tree measured at `<base>`
-and in the working tree, so the report is a delta. Three tools, each with a
+and in the working tree, so the report is a delta. Four tools, each with a
 different job:
 
 | tool | question it answers |
@@ -14,6 +14,7 @@ different job:
 | `scb-check` | verbosity and erosion - the two SlopCodeBench metrics |
 | `bca` | per-file, per-metric complexity changes across the diff |
 | `lizard` | which functions are too complex, by name |
+| `jscpd` | which blocks are duplicated, and which of those this change added |
 
 ## Run it
 
@@ -25,10 +26,10 @@ nu <skill-dir>/measure.nu --base main --paths src   # scope both sides
 nu <skill-dir>/measure.nu --json                    # machine-readable
 ```
 
-It needs `git`, `scb-check`, `bca`, `lizard` and `tar` on `PATH`, and refuses to
-run outside a git repository. It touches nothing: no staging, no commits, and
-the before side is `git archive <base>` extracted to a temp dir - never a
-worktree, which stays opt-in.
+It needs `git`, `scb-check`, `bca`, `lizard`, `jscpd` and `tar` on `PATH`, and
+refuses to run outside a git repository. It touches nothing: no staging, no
+commits, and the before side is `git archive <base>` extracted to a temp dir -
+never a worktree, which stays opt-in.
 
 ## What the two paper metrics are
 
@@ -66,6 +67,22 @@ to trip - the sample here is a diff, not a repository.
   cyclomatic complexity: erosion is built on it, `bca` reports it, `lizard`
   ranks by it. Use `lizard`'s output to name the function, not to re-derive the
   number.
+- **jscpd sees only the formats it has a grammar for.** Supported ones include
+  rust, python, typescript, javascript and go; there is **no nix and no
+  nushell**, so in this repo its scan covers the python, bash, json and markdown
+  files and nothing else. Say that when quoting its percentage - and note that
+  data files it does parse (a grafana dashboard JSON, a checked-in lockfile)
+  inflate it, so `-i` is worth passing by hand when that is what filled the
+  report.
+- **jscpd's duplication and `scb-check`'s `clone_loc` are not the same number.**
+  `clone_loc` is the aggregate the verbosity metric is built from; jscpd's
+  `duplicatedLines` counts the lines in the pairs it detects and classifies.
+  Read the aggregate for the trend and jscpd for the pair to fix, and do not
+  expect them to agree.
+- **New clones are marked against the ref's tree, not the working tree's
+  parent.** `--baseline-from-ref <base>` has jscpd build the baseline from
+  `<base>` itself, so uncommitted work that predates the session counts as new -
+  pass the ref you actually branched from when that matters.
 
 ## Reporting the result
 
@@ -74,3 +91,10 @@ that is the half you expected. Then point at the function. Erosion rising with
 `clone_loc` unchanged means a function got bigger or branchier rather than
 duplicated - `bca` names the file, `lizard` names the function, and the fix is
 usually to extract rather than to reformat.
+
+Duplication is the one section that names both halves of the problem: a new
+clone is a pair of line ranges, so the fix is to keep one of them and point the
+other at it. When the report says new clones are zero while `clone_loc` rose,
+the lines went into an *existing* clone - the aggregate moved and jscpd has
+nothing new to show, which is a different fix (make the new caller use the
+existing helper).
