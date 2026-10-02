@@ -69,4 +69,19 @@ with pkgs;
   # a crate graph this size. mold is selected in homes/programs/cargo.nix -
   # having it on PATH alone changes nothing.
   mold
+
+  # mold is not a universal linker, and the exception is worth having on PATH.
+  # A dependency whose build compiles its C library with Zig - herdr's vendored
+  # libghostty-vt is one - produces relocations in zig's own compiler_rt.o that
+  # mold refuses outright ("undefined symbol:" with no name at all), where lld
+  # links the same objects and keeps the .eh_frame_hdr table that turning the
+  # header off instead would throw away.
+  #
+  # Nothing selects this globally: homes/programs/cargo.nix still points every
+  # host build at mold, which is the faster linker for the ordinary case. A repo
+  # that trips the above overrides link-arg in its own .cargo/config.toml, which
+  # wins over the user-level file exactly as that comment says, or per run with
+  # RUSTFLAGS="-C link-arg=-fuse-ld=lld". Both need nothing but lld on PATH -
+  # clang is the driver and finds ld.lld there.
+  lld
 ]

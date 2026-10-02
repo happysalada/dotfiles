@@ -5,10 +5,15 @@
 # will not use a compiler wrapper unless it is named here - so without this file
 # sccache and mold are both installed and both unused.
 #
-# sccache and mold come from packages/dev/rust-toolchain.nix.
+# sccache, mold and lld come from packages/dev/rust-toolchain.nix.
 #
 # The linker is scoped to the host triple deliberately. A bare [build] rustflags
 # would follow every cross build too, and mold cannot link wasm32 or musl targets.
+# mold is not universal within the host triple either: a dependency whose own C
+# library is built by Zig - herdr's vendored libghostty-vt is one - comes out with
+# relocations mold rejects, and wants lld. That is what the lld note in
+# packages/dev/rust-toolchain.nix is for; the per-project override below is how a
+# repo picks it.
 { ... }:
 {
   home.file.".cargo/config.toml".text = ''
