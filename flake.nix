@@ -5,19 +5,13 @@
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    # The agent CLIs, all of them packaged together: claude-code, codex,
-    # opencode's v2 branch (as `opencode2`), reasonix, openresearch, rtk, icm,
-    # nono and terminal-browser. Upstream maintains these against the releases
-    # as they ship, where nixpkgs lags by days and a stale node_modules hash in
-    # opencode v2's own flake had to be overridden here to build at all.
-    #
-    # It follows nixpkgs, so it is one revision everywhere - and that costs
-    # nothing, because their binary cache carries the paths built against
-    # nixpkgs-unstable's current HEAD too, which is the revision this pins.
-    # Measured, not assumed: with this pin, codex, reasonix, openresearch, rtk,
-    # icm, nono, opencode2 and claude-code all substitute. The substituter and
-    # its key are in machines/strix/default.nix, the overlay that puts the
-    # packages in `pkgs` is there too, and packages/ai.nix lists them.
+    # The agent CLIs, packaged together: claude-code, codex, opencode's v2 branch
+    # (as `opencode2`), reasonix, openresearch, rtk, icm, nono and
+    # terminal-browser. It follows nixpkgs so it is one revision everywhere, and
+    # that costs nothing because their binary cache also carries the paths built
+    # against nixpkgs-unstable's current HEAD - measured, not assumed: with this
+    # pin all eight substitute. The substituter and the overlay that puts them in
+    # `pkgs` are in machines/strix/default.nix; packages/ai.nix lists them.
     llm-agents.url = "github:numtide/llm-agents.nix";
     llm-agents.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -39,7 +33,7 @@
     nixinate.url = "github:matthewcroughan/nixinate";
     nixinate.inputs.nixpkgs.follows = "nixpkgs";
 
-    # The site on bee. devshell and nuenv come in only through it and each
+    # The site on bee. devshell and nuenv come in only through it, and each
     # carries its own 2023-era input - a flake-utils and a 45 MB rust-overlay -
     # that feeds nothing but their own dev shells, so both follow the root ones.
     megzari_com.url = "github:happysalada/svelte.megzari.com";
