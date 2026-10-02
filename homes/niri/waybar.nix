@@ -1,8 +1,5 @@
-# Status bar for the niri session.
-#
-# waybar speaks layer-shell and reserves its own exclusive zone, which is why
-# niri's `struts` block is left empty - the bar tells the compositor how much
-# room it needs.
+# Status bar for the niri session. It reserves its own exclusive zone via
+# layer-shell, which is why niri's struts block is left empty.
 { pkgs }:
 {
   enable = true;
@@ -32,8 +29,7 @@
 
     "niri/workspaces" = {
       format = "{index}";
-      # niri workspaces are a vertical stack per output and are dynamic, so
-      # this list grows and shrinks as you use them
+      # niri workspaces are a dynamic vertical stack per output, not a fixed set
       on-click = "activate";
     };
 
@@ -55,9 +51,8 @@
     };
 
     # This machine runs the 4090 in PRIME offload with fine-grained runtime D3,
-    # so the dGPU should read `suspended` almost all the time. Seeing it stuck
-    # on `active` while nothing is rendering means something is holding it awake
-    # and the battery is paying for it.
+    # so the dGPU should read `suspended` almost always. Stuck on `active` while
+    # nothing renders means something is holding it awake and costing battery.
     "custom/dgpu" = {
       exec = pkgs.writeShellScript "waybar-dgpu" ''
         state=$(cat /sys/bus/pci/devices/0000:01:00.0/power/runtime_status 2>/dev/null || echo unknown)
@@ -75,9 +70,8 @@
     cpu = {
       format = "󰻠 {usage}%";
       interval = 5;
-      # bottom, not btop: it is already in basic_cli_set.nix and nushell.nix
-      # carries its completions, so btop was a second process viewer earning
-      # its keep only from this one click.
+      # bottom, not btop: bottom is already in basic_cli_set.nix with nushell
+      # completions, so btop only earned its keep from this one click.
       on-click = "${pkgs.ghostty}/bin/ghostty -e ${pkgs.bottom}/bin/btm";
     };
 
@@ -153,8 +147,7 @@
     };
   };
 
-  # carbon: black bar, grey text, cyan accents - same palette as ghostty,
-  # helix and fuzzel
+  # carbon: black bar, grey text, cyan accents - same palette as ghostty/helix/fuzzel
   style = ''
     * {
       font-family: "FiraCode Nerd Font";

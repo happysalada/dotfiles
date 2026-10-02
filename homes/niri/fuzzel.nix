@@ -1,7 +1,6 @@
-# fuzzel is the wayland-native rofi replacement: same dmenu-style pipe
-# interface (`fuzzel --dmenu`), same "type to filter, enter to run", but it
-# speaks layer-shell so it renders correctly on niri. `Mod+D` opens it as an
-# app launcher; `Mod+V` pipes clipboard history through `--dmenu`.
+# wayland-native rofi replacement: same dmenu-style pipe (`fuzzel --dmenu`) but
+# layer-shell, so it renders correctly on niri. `Mod+D` launches apps; `Mod+V`
+# pipes clipboard history through `--dmenu`.
 { pkgs }:
 {
   enable = true;

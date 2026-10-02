@@ -3,19 +3,18 @@
 # (programs.opencode.context), ~/.codex/AGENTS.md (programs.codex.context) and
 # ~/.reasonix/REASONIX.md (home.activation in homes/programs/reasonix.nix).
 #
-# AGENTS.md is the cross-tool convention, CLAUDE.md is Claude Code's name for
-# the same thing and REASONIX.md is reasonix's; no tool reads another's file.
-# Generated from one source instead of symlinked, because a few paragraphs
-# genuinely differ per tool - which hooks fire, whether the tool ships a web
-# search of its own, and whether it ships a memory of its own.
+# AGENTS.md is the cross-tool convention, CLAUDE.md and REASONIX.md its
+# per-tool names; no tool reads another's file. Generated from one source, not
+# symlinked, because a few paragraphs genuinely differ per tool - which hooks
+# fire, and whether the tool ships a web search or a memory of its own.
 { lib }:
 {
   # tool :: "claude-code" | "opencode" | "codex" | "reasonix"
   mkContext =
     { tool }:
     let
-      # The per-tool files the prose has to name: itself, the settings file
-      # beside it, and the credential file that is deliberately neither.
+      # The per-tool files the prose names: itself, its settings file, and the
+      # credential file that is deliberately neither.
       paths = {
         claude-code = {
           selfPath = "~/.claude/CLAUDE.md";
@@ -54,10 +53,9 @@
         settingsOption
         ;
 
-      # What the file physically is. Three of these are store symlinks like
-      # everything else home-manager writes; reasonix's is a copy instead,
-      # because it ignores an instruction document whose symlink resolves
-      # outside its home - see the activation in homes/programs/reasonix.nix.
+      # Three are store symlinks like everything else home-manager writes;
+      # reasonix's is a copy, because it ignores a document whose symlink
+      # resolves outside its home - see the activation in reasonix.nix.
       fileKind =
         {
           claude-code = "symlink into the nix store";
@@ -67,9 +65,8 @@
         }
         .${tool};
 
-      # Where the credential file is and what writes it. Separate prose rather
-      # than a path plus a command, because reasonix's is the one that is not
-      # written by the tool at all - agenix decrypts it.
+      # Separate prose rather than a path plus a command, because reasonix's is
+      # the one not written by the tool at all - agenix decrypts it.
       credentials =
         {
           claude-code = ''
@@ -192,9 +189,8 @@
         }
         .${tool};
 
-      # Claude Code ships WebFetch/WebSearch, codex ships a cached web_search,
-      # opencode has webfetch and no search. The overlap with crw differs, so
-      # the "which one" advice does.
+      # Claude Code ships WebFetch/WebSearch, codex a cached web_search, opencode
+      # webfetch and no search. The overlap with crw differs, so the advice does.
       crwSection =
         {
           claude-code = ''
@@ -243,8 +239,8 @@
         }
         .${tool};
 
-      # Which *third* store exists and has been switched off differs per tool;
-      # the two-system split itself does not.
+      # Which *third* store exists and is switched off differs per tool; the
+      # two-system split itself does not.
       memoryIntro =
         {
           claude-code = ''

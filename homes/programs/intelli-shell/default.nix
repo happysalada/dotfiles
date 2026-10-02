@@ -5,16 +5,14 @@
   programs.intelli-shell = {
     enable = true;
 
-    # The nushell script is generated at build time and sourced from
-    # nushell.nix instead. home-manager's integration shells out to
-    # `intelli-shell init nushell | save -f` into the data dir on every shell
-    # start, which is a mkdir and a write we do not need on that path.
+    # The nushell script is generated at build time and sourced from nushell.nix;
+    # home-manager's integration shells out to `intelli-shell init nushell | save -f`
+    # into the data dir on every shell start, a mkdir and write we do not need.
     enableNushellIntegration = false;
 
-    # Deliberately not using programs.intelli-shell.shellHotkeys: it writes
-    # home.sessionVariables, which the nushell module never loads. The one
-    # hotkey override that matters (ESC) is set in nushell.nix, next to the
-    # source that reads it.
+    # Deliberately not programs.intelli-shell.shellHotkeys: it writes
+    # home.sessionVariables, which the nushell module never loads. The one hotkey
+    # that matters (ESC) is set in nushell.nix, next to the source that reads it.
 
     # nix owns the version, so an update nag could only ever be noise.
     settings.check_updates = false;
@@ -30,10 +28,9 @@
   '';
 
   # Without this the store holds only the commands above, and searching for
-  # anything you never bookmarked comes back empty. On a timer rather than in
-  # the activation above: it is a git fetch of ~30k examples, too slow to redo
-  # on every rebuild. Persistent means a machine that has never run it fires
-  # shortly after boot instead of waiting out the first week.
+  # anything you never bookmarked comes back empty. On a timer, not in the
+  # activation: it is a git fetch of ~30k examples, too slow to redo on every
+  # rebuild. Persistent means a fresh machine fires shortly after boot.
   systemd.user = {
     services.intelli-shell-tldr = {
       Unit.Description = "Refresh intelli-shell's tldr command examples";

@@ -26,18 +26,17 @@
       default_shell = "nu";
       default_layout = "compact";
 
-      # Deliberately left at the default (off). On, Zellij captures the wheel
-      # and scrolls its own per-pane buffer; off, the wheel goes to ghostty,
-      # whose buffer holds the frames Zellij painted. That matters because a
-      # claude pane has no pane buffer to scroll: Claude's TUI keeps the whole
-      # conversation in a screen-sized viewport and repaints it, so the terminal
-      # only ever sees one screenful. Measured: Ctrl+S does enter scroll mode
-      # (the bar says SCROLL) but the pane holds ~29 lines even after resuming a
-      # 1568-line transcript. Capturing the wheel here would therefore trade the
-      # ghostty frames that do scroll for an empty zellij buffer. Panes whose app
-      # does append - a shell, reasonix (see the reasonix wrapper in
-      # machines/strix/default.nix) - grow a real buffer, and Ctrl+S scrolls
-      # those as expected.
+      # Deliberately left at the default (off). On, Zellij captures the wheel and
+      # scrolls its own per-pane buffer; off, the wheel goes to ghostty, whose
+      # buffer holds the frames Zellij painted. That matters because a claude pane
+      # has no pane buffer to scroll - Claude's TUI keeps the whole conversation in
+      # a screen-sized viewport and repaints it, so the terminal only ever sees one
+      # screenful. Measured: Ctrl+S does enter scroll mode (the bar says SCROLL)
+      # but the pane holds ~29 lines even after resuming a 1568-line transcript,
+      # so capturing the wheel here trades ghostty frames that do scroll for an
+      # empty buffer. Panes whose app does append - a shell, reasonix (see the
+      # reasonix wrapper in machines/strix/default.nix) - grow a real buffer, and
+      # Ctrl+S scrolls those as expected.
       #
       # mouse_mode = true;
       ui = {
@@ -133,8 +132,7 @@
 
       # Claude Code's statusline, invoked as `starship statusline claude-code`
       # from programs/claude-code.nix. Directory leads because agents run in
-      # .claude/worktrees - which checkout this is matters more than which
-      # model. The three claude_* modules only exist inside this profile.
+      # .claude/worktrees; the three claude_* modules only exist in this profile.
       profiles.claude-code = "$directory$git_branch$claude_model$claude_context$claude_cost";
     };
   };
@@ -145,17 +143,15 @@
   };
 
   atuin = {
-    # atuin's `init nu` emits its ctrl-r and up-arrow keybindings as two
-    # separate `$env.config = ($env.config | upsert keybindings ...)`
-    # statements, and the second silently discards the first - leaving ctrl-r
-    # on nushell's builtin history_menu. Emitting only one statement avoids
-    # the clobber entirely. Reproduced on stock nushell 0.115.0 + atuin
-    # 18.19.0; this is upstream atuin, not home-manager.
+    # atuin's `init nu` emits its ctrl-r and up-arrow keybindings as two separate
+    # `upsert keybindings` statements and the second silently discards the first,
+    # leaving ctrl-r on nushell's builtin history_menu; emitting only one avoids
+    # the clobber. Reproduced on stock nushell 0.115.0 + atuin 18.19.0.
     flags = [ "--disable-up-arrow" ];
 
-    # daemon-fuzzy does its matching in the daemon. It also decouples history
-    # writes from shell latency. home-manager sets up the systemd user
-    # service + socket and flips settings.daemon.enabled for us.
+    # daemon-fuzzy matches in the daemon and decouples history writes from shell
+    # latency; home-manager wires the systemd service + socket and flips
+    # settings.daemon.enabled.
     daemon.enable = true;
     enable = true;
     enableBashIntegration = true;
@@ -164,8 +160,8 @@
       auto_sync = true;
       sync_frequency = "5m";
       sync_address = "https://atuin.megzari.com";
-      # `skim` was removed upstream. atuin points you at daemon-fuzzy as the
-      # closest equivalent; it needs the daemon (enabled below).
+      # `skim` was removed upstream; daemon-fuzzy is its closest equivalent, and
+      # it needs the daemon.
       search_mode = "daemon-fuzzy";
       show_preview = true;
       update_check = false;
@@ -226,12 +222,12 @@
   vdirsyncer.enable = true; # contacts + calendar sync
   mbsync.enable = true; # main sync
 
-  # No keychain. It cached a passphrase the key does not have, via a second
-  # agent gcr-ssh-agent already provides - and 3.0.4's coordinator prompts on
-  # /dev/tty then selects on it with no timeout, which from GDM's env-import
-  # login shell froze the graphical login for minutes. gcr-ssh-agent.socket
-  # exports SSH_AUTH_SOCK on its own, and ssh.nix's AddKeysToAgent loads the
-  # key on first use, so nothing here replaces it.
+  # No keychain: it cached a passphrase the key does not have, via a second agent
+  # gcr-ssh-agent already provides - and 3.0.4's coordinator prompts on /dev/tty
+  # then selects on it with no timeout, which from GDM's env-import login shell
+  # froze the graphical login for minutes. gcr-ssh-agent.socket exports
+  # SSH_AUTH_SOCK on its own, and ssh.nix's AddKeysToAgent loads the key on first
+  # use, so nothing here replaces it.
 
   mise = {
     enable = true;

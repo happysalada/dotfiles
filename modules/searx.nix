@@ -1,9 +1,6 @@
-# bee's public SearXNG, behind caddy at searx.megzari.com.
-#
-# Not modules/searx-local.nix - that one is strix's loopback instance, whose
-# clients are firefox and crw and whose threat model is "nobody else can reach
-# it". This one is on the open internet, which changes three things: the secret
-# key has to be a secret, the limiter has to be on, and searxng has to know its
+# bee's public SearXNG, behind caddy at searx.megzari.com - not the loopback
+# modules/searx-local.nix. Being on the open internet changes three things: the
+# secret key must be a secret, the limiter must be on, and searxng must know its
 # own public URL.
 { config, pkgs, ... }:
 
@@ -15,11 +12,10 @@ let
   port = 8889; # strix runs on searxng's default 8888
 
   # Engines that ship in searxng's own settings.yml and only need switching on.
-  # An entry here with no `engine:` key is merged onto the upstream definition
-  # by name (searx/settings_loader.py:172); a name upstream has since dropped is
-  # NOT an error, it just logs `The "engine" field is missing` on every start
-  # and does nothing. 18 such corpses were removed from this list - checked
-  # against searxng 2026-08-13, recheck after a nixpkgs bump.
+  # An entry with no `engine:` key is merged onto the upstream definition by
+  # name (searx/settings_loader.py:172); a name upstream dropped is not an
+  # error, just a `The "engine" field is missing` log on every start. 18 such
+  # corpses were removed here, checked 2026-08-13, recheck after a nixpkgs bump.
   enabled = [
     "adobe stock"
     "adobe stock video"
@@ -167,10 +163,9 @@ in
       outgoing.request_timeout = 5.0;
 
       # suspended_times is left at upstream's 15-day/7-day penalties on
-      # purpose. Those are sized for exactly this case: a shared instance on a
-      # server IP, where sitting out a ban costs nothing per query. strix
-      # shortens them because there one bad afternoon takes the engine away
-      # from a single user.
+      # purpose: they suit a shared instance on a server IP, where sitting out a
+      # ban costs nothing per query. strix shortens them because there one bad
+      # afternoon takes the engine away from a single user.
 
       engines = [
         {

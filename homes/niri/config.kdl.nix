@@ -5,9 +5,8 @@
 let
   terminal = "${pkgs.ghostty}/bin/ghostty";
   zellij = "${pkgs.zellij}/bin/zellij";
-  # the home-manager-wrapped firefox, not pkgs.firefox - the policies that
-  # force-install uBlock/Sidebery/Tridactyl live in the wrapper, so the bare
-  # package would start with none of them
+  # the home-manager-wrapped firefox, not pkgs.firefox - the uBlock/Sidebery/
+  # Tridactyl force-install policies live in the wrapper, not the bare package
   firefox = "${config.programs.firefox.finalPackage}/bin/firefox";
   launcher = "${pkgs.fuzzel}/bin/fuzzel";
   brightness = "${pkgs.brightnessctl}/bin/brightnessctl";

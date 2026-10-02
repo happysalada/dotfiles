@@ -1,19 +1,14 @@
 # Cargo's user-level config: cache the compile step, point the link step at mold.
+# Being on PATH is not enough - rustc picks `cc` and its default ld unless told
+# otherwise, and cargo ignores a compiler wrapper unless named here - so without
+# this file sccache and mold are both installed and both unused (both from
+# packages/dev/rust-toolchain.nix).
 #
-# Both settings exist because being on PATH is not enough on its own. rustc picks
-# `cc` and whatever ld that driver defaults to unless told otherwise, and cargo
-# will not use a compiler wrapper unless it is named here - so without this file
-# sccache and mold are both installed and both unused.
-#
-# sccache, mold and lld come from packages/dev/rust-toolchain.nix.
-#
-# The linker is scoped to the host triple deliberately. A bare [build] rustflags
-# would follow every cross build too, and mold cannot link wasm32 or musl targets.
-# mold is not universal within the host triple either: a dependency whose own C
-# library is built by Zig - herdr's vendored libghostty-vt is one - comes out with
-# relocations mold rejects, and wants lld. That is what the lld note in
-# packages/dev/rust-toolchain.nix is for; the per-project override below is how a
-# repo picks it.
+# The linker is scoped to the host triple deliberately: a bare [build] rustflags
+# would follow every cross build too, and mold cannot link wasm32 or musl. Nor is
+# it universal within the triple - a dependency whose own C library Zig builds
+# (herdr's vendored libghostty-vt) comes out with relocations mold rejects and
+# wants lld; a repo picks lld with the per-project override below.
 { ... }:
 {
   home.file.".cargo/config.toml".text = ''

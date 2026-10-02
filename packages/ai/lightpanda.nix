@@ -1,13 +1,11 @@
 # LightPanda - headless browser for scraping: DOM + JS + network, no layout,
-# no rasterization. crw tries it before Chrome, which is what makes the pair
-# worth having (see packages/ai/crw.nix).
+# no rasterization; crw tries it before Chrome.
 #
 # Upstream ships prebuilt binaries and no supported source build (the Zig tree
-# needs a custom v8), so this unpacks a release asset. The asset is a plain
-# glibc dynamic binary - autoPatchelfHook rewrites its interpreter to the
-# store's. Note that crw's own auto-download drops the *unpatched* asset in
-# ~/.crw, which then runs only where nix-ld happens to be enabled; that
-# accident is exactly what this package exists to avoid.
+# needs a custom v8), so this unpacks a release asset - a plain glibc dynamic
+# binary, which autoPatchelfHook rewrites to the store's interpreter. crw's own
+# auto-download drops the *unpatched* asset in ~/.crw, which then runs only
+# where nix-ld is enabled; this package exists to avoid that.
 {
   lib,
   stdenv,

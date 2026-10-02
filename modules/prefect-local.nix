@@ -1,11 +1,10 @@
-# Prefect's server on loopback: the UI, run history and logs for the flows this
-# machine runs. `modules/prefect.nix` is bee's - it publishes the UI through
-# Caddy under a public name, which is the one thing a laptop should not do.
+# Prefect's server on loopback: UI, run history and logs for this machine's
+# flows. (modules/prefect.nix is bee's - it publishes the UI through Caddy.)
 #
-# No `workerPools`. A worker exists to poll a work pool for deployment runs,
-# and the flows here are launched by systemd timers instead - `Persistent`
-# catches up a run the machine slept through, which is most Monday mornings,
-# and is not something prefect's own scheduler can do while powered off.
+# No `workerPools`: workers poll a work pool for deployment runs, but the flows
+# here are launched by systemd timers instead, whose `Persistent` catches up a
+# run the machine slept through - which prefect's own scheduler cannot do while
+# powered off.
 {
   services.prefect = {
     enable = true;

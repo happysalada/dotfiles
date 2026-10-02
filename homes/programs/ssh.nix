@@ -39,23 +39,20 @@
       ServerAliveCountMax = 10;
 
       # `no` disabled host-key checking entirely, which also silently accepts a
-      # CHANGED key for a known host - i.e. no MITM protection at all.
-      # `accept-new` still auto-trusts first contact, but refuses if a known
-      # host's key ever changes.
+      # CHANGED key for a known host - no MITM protection at all. `accept-new`
+      # still auto-trusts first contact but refuses if a known key changes.
       StrictHostKeyChecking = "accept-new";
       HashKnownHosts = true;
 
       # Ciphers/MACs/KexAlgorithms/HostKeyAlgorithms are deliberately NOT set.
-      # The hand-rolled lists that used to live here still permitted ssh-rsa
-      # (SHA-1) and diffie-hellman-group-exchange-sha256; OpenSSH's own
-      # defaults are stricter than that and get tightened upstream over time.
+      # The hand-rolled lists that used to live here permitted ssh-rsa (SHA-1) and
+      # diffie-hellman-group-exchange-sha256; OpenSSH's own defaults are stricter.
 
       PubkeyAuthentication = "yes";
       PasswordAuthentication = "no";
-      # NOT set here: ForwardAgent / ForwardX11. On Host * they applied to
-      # every server, letting any of them use your agent to authenticate as
-      # you elsewhere - and making github refuse the X11 request on every
-      # clone ("X11 forwarding request failed"). Scoped to bee/hetz instead.
+      # NOT set here: ForwardAgent / ForwardX11. On Host * they applied to every
+      # server, letting any of them authenticate as you elsewhere, and made github
+      # refuse the X11 request on every clone ("X11 forwarding request failed").
       AddKeysToAgent = "yes";
       IdentityFile = "~/.ssh/id_ed25519";
     };

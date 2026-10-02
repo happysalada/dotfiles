@@ -1,10 +1,10 @@
 { ... }:
 
 {
-  # Upstream removed `services.ollama.acceleration`: the backend is chosen by
-  # the package now. So each machine importing this sets its own `package`
-  # (bee: ollama-rocm, strix: ollama-cuda) and its own `loadModels` - a server
-  # pulling embedding models is not what a laptop wants.
+  # Upstream removed `services.ollama.acceleration` - the package chooses the
+  # backend now, so each importing machine sets its own `package` (bee:
+  # ollama-rocm, strix: ollama-cuda) and its own `loadModels` - a server pulling
+  # embedding models is not what a laptop wants.
   services.ollama = {
     enable = true;
 

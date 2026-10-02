@@ -4,14 +4,9 @@ home-manager.nixosModules.home-manager {
   home-manager.users.yt = ({
     home = {
       username = "yt";
-      # This value determines the Home Manager release that your
-      # configuration is compatible with. This helps avoid breakage
-      # when a new Home Manager release introduces backwards
-      # incompatible changes.
-      #
-      # You can update Home Manager without changing this value. See
-      # the Home Manager release notes for a list of state version
-      # changes in each release.
+      # Determines the Home Manager release this configuration is compatible
+      # with: bump it to follow upstream's state-version changes. Updating Home
+      # Manager itself does not require changing it.
       stateVersion = "22.05";
       homeDirectory = /home/yt;
 

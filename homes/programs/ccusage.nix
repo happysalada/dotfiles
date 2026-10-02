@@ -1,17 +1,15 @@
 # ccusage as one prompt segment: the active Claude usage block, which is what a
-# subscription is actually measured in - five hours of usage, then a reset.
+# subscription is measured in - five hours of usage, then a reset.
 #
-# The block is the half of ccusage worth a prompt. `ccusage daily` answers "what
-# has this cost me lately" across Claude Code, Codex and OpenCode, and belongs on
-# a command line, not in a prompt: it changes once a day. Time until the window
-# resets changes what you do next, and the cost beside it is the share of the
-# window already spent. Both are notional - ccusage prices the tokens the local
-# logs record, and a subscription was not charged for them.
+# The block is the half worth a prompt; `ccusage daily` changes once a day and
+# belongs on a command line. Time until reset changes what you do next, and the
+# cost beside it is the share of the window already spent. Both are notional:
+# ccusage prices the tokens the local logs record, and a subscription was not
+# charged for them.
 #
-# A starship custom module rather than `ccusage statusline`, which is ccusage's
-# own mode for Claude Code's statusline: that would replace the starship profile
-# Claude Code already uses. Add `$custom` to profiles.claude-code in
-# homes/common.nix to show this segment there too.
+# A starship custom module rather than `ccusage statusline`, which would replace
+# the starship profile Claude Code already uses. Add `$custom` to
+# profiles.claude-code in homes/common.nix to show this segment there too.
 { pkgs, lib, ... }:
 let
   # Named by store path: a prompt does not always inherit the shell's PATH (a
@@ -19,10 +17,9 @@ let
   ccusage = lib.getExe pkgs.ccusage;
 
   # Measured: 17ms for nu to start, 19ms for this script against a warm cache,
-  # and 50-260ms for the ccusage run that fills it. Hence the cache - one
-  # refresh a minute instead of one per prompt - and `writeNu`, not `writeNuBin`:
-  # the module below references this by path and never merges it into an
-  # environment (homes/programs/nono.nix records what that distinction costs).
+  # and 50-260ms for the ccusage run that fills it. Hence the cache - one refresh
+  # a minute instead of one per prompt - and `writeNu`, not `writeNuBin`: the
+  # module below references this by path and never merges it into an environment.
   block = pkgs.writers.writeNu "ccusage-block" ''
     const TTL = 60sec
 

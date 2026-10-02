@@ -1,23 +1,19 @@
 # A weekly digest of what shipped in the repos I have starred.
 #
-# digest.py is the flow; this file is only the schedule and the environment it
-# needs. systemd owns the schedule rather than prefect because `Persistent`
-# reruns a job the machine slept through, and the laptop is usually asleep at
-# nine on a Monday.
+# digest.py is the flow; this file is the schedule and environment. systemd owns
+# the schedule, not prefect, because `Persistent` reruns a job the machine slept
+# through and the laptop is usually asleep at nine on a Monday.
 #
-# No token to mint: the flow borrows gh's, which reaches the login keyring
-# from a user unit while the session is unlocked. Set GITHUB_TOKEN in
-# ~/.config/starred-digest/env only to override that.
-#
-# Run it now rather than waiting for Monday with:
+# No token to mint: the flow borrows gh's, which reaches the login keyring from a
+# user unit while the session is unlocked; set GITHUB_TOKEN in
+# ~/.config/starred-digest/env to override. Run it now with
 #   systemctl --user start starred-digest
 { pkgs, config, ... }:
 let
-  # Plain `python3` cannot import prefect - the top-level `prefect` package is
-  # a wrapped application - so the flow gets its own interpreter.
-  #
-  # The http2 extra resolves to h2 alone, so httpx2 itself has to be listed
-  # beside it. Seventeen paginated requests to one host is what h2 is for.
+  # Plain `python3` cannot import prefect (the top-level `prefect` is a wrapped
+  # application), so the flow gets its own interpreter. The http2 extra resolves
+  # to h2 alone, so httpx2 is listed beside it - 17 paginated requests to one host
+  # is the case h2 is for.
   python = pkgs.python3.withPackages (
     ps:
     [

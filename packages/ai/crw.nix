@@ -1,14 +1,11 @@
 # fastCRW - web scraper/crawler/search engine for agents, exposed over MCP.
 #
-# The build is nixpkgs' `fastcrw` (pkgs/by-name/fa/fastcrw), so it comes out of
-# the binary cache instead of compiling an 11-crate Rust workspace here. This
-# file is only the renderer wiring nixpkgs deliberately leaves out.
-#
-# Four binaries: `crw` for the shell, `crw-mcp` for the MCP server registered in
-# homes/programs/crw.nix, plus `crw-server` and `crw-browse`.
-#
-# `crw-mcp` defaults to *embedded* mode - the whole scraping engine in-process,
-# no server and no account. It only talks to a remote when CRW_API_URL is set.
+# The build is nixpkgs' `fastcrw`, so it comes from the binary cache instead of
+# compiling an 11-crate Rust workspace; this file is only the renderer wiring
+# nixpkgs leaves out. Four binaries: `crw`, `crw-mcp` (registered in
+# homes/programs/crw.nix), plus `crw-server` and `crw-browse`. `crw-mcp`
+# defaults to *embedded* mode - the engine in-process, no account - and only
+# talks to a remote when CRW_API_URL is set.
 {
   lib,
   symlinkJoin,
@@ -19,17 +16,13 @@
   callPackage,
 }:
 
-# Both renderers, which is what upstream's own config.default.toml calls for:
-# the auto ladder runs LightPanda first and falls through to Chrome when a page
-# crashes during hydration. LightPanda has no layout engine, so Chrome is also
-# the only one of the two that can take a screenshot.
-#
-# Without this, crw downloads a LightPanda nightly into ~/.crw at first use and
-# finds no Chrome at all. CRW_CHROME_PATH is the first thing its browser lookup
-# checks; LightPanda is found by name on PATH.
-#
-# symlinkJoin rather than overrideAttrs: a postInstall would change fastcrw's
-# derivation hash and cost a full source rebuild for two environment variables.
+# Both renderers, as upstream's config.default.toml calls for: the auto ladder
+# runs LightPanda first and falls through to Chrome when a page crashes during
+# hydration, and only Chrome can screenshot (LightPanda has no layout engine).
+# Without this, crw downloads a LightPanda nightly into ~/.crw and finds no
+# Chrome. symlinkJoin rather than overrideAttrs: a postInstall would change
+# fastcrw's derivation hash and cost a source rebuild for two environment
+# variables.
 symlinkJoin {
   name = "crw-${fastcrw.version}";
   paths = [ fastcrw ];

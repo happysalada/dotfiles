@@ -1,19 +1,14 @@
 # Symposium - "AI the Rust way". Ships as `cargo agents`, a cargo subcommand.
 #
-# It reads the workspace dependency graph (`cargo metadata`), matches each
-# crate against plugin manifests from the symposium-dev/recommendations
-# registry, and installs the skills/hooks/MCP servers those plugins declare
-# into whichever agents you use. An agent working in a project that depends on
-# tokio then gets guidance written for the tokio version actually in the lock
-# file, rather than whatever the model remembers.
+# It reads the workspace dependency graph (`cargo metadata`), matches each crate
+# against symposium-dev/recommendations plugin manifests, and installs the
+# skills/hooks/MCP servers those plugins declare, so guidance comes from the
+# crate version in the lock file rather than the model's memory. Not in nixpkgs
+# (checked 2026-08-30), so it is built here from the crates.io release; the crate
+# is named `symposium` but its only binary is `cargo-agents`.
 #
-# Not in nixpkgs (checked 2026-08-30), so it is built here from the crates.io
-# release. The crate is named `symposium` but its only binary is
-# `cargo-agents`, which is what cargo dispatches to for `cargo agents`.
-#
-# Wrapped with cargo and git on PATH: it shells out to `cargo metadata` for the
-# dependency graph and to `git` for git-backed plugin registries. Neither is a
-# build input, so unwrapped it would pick up whatever is in the ambient PATH.
+# Wrapped with cargo and git on PATH: it shells out to both, and neither is a
+# build input, so unwrapped it would pick up the ambient PATH.
 {
   lib,
   rustPlatform,

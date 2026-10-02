@@ -283,10 +283,7 @@ in
         fi
       '';
 
-      # This value determines the NixOS release with which your system is to be
-      # compatible, in order to avoid breaking some software such as database
-      # servers. You should change this only after NixOS release notes say you
-      # should.
+      # NixOS release whose stateful-data layout this system is compatible with - change it only per the release notes.
       system.stateVersion = "25.11"; # Did you read the comment?
 
       # Set your time zone.
@@ -331,14 +328,7 @@ in
         # };
         home = {
           username = "yt";
-          # This value determines the Home Manager release that your
-          # configuration is compatible with. This helps avoid breakage
-          # when a new Home Manager release introduces backwards
-          # incompatible changes.
-          #
-          # You can update Home Manager without changing this value. See
-          # the Home Manager release notes for a list of state version
-          # changes in each release.
+          # Home Manager release this config is compatible with - change it only per the release notes.
           stateVersion = "25.05";
           # homeDirectory = /home/yt;
 

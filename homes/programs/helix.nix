@@ -177,16 +177,15 @@
       {
         name = "rust";
         # Replaces helix's built-in rust debugger, `lldb-dap`. codelldb's stdio
-        # mode is its no-argument default - a port is only used when --port or
-        # --connect is passed - which skips helix's 500ms tcp connect delay and
-        # its bind-close-respawn port race. The store path is because it is not
-        # on PATH; helix's stdio path resolves it through `which`, as it does
-        # for the language servers above.
+        # mode is its no-argument default (a port is only used with --port or
+        # --connect), which skips helix's 500ms tcp connect delay and its
+        # bind-close-respawn port race. The store path is because it is not on
+        # PATH; helix resolves stdio through `which`, as for the servers above.
         #
-        # No "binary (terminal)" template on purpose. That needs runInTerminal,
+        # No "binary (terminal)" template on purpose: it needs runInTerminal,
         # which helix refuses with "No external terminal defined" unless an
-        # [editor] terminal is configured - and falling back to codelldb's
-        # default console terminal streams the output through DAP anyway.
+        # [editor] terminal is set - and codelldb's default console terminal
+        # streams the output through DAP anyway.
         debugger = {
           name = "codelldb";
           transport = "stdio";
@@ -327,7 +326,6 @@
       "diff.delta" = "base09";
 
       # User Interface
-      # --------------
       "ui.background" = {
         fg = "base04";
         bg = "black";

@@ -1,7 +1,6 @@
-# Notification daemon for the niri session. home-manager registers this as a
-# D-Bus activated service rather than a systemd unit, so it starts on the first
-# notification and only when nothing else owns org.freedesktop.Notifications -
-# which keeps it out of the way under GNOME.
+# Notification daemon for the niri session. home-manager registers it as a
+# D-Bus activated service, so it starts on the first notification and only when
+# nothing else owns org.freedesktop.Notifications - idle under GNOME otherwise.
 { pkgs }:
 {
   enable = true;
@@ -26,8 +25,7 @@
     icons = true;
     max-icon-size = 48;
 
-    # urgency=critical notifications (low battery, failed units) stay until
-    # dismissed and get a coloured border
+    # urgency=critical (low battery, failed units): stay until dismissed, coloured border
     "urgency=critical" = {
       border-color = "#ee5396";
       default-timeout = 0;

@@ -31,6 +31,11 @@
         # the flows in homes/programs/starred-digest.
         ../../modules/prefect-local.nix
 
+        # Chorded text expansion on the Glove80: press two keys together and
+        # the whole word is typed. Scoped to that one keyboard, so it cannot
+        # fight Handy over the same exclusive evdev grab.
+        ../../modules/kanata.nix
+
         # --- nixos-hardware -------------------------------------------------
         # there's no g834 profile upstream, so this is the g533zw profile
         # rebuilt for ada lovelace instead of ampere.
@@ -45,9 +50,7 @@
         nixos-hardware.nixosModules.asus-battery
       ];
 
-      # ---------------------------------------------------------------------
       # boot
-      # ---------------------------------------------------------------------
       boot = {
         loader.systemd-boot.enable = true;
         loader.efi.canTouchEfiVariables = true;
@@ -99,9 +102,7 @@
         memoryPercent = 25;
       };
 
-      # ---------------------------------------------------------------------
       # networking / locale
-      # ---------------------------------------------------------------------
       networking = {
         hostName = "strix";
         networkmanager.enable = true;
@@ -114,12 +115,8 @@
       time.timeZone = "America/Toronto";
       i18n.defaultLocale = "en_CA.UTF-8";
 
-      # ---------------------------------------------------------------------
-      # nvidia: prime offload
-      #
-      # the intel igpu drives the display; the 4090 stays powered down until
-      # something asks for it via `nvidia-offload <cmd>`.
-      # ---------------------------------------------------------------------
+      # nvidia: prime offload - the intel igpu drives the display; the 4090 stays
+      # powered down until something asks for it via `nvidia-offload <cmd>`.
       hardware.nvidia = {
         modesetting.enable = true;
         nvidiaSettings = true;
@@ -137,20 +134,14 @@
       # adds a "battery-saver" boot entry that disables the dgpu outright
       hardware.nvidia.primeBatterySaverSpecialisation = true;
 
-      # ---------------------------------------------------------------------
-      # ollama
-      #
-      # The cuda build is what puts it on the 4090; `services.ollama.package`
-      # is the only thing that selects a backend since `acceleration` was
-      # removed upstream.
-      #
-      # It does NOT need the `nvidia-offload` wrapper - that only redirects
-      # GLX/Vulkan. Creating a cuda context is itself enough to pull the dgpu
-      # back out of its finegrained runtime suspend, which is also why the gpu
-      # stays awake for as long as a model is resident (OLLAMA_KEEP_ALIVE,
-      # 5 minutes by default). Under the battery-saver specialisation the dgpu
-      # is gone, and ollama quietly falls back to CPU.
-      # ---------------------------------------------------------------------
+      # ollama: the cuda build is what puts it on the 4090, and
+      # `services.ollama.package` is the only thing that selects a backend since
+      # `acceleration` was removed upstream. It does NOT need the `nvidia-offload`
+      # wrapper - that only redirects GLX/Vulkan; creating a cuda context alone
+      # pulls the dgpu back out of its finegrained runtime suspend, so the gpu
+      # stays awake while a model is resident (OLLAMA_KEEP_ALIVE, 5 minutes by
+      # default). Under the battery-saver specialisation the dgpu is gone and
+      # ollama falls back to CPU.
       services.ollama = {
         package = pkgs.ollama-cuda;
         # ~7GB of the 16GB of VRAM; add more with `ollama pull`, or here to
@@ -158,19 +149,17 @@
         loadModels = [ "mistral-nemo" ];
       };
 
-      # services.ollaya = {
-      #   enable = true;
-      #   package = pkgs.ollaya.override {
-      #     onnxruntime = pkgs.onnxruntime.override { cudaSupport = true; };
-      #     llama-cpp = pkgs.llama-cpp.override { cudaSupport = true; };
-      #   };
-      #   loadModels = [ "winnow:e4b" ];
-      #   environmentVariables.OLLAYA_DEVICE = "auto";
-      # };
+      services.ollaya = {
+        enable = true;
+        package = pkgs.ollaya.override {
+          onnxruntime = pkgs.onnxruntime.override { cudaSupport = true; };
+          llama-cpp = pkgs.llama-cpp.override { cudaSupport = true; };
+        };
+        loadModels = [ "winnow:e4b" ];
+        environmentVariables.OLLAYA_DEVICE = "auto";
+      };
 
-      # ---------------------------------------------------------------------
       # asus: rgb off + battery charge limit
-      # ---------------------------------------------------------------------
       services.asusd.enable = true;
 
       # stop charging at 80% to keep the cells happy. re-applied on resume by
@@ -222,9 +211,7 @@
         '';
       };
 
-      # ---------------------------------------------------------------------
       # desktop (gnome, as installed)
-      # ---------------------------------------------------------------------
       services.xserver = {
         enable = true;
         xkb = {
@@ -243,16 +230,13 @@
       # ibus rather than teach niri to host it.
       i18n.inputMethod.enable = false;
 
-      # ---------------------------------------------------------------------
       # niri: a scrollable-tiling wayland compositor, and the session GDM logs
-      # into by default. GNOME stays installed as the fallback - pick it from
-      # the gear menu at the login screen if something is broken under niri.
-      #
-      # The nixpkgs module handles the session file, the portals
-      # (xdg-desktop-portal-gnome, needed for screen sharing) and gnome-keyring.
-      # Everything user-facing - config.kdl, bar, launcher, notifications, idle
-      # - lives in homes/niri/.
-      # ---------------------------------------------------------------------
+      # into by default. GNOME stays installed as the fallback - pick it from the
+      # gear menu at the login screen if something is broken under niri. The
+      # nixpkgs module handles the session file, the portals
+      # (xdg-desktop-portal-gnome, needed for screen sharing) and gnome-keyring;
+      # everything user-facing (config.kdl, bar, launcher, notifications, idle)
+      # lives in homes/niri/.
       programs.niri.enable = true;
 
       # programs.niri already sets this with mkDefault; stated explicitly so the
@@ -263,6 +247,16 @@
       # Without this stanza it rejects every password and the only way out of
       # the lock screen is a VT switch.
       security.pam.services.swaylock = { };
+
+      # Handy (packages/gui.nix) types by injecting below the compositor, which
+      # is the only path that reaches native Wayland windows here - XTest
+      # through xwayland-satellite reaches X11 clients only. Its handy_keys
+      # backend grabs /dev/input and re-injects through a uinput clone, so it
+      # wants the module, the udev rule and the group this brings (granted to
+      # the user below). ydotool is the fallback typing tool it shells out to
+      # when wtype is unusable, and this is what puts the daemon behind it up.
+      hardware.uinput.enable = true;
+      programs.ydotool.enable = true;
 
       services.printing.enable = true;
 
@@ -325,21 +319,22 @@
         pulse.enable = true;
       };
 
-      # ---------------------------------------------------------------------
-      # users
-      #
-      # NOTE: mutableUsers stays true, unlike bee/hetz. the install-time
+      # users. NOTE: mutableUsers stays true, unlike bee/hetz - the install-time
       # password is kept; switch to hashedPassword + mutableUsers = false once
       # you've run `mkpasswd -m sha-512`.
-      # ---------------------------------------------------------------------
       users.users.yt = {
         isNormalUser = true;
         description = "yt";
+        # `input`, `uinput` and `ydotool` are Handy's, not the session's: it
+        # reads /dev/input directly, re-injects through /dev/uinput, and falls
+        # back to the socket ydotoold owns.
         extraGroups = [
           "networkmanager"
           "wheel"
           "video"
           "input"
+          "uinput"
+          "ydotool"
         ];
         shell = pkgs.nushell;
       };
@@ -378,9 +373,7 @@
       # used to be set in nushell env.nu, which could shadow the right libs.
       programs.nix-ld.enable = true;
 
-      # ---------------------------------------------------------------------
       # nix
-      # ---------------------------------------------------------------------
       nix = {
         package = pkgs.nixVersions.latest;
         settings = {
@@ -469,12 +462,12 @@
           # than built, so this costs a download, not a compile.
           rust-overlay.overlays.default
 
-          # Every agent CLI this machine runs, from numtide/llm-agents.nix
-          # (flake.nix explains why the flake is used). This is the only place it
-          # is read: it shadows the nixpkgs names - claude-code, codex, rtk, icm,
-          # nono, tuicr, herdr - so homes/programs/*.nix and packages/ai.nix go on
-          # saying pkgs.claude-code and pkgs.rtk without knowing where they came
-          # from.
+          # Every agent CLI this machine runs, from numtide/llm-agents.nix. This
+          # is the only place it is read: it shadows the nixpkgs names -
+          # claude-code, codex, handy,
+          # rtk, icm, nono, tuicr, herdr - so homes/programs/*.nix and
+          # packages/*.nix go on saying pkgs.claude-code and pkgs.rtk without
+          # knowing where they came from.
           #
           # `opencode` is that flake's `opencode2`. Upstream v2's binary really is
           # called `opencode`, which llm-agents renames so it can coexist with
@@ -509,6 +502,7 @@
               semble = lm.semble;
               plannotator-tui = lm.plannotator-tui;
               agent-browser = lm.agent-browser;
+              handy = lm.handy;
 
               # llm-agents' herdr, relinked with lld - the one binding in this
               # block that is not their derivation untouched. Theirs does not link
@@ -728,6 +722,7 @@
             ++ (import ../../packages/basic_cli_set.nix { inherit pkgs; })
             ++ (import ../../packages/ai.nix { inherit pkgs; })
             ++ (import ../../packages/linux_cli_set.nix { inherit pkgs; })
+            ++ (import ../../packages/gui.nix { inherit pkgs; })
             ++ (import ../../packages/package_managers.nix { inherit pkgs; })
             ++ (import ../../packages/dev/rust.nix { inherit pkgs; })
             # rustc/cargo/clippy/rustfmt/rust-analyzer at stable latest, plus the

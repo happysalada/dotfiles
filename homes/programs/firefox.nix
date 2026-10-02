@@ -1,8 +1,7 @@
 { pkgs }:
 let
-  # force_installed via enterprise policy, so no NUR / firefox-addons input is
-  # needed. GUIDs were taken from the AMO API (v5 `.guid`), not guessed - a
-  # wrong GUID makes the extension silently fail to install.
+  # force_installed via enterprise policy, so no NUR / firefox-addons input.
+  # GUIDs came from the AMO API (v5 `.guid`) - a wrong one installs nothing.
   ext = id: slug: {
     name = id;
     value = {
@@ -11,17 +10,13 @@ let
     };
   };
 
-  # Everything below is shared by all three profiles. Only startup tabs differ
-  # between them, so each profile takes these verbatim and overrides that.
+  # Shared by all three profiles; only the startup tabs differ.
   baseSettings = {
-    # ---------------------------------------------------------------
     # privacy
     #
-    # NOTE: `privacy.resistFingerprinting` is deliberately NOT set. RFP
-    # normalises timezone/screen/canvas in ways Cloudflare's bot management
-    # scores as automation, and claude.ai sits behind Cloudflare. Strict ETP
-    # plus uBlock Origin gets most of the benefit without that breakage.
-    # ---------------------------------------------------------------
+    # `privacy.resistFingerprinting` is deliberately NOT set: its
+    # timezone/screen/canvas normalisation scores as automation with
+    # Cloudflare's bot management, and claude.ai sits behind Cloudflare.
     "browser.contentblocking.category" = "strict";
     "privacy.trackingprotection.enabled" = true;
     "privacy.trackingprotection.socialtracking.enabled" = true;
@@ -29,10 +24,9 @@ let
     "privacy.globalprivacycontrol.enabled" = true;
     "privacy.query_stripping.enabled" = true;
     "dom.security.https_only_mode" = true;
-    # The default search engine below is http://127.0.0.1:8888. Loopback is
-    # already exempt from the upgrade, but the pref that decides that is
-    # pinned rather than assumed - a silent flip upstream would break every
-    # search in the address bar.
+    # The default engine below is http://127.0.0.1:8888 and loopback is already
+    # exempt from the upgrade, so this is pinned rather than assumed - a silent
+    # flip upstream would break every address-bar search.
     "dom.security.https_only_mode.upgrade_local" = false;
     "network.trr.mode" = 2; # DoH with plain-DNS fallback
 
@@ -48,27 +42,19 @@ let
     "datareporting.healthreport.uploadEnabled" = false;
     "browser.aboutConfig.showWarning" = false;
 
-    # ---------------------------------------------------------------
     # tabs: Sidebery owns the tab list.
     #
-    # `sidebar.revamp` stays on - that is the sidebar rail Sidebery is
-    # pinned into. `verticalTabs` is off because it is the *native* vertical
-    # tab strip, and running it next to Sidebery means two tab lists
-    # competing for the same job. Turning it off brings the horizontal strip
-    # back, which the userChrome below collapses.
-    #
-    # Native tab groups are left enabled: they are independent of Sidebery's
-    # panels and cost nothing if unused.
-    # ---------------------------------------------------------------
+    # `sidebar.revamp` is the rail Sidebery is pinned into. `verticalTabs` is the
+    # *native* vertical strip, and running both means two tab lists competing for
+    # one job - off, which is what leaves the horizontal strip the userChrome
+    # below collapses. Native tab groups stay on: free if unused.
     "sidebar.revamp" = true;
     "sidebar.verticalTabs" = false;
     "browser.tabs.groups.enabled" = true;
     "browser.startup.page" = 3; # 3 = restore previous session
     "browser.sessionstore.resume_from_crash" = true;
 
-    # ---------------------------------------------------------------
     # theme: as black as firefox will go
-    # ---------------------------------------------------------------
     "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
     "browser.theme.toolbar-theme" = 0; # 0 = dark
     "browser.theme.content-theme" = 0; # 0 = dark
@@ -78,12 +64,12 @@ let
   };
 
   # The local SearXNG from modules/searx-local.nix becomes the address bar's
-  # default, with the engines it replaces kept a bang away.
+  # default, the engines it replaces kept a bang away.
   #
-  # `force` is required because these profiles already have a search.json.mozlz4
-  # - Firefox rewrites that file on every launch, so without it home-manager's
-  # copy is ignored. It also means engines added through the browser UI are
-  # discarded on the next activation: new ones go here, not in Settings.
+  # `force` is required because Firefox rewrites the existing search.json.mozlz4
+  # on every launch, so home-manager's copy would otherwise be ignored - which
+  # also means engines added in the browser UI are discarded on the next
+  # activation. New ones go here.
   searchConfig = {
     force = true;
     default = "searxng";
@@ -106,9 +92,8 @@ let
               }
             ];
           }
-          # SearXNG speaks the opensearch suggestion format on its own
-          # endpoint, so the address bar keeps completing - the completions
-          # just come from the local instance now.
+          # SearXNG serves the opensearch suggestion format itself, so the
+          # address bar keeps completing - from the local instance now.
           {
             type = "application/x-suggestions+json";
             template = "http://127.0.0.1:8888/autocompleter";
@@ -123,9 +108,8 @@ let
         definedAliases = [ "@sx" ];
       };
 
-      # Kagi through the normal web UI, which the subscription covers - as
-      # opposed to the metered API the SearXNG `!kg` bang would call. This is
-      # the free half of the A/B: `@k <query>` against `@sx <query>`.
+      # Kagi through the normal web UI, which the subscription covers - not the
+      # metered API the SearXNG `!kg` bang would call. The free half of the A/B.
       kagi = {
         name = "Kagi";
         urls = [
@@ -145,10 +129,9 @@ let
     };
   };
 
-  # Firefox's built-in Dark theme is grey, not black. This pushes the chrome
-  # to #000000 with the same carbon accents as helix/ghostty. Best-effort:
-  # internal IDs do shift between Firefox releases, so if a bar goes grey
-  # after a major update, that's what to re-check.
+  # Firefox's Dark theme is grey, not black; this pushes the chrome to #000000
+  # with the same carbon accents as helix/ghostty. Internal IDs shift between
+  # releases, so a bar that goes grey after an update is what to re-check.
   chromeCss = ''
     :root {
       --lwt-accent-color: #000000 !important;
@@ -209,12 +192,10 @@ let
     }
   '';
 
-  # Firefox has no named sessions - a profile is the only thing it will name
-  # and restore separately, and the only thing that gives a window its own
-  # app-id (via `--name`), which is what niri matches on to place it.
-  #
-  # `startupPage` 1 reopens exactly `urls` every launch; 3 restores whatever
-  # was left open and only falls back to `urls` on a profile's first run.
+  # Firefox has no named sessions - a profile is the only thing it names and
+  # restores separately, and the only thing giving a window its own `--name`
+  # app-id for niri to place. `startupPage` 1 reopens exactly `urls`; 3 restores
+  # what was left open and falls back to `urls` only on a first run.
   taskProfile =
     {
       id,
@@ -226,8 +207,8 @@ let
       settings = baseSettings // {
         "browser.startup.page" = startupPage;
         "browser.startup.homepage" = builtins.concatStringsSep "|" urls;
-        # Otherwise a new profile's first launch shows about:welcome instead
-        # of `urls`, and a Firefox upgrade swaps in its what's-new page.
+        # Otherwise a first launch shows about:welcome and an upgrade swaps in
+        # its what's-new page.
         "browser.startup.homepage_override.mstone" = "ignore";
       };
       search = searchConfig;
@@ -293,10 +274,9 @@ in
     };
   };
 
-  # Tridactyl cannot read ~/.config/tridactyl/tridactylrc on its own - the
-  # extension has no filesystem access and shells out to this helper for it.
-  # Without it Tridactyl still works, but only from config set interactively,
-  # and homes/programs/tridactylrc.nix is never applied.
+  # Tridactyl has no filesystem access, so it shells out to this helper to read
+  # ~/.config/tridactyl/tridactylrc - without it homes/programs/tridactylrc.nix
+  # is never applied.
   nativeMessagingHosts = [ pkgs.tridactyl-native ];
 
   profiles.yt = {

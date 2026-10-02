@@ -1,14 +1,11 @@
 # Tridactyl's config file, as a text template.
 #
-# IMPORTANT: the extension does not read this file by itself. It shells out to
-# the native messenger to read it at startup, so this only takes effect because
-# firefox.nix puts `pkgs.tridactyl-native` in
-# `programs.firefox.nativeMessagingHosts`. Drop that and Tridactyl silently
-# falls back to whatever is in its own extension storage, and this file is dead
-# weight.
-#
-# Tridactyl re-reads it on `:source`, so most edits need no Firefox restart -
-# but the file is a read-only store symlink, so edit it here and `switch`.
+# The extension does not read this file itself - it shells out to the native
+# messenger at startup - so it only takes effect because firefox.nix puts
+# `pkgs.tridactyl-native` in `programs.firefox.nativeMessagingHosts`; drop that
+# and Tridactyl silently falls back to its own extension storage and this file is
+# dead weight. It re-reads on `:source`, but the file is a read-only store
+# symlink, so edit here and `switch`.
 { pkgs }:
 ''
   " Ex commands, one per line. `"` starts a comment.

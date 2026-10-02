@@ -1,16 +1,11 @@
-# The niri session, as a home-manager module.
-#
-# It sits *alongside* GNOME rather than replacing it: GDM offers both, and
-# nothing here runs inside the GNOME session. That separation is the reason
-# waybar/swayidle/cliphist below are pinned to `niri.service` instead of the
-# usual `graphical-session.target` - GNOME reaches that target too, and waybar
-# would otherwise start (and immediately fail, since mutter has no layer-shell)
-# on every GNOME login.
-#
-# mako needs no such treatment: home-manager wires it up as a D-Bus activated
-# service, so it only ever starts when something asks for a notification and
-# nothing else already owns org.freedesktop.Notifications. Under GNOME,
-# gnome-shell owns that name and mako stays asleep.
+# The niri session, as a home-manager module. It sits *alongside* GNOME rather
+# than replacing it: GDM offers both, and nothing here runs inside the GNOME
+# session. So waybar/swayidle/cliphist are pinned to `niri.service` instead of
+# `graphical-session.target` - GNOME reaches that target too, and waybar would
+# otherwise start (and fail: mutter has no layer-shell) on every GNOME login.
+# mako needs no such treatment: home-manager wires it as a D-Bus activated
+# service, so it starts only when something asks for a notification and nothing
+# else owns org.freedesktop.Notifications.
 {
   pkgs,
   config,
@@ -21,20 +16,19 @@ let
   systemctl = "${pkgs.systemd}/bin/systemctl";
   systemdRun = "${pkgs.systemd}/bin/systemd-run";
 
-  # swayidle fires a timeout action exactly once, so a plain "skip if busy"
-  # would leave the laptop awake all night after a build that ended at minute
-  # 40. Retry instead - swayidle's resume command kills the waiter on the first
-  # keypress, so it can only ever fire while you are actually away.
+  # swayidle fires a timeout action exactly once, so "skip if busy" would leave
+  # the laptop awake all night after a build that ended at minute 40 - retry
+  # instead. Its resume command kills the waiter on the first keypress, so it
+  # can only ever fire while you are actually away.
   #
   # `systemctl suspend` fails while any logind *block* inhibitor is up, which
-  # is what makes this honour the lock Claude holds while it is working and
-  # anything wrapped in `keepawake`. --check-inhibitors=yes is not redundant:
-  # logind enforces the lock either way, but the default "auto" only does the
-  # client-side check for TTY callers, and this runs from a systemd unit. Asking
-  # explicitly gets the refusal before the D-Bus call and names the blocker. The pgrep covers the one case with no lock
-  # holder: nix-daemon forks a child per client connection, so a count above 1
-  # means a build is live. `nix develop` and `nix repl` hold a connection open
-  # while idle and read as busy too.
+  # makes this honour the lock Claude holds and `keepawake`. --check-inhibitors=yes
+  # is not redundant: logind enforces the lock either way, but the default "auto"
+  # only client-side-checks TTY callers, and this runs from a systemd unit -
+  # asking explicitly gets the refusal before the D-Bus call and names the
+  # blocker. The pgrep covers the one case with no lock holder: nix-daemon forks
+  # a child per connection, so a count above 1 means a build is live (`nix
+  # develop` and `nix repl` hold an idle connection and read as busy too).
   deferredSuspend = pkgs.writeShellScript "deferred-suspend" ''
     while true; do
       if [ "$(${pkgs.procps}/bin/pgrep -c -x nix-daemon)" -le 1 ] \
@@ -88,14 +82,9 @@ in
   # the file is a read-only store symlink, so edit it here and `switch`.
   xdg.configFile."niri/config.kdl".text = import ./config.kdl.nix { inherit pkgs config; };
 
-  # ---------------------------------------------------------------------
   # launcher (the rofi replacement)
-  # ---------------------------------------------------------------------
   programs.fuzzel = import ./fuzzel.nix { inherit pkgs; };
 
-  # ---------------------------------------------------------------------
-  # bar
-  # ---------------------------------------------------------------------
   programs.waybar = import ./waybar.nix { inherit pkgs; } // {
     systemd = {
       enable = true;
@@ -104,18 +93,14 @@ in
     };
   };
 
-  # ---------------------------------------------------------------------
-  # notifications (D-Bus activated, see header)
-  # ---------------------------------------------------------------------
+  # notifications (D-Bus activated)
   services.mako = import ./mako.nix { inherit pkgs; };
 
-  # ---------------------------------------------------------------------
   # lock screen
   #
-  # NOTE: swaylock authenticates through PAM, which means it needs
+  # NOTE: swaylock authenticates through PAM, so it needs
   # `security.pam.services.swaylock = { };` at the NixOS level. Without it the
-  # lock screen accepts no password at all and you have to switch VTs.
-  # ---------------------------------------------------------------------
+  # lock screen accepts no password and you must switch VTs.
   programs.swaylock = {
     enable = true;
     settings = {
@@ -144,17 +129,14 @@ in
     };
   };
 
-  # ---------------------------------------------------------------------
   # idle: dim -> lock -> screen off -> suspend
   #
-  # The timeouts assume you are on AC as often as not; they are deliberately
-  # conservative because the display is the biggest draw on this machine.
-  #
-  # Only the last step is conditional. Dimming, locking and blanking happen on
-  # schedule whatever is running - it is suspending mid-build that costs you
-  # something. swayidle itself is not inhibitor-aware (it takes only a `delay`
-  # lock, for before-sleep), so the condition has to live in the action.
-  # ---------------------------------------------------------------------
+  # Timeouts assume AC as often as not, deliberately conservative because the
+  # display is the biggest draw here. Only the last step is conditional:
+  # dimming, locking and blanking happen on schedule whatever is running -
+  # suspending mid-build is what costs you. swayidle itself is not
+  # inhibitor-aware (its only lock is a `delay` for before-sleep), so the
+  # condition has to live in the action.
   services.swayidle = {
     enable = true;
     systemdTargets = [ "niri.service" ];
@@ -186,9 +168,7 @@ in
     ];
   };
 
-  # ---------------------------------------------------------------------
   # clipboard history, bound to Mod+V through fuzzel
-  # ---------------------------------------------------------------------
   services.cliphist = {
     enable = true;
     systemdTargets = [ "niri.service" ];

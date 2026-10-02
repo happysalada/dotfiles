@@ -8,26 +8,20 @@ let
   systemdRun = "${pkgs.systemd}/bin/systemd-run";
   systemdInhibit = "${pkgs.systemd}/bin/systemd-inhibit";
 
-  # herdr's Claude Code integration: a SessionStart hook that reports the
-  # session id to the local herdr socket, so herdr can reopen this exact
-  # conversation after its server restarts. Both halves have to look like what
-  # `herdr integration install claude` writes - herdr decides an integration is
-  # installed by finding this file and this command string, and reports the
-  # version embedded in the file.
+  # herdr's Claude Code integration: a SessionStart hook reporting the session id
+  # to the local socket so herdr can reopen this conversation after a restart.
+  # Both halves must match what `herdr integration install claude` writes - herdr
+  # finds the integration by this file and this command string, and reads the
+  # version embedded in it.
   herdrClaudeHook = "${config.home.homeDirectory}/.claude/hooks/herdr-agent-state.sh";
   herdrClaudeCommand = "bash '${herdrClaudeHook}' session";
 
-  # Keep the laptop awake while Claude is actually working.
-  #
-  # "Is the agent busy" is not answerable from the process table - claude is
-  # alive whether it is thinking or waiting on you - but it does not have to
-  # be guessed: UserPromptSubmit and Stop *are* the started/finished edges. A
-  # lock held between them also stays held while Claude sits on a permission
-  # prompt, which is the case you would most hate to sleep through.
-  #
-  # RuntimeMaxSec is the fuse. A Stop hook that never fires (crash, SIGKILL)
-  # must not pin the machine awake indefinitely, so the lock expires on its
-  # own after four hours no matter what.
+  # Keep the laptop awake while Claude is actually working. "Is the agent busy" is
+  # not answerable from the process table - claude is alive whether thinking or
+  # waiting on you - but UserPromptSubmit and Stop *are* the started/finished
+  # edges, and a lock held between them stays held while Claude sits on a
+  # permission prompt. RuntimeMaxSec is the fuse, so a Stop hook that never fires
+  # (crash, SIGKILL) cannot pin the machine awake for more than four hours.
   claudeAwake = pkgs.writeShellScript "claude-awake-start" ''
     set -uo pipefail
     unit="claude-awake-$(${jaq} -r '.session_id // "nosession"')"
@@ -47,13 +41,11 @@ let
   '';
 
   # Clickable "Claude is done" notification that focuses the niri window AND the
-  # zellij pane the session runs in.
-  #
-  # The window is found by title, not at SessionStart: `niri msg focused-window`
-  # only names the terminal if you happened to be looking at it. zellij prefixes
-  # the terminal title with its session name ("main | <tab>"), which is
-  # focus-independent - ghostty is single-instance, so PIDs cannot tell windows
-  # apart. No zellij (e.g. `claude --bg`) falls back to whatever is focused.
+  # zellij pane the session runs in. The window is found by title, not at
+  # SessionStart - `niri msg focused-window` only names the terminal if you
+  # happened to be looking at it - and zellij's session-name prefix
+  # ("main | <tab>") is focus-independent, where ghostty is single-instance and
+  # PIDs cannot tell windows apart. No zellij (`claude --bg`) falls back to focus.
   stopNotify = pkgs.writers.writeNu "claude-stop-notify" ''
     def main [] {
       let zsession = $env.ZELLIJ_SESSION_NAME? | default ""
@@ -116,61 +108,43 @@ in
     enable = true;
     package = pkgs.claude-code;
 
-    # NOTE: settings.json and CLAUDE.md become mode-444 symlinks into the nix
-    # store. That is the point (they are reviewable and reproducible), but it
-    # means `/config` and the in-TUI auto-memory toggle can no longer write to
-    # them - every change has to come through this file plus a rebuild. It also
-    # means `rtk init`, `icm init` and `graphify claude install` must never be
-    # run: they mutate exactly these two files and will fail or be reverted.
+    # NOTE: settings.json and CLAUDE.md become mode-444 store symlinks - the point
+    # (reviewable, reproducible), but `/config` and the in-TUI auto-memory toggle
+    # can no longer write them. `rtk init`, `icm init` and `graphify claude
+    # install` mutate exactly these two files, so they must never be run.
     settings = {
       model = "sonnet";
       theme = "dark";
-      # `tui` takes "default" or "fullscreen". Fullscreen is the alternate
-      # screen, which has no scrollback at all in Zellij; `default` appends the
-      # transcript to the terminal, so the pane's scrollback does hold the
-      # conversation - measured, 49 of 50 lines of a local command's output
-      # landed there. What stays out of reach in this mode is Claude Code's own
-      # pager for long panels (release notes, help), which repaints in place.
-      #
-      # `axScreenReader` is the append-only renderer - it puts even those panels
-      # in the scrollback (420 lines from one command, verified) - but it is the
-      # screen-reader UI: menus become number pickers ("Select with numbers
-      # [1-406]"), which is not worth it. Not enabled.
+      # `default` appends the transcript to the terminal, so the pane's scrollback
+      # does hold the conversation - measured, 49 of 50 lines of a local command's
+      # output landed there; `fullscreen` is the alternate screen, which has no
+      # scrollback in Zellij. Claude Code's own pager for long panels still
+      # repaints in place, and `axScreenReader` would put even those in the
+      # scrollback but is the screen-reader UI (number-picker menus). Not enabled.
       tui = "default";
       effortLevel = "high";
       agentPushNotifEnabled = true;
 
-      # Every interactive session registers itself for Remote Control, so the
-      # phone can pick up whatever the terminal is already doing without
-      # having to have remembered to type `/remote-control` first. The session
-      # still runs here - claude.ai/code is only a window onto this machine.
-      #
-      # Costs one remote session per `claude` process, and the auto-generated
-      # title is `strix-<adjective>-<noun>` until the first prompt renames it,
-      # so name anything you intend to come back to with `/rename`.
-      #
-      # A `false` in a repo's .claude/settings.json still wins over this; a
-      # `true` there is ignored, which is why it has to live here.
+      # Every interactive session registers for Remote Control, so the phone can
+      # pick up what the terminal is already doing without typing
+      # `/remote-control` first - the session still runs here, claude.ai/code is
+      # only a window onto this machine. Costs one remote session per `claude`
+      # process. A `false` in a repo's .claude/settings.json still wins over this;
+      # a `true` there is ignored, which is why it has to live here.
       remoteControlAtStartup = true;
 
-      # Model, context gauge and session cost, rendered by starship rather than
-      # a hand-rolled script - the profile lives beside the shell prompt in
-      # homes/common.nix. Needs starship >= 1.25, which added the subcommand.
+      # Model, context gauge and session cost via starship (>= 1.25), whose
+      # profile lives beside the shell prompt in homes/common.nix.
       statusLine = {
         type = "command";
         command = "${starship} statusline claude-code";
       };
 
-      # Native auto-memory is OFF deliberately. It is the third memory system
-      # here, and the only one whose store is per-project and invisible to
-      # opencode - which makes it the odd one out now that icm (keyed, global,
-      # cross-tool) and funes (semantic, session history) cover the same
-      # ground between them. Its directory
-      # (~/.claude/projects/<proj>/memory) has been empty since it was created,
-      # so nothing is being discarded by turning it off.
-      #
-      # Flip to true if you ever want per-project memory that is human-readable
-      # and diffable in a way neither of the other two are.
+      # Off deliberately: per-project and invisible to opencode, so it is the odd
+      # one out now that icm (keyed, global, cross-tool) and funes (semantic,
+      # session history) cover the same ground. Its directory has been empty since
+      # it was created, so nothing is discarded by turning it off. True would give
+      # readable, diffable per-project memory - and reopen which store owns it.
       autoMemoryEnabled = false;
 
       # Not auto: its classifier is a server round-trip per call, and an outage
@@ -181,16 +155,12 @@ in
       # writes here - which fails against the read-only store path.
       skipDangerousModePermissionPrompt = true;
 
-      # The Git section of ai-context.nix, enforced rather than merely asked
-      # for - the same denies opencode.nix already carries in permission.bash.
-      # Deny beats allow and beats a narrower rule, and claude-code matches each
-      # subcommand of a compound command independently, so `foo && git commit`
-      # is caught too.
-      #
-      # Not airtight: the pattern is literal up to the first `*`, so
-      # `git -c user.name=x commit` slips past. It stops the accident, not a
-      # determined agent - the prose in ai-context.nix is still what carries the
-      # rule.
+      # The Git section of ai-context.nix, enforced rather than merely asked for -
+      # the same denies opencode.nix carries. Deny beats allow and beats a narrower
+      # rule, and claude-code matches each subcommand of a compound command
+      # independently, so `foo && git commit` is caught. Not airtight: the pattern
+      # is literal up to the first `*`, so `git -c user.name=x commit` slips past,
+      # and the prose in ai-context.nix is still what carries the rule.
       permissions.deny = [
         "Bash(git add *)"
         "Bash(git commit *)"
@@ -271,8 +241,8 @@ in
         "Bash(lsusb*)"
         "Bash(ip addr*)"
         # Deliberately NOT "Bash(sg *)": on NixOS `sg` resolves to
-        # /run/wrappers/bin/sg, the setgid "run a command as another group"
-        # utility - not ast-grep. Always spell out `ast-grep`.
+        # /run/wrappers/bin/sg, the setgid run-as-group utility, not ast-grep.
+        # Always spell out `ast-grep`.
       ];
 
       hooks = {
@@ -297,30 +267,25 @@ in
           (cmdFor "Bash" "${rtk} hook claude")
 
           # graphify's hook-guard nudges search/read toward the knowledge graph.
-          # Left off by default: it intercepts *every* Read and Glob, which is
-          # pure latency in the repos where no graphify-out/graph.json exists.
-          # The CLAUDE.md section below already tells Claude to use graphify,
-          # which is the part that actually matters. Uncomment if you want the
-          # hard guard instead of the instruction.
+          # Off: it intercepts every Read and Glob, pure latency where no
+          # graphify-out/graph.json exists, and the CLAUDE.md section below
+          # already carries the instruction. Uncomment for the hard guard.
           # (cmdFor "Bash|Grep" "${lib.getExe pkgs.graphify} hook-guard search")
           # (cmdFor "Read|Glob" "${lib.getExe pkgs.graphify} hook-guard read")
 
-          # `icm hook pre` is icm's *auto-allow* hook: it returns permission
-          # decisions, i.e. it can approve tool calls that would otherwise
-          # prompt. That is a permission bypass driven by a third-party binary,
-          # so it stays off. icm's memory features work fine without it.
+          # `icm hook pre` returns permission decisions - it can approve calls that
+          # would otherwise prompt, a permission bypass driven by a third-party
+          # binary. Off; icm's memory features work fine without it.
           # (cmdFor "Bash" "${icm} hook pre")
         ];
 
-        # icm's post/compact/end extraction hooks are off. Their rule-based
-        # extraction stored hundreds of sentence fragments and restatements of
-        # the repo, which crowded the wake-up pack below. Memories are stored by
-        # hand with `icm store`.
+        # icm's post/compact/end extraction hooks are off: their rule-based
+        # extraction stored hundreds of sentence fragments and repo restatements,
+        # which crowded the wake-up pack below. `icm store` by hand instead.
 
-        # icm's wake-up pack: identity/preferences plus critical decisions,
-        # injected once per session. This is the *only* automatic memory
-        # injection that stays on - see the memory-split section in
-        # ai-context.nix for why exactly one system may own this path.
+        # icm's wake-up pack: identity/preferences plus critical decisions, once
+        # per session - the *only* automatic memory injection left on. See the
+        # memory-split section in ai-context.nix for why one system owns the path.
         SessionStart = [
           (cmd "${icm} hook start")
 
@@ -339,13 +304,11 @@ in
           }
         ];
 
-        # `icm hook prompt` (auto-recall) is deliberately off. It fires on
-        # every single user prompt and its output is appended to the
-        # conversation, so the cost is not paid once - it accumulates, one
-        # recall block per turn, for the whole session. That directly undoes
-        # what rtk is here to do, and it re-injects on turns that have nothing
-        # to do with the recalled topic. `icm recall` on demand covers the same
-        # ground at the moment it is actually needed.
+        # `icm hook prompt` (auto-recall) is off: it fires on every user prompt and
+        # appends to the conversation, so one recall block per turn accumulates for
+        # the whole session - undoing what rtk is here to do - and it re-injects on
+        # turns unrelated to the recalled topic. `icm recall` covers the same
+        # ground on demand.
         # (cmd "${icm} hook prompt")
 
         # Take the keep-awake lock; Stop below drops it again.
@@ -368,13 +331,11 @@ in
 
     # Real code intelligence instead of grep: claude-code speaks
     # textDocument/definition, /references and /documentSymbol, and surfaces
-    # publishDiagnostics. Same servers and same store paths as helix.nix, so the
-    # editor and the agent can never disagree about a version.
-    #
-    # The marketplace's twelve `*-lsp` plugins are nothing but this attrset plus
-    # a README, and there is no Nix one at all. `ty` rather than `ruff server`
-    # on .py: ruff's server is lint and format, which ai-context.nix already
-    # tells the agent to get from `ruff check --fix`.
+    # publishDiagnostics. Same servers and store paths as helix.nix, so the editor
+    # and the agent cannot disagree on a version. `ty` rather than `ruff server` on
+    # .py: ruff's server is lint and format, which ai-context.nix already covers
+    # with `ruff check --fix`. The marketplace's twelve `*-lsp` plugins are nothing
+    # but this attrset plus a README, and there is no Nix one.
     lspServers = with pkgs; {
       nixd = {
         command = "${nixd}/bin/nixd";

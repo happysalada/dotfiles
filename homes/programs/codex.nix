@@ -1,18 +1,15 @@
 # codex - OpenAI's terminal agent, third on this box after claude-code and
-# opencode, and wired the same way.
-#
-# Shared: MCP servers (homes/programs/ai-mcp.nix), instructions
-# (homes/programs/ai-context.nix), skills (homes/programs/ai-skills.nix), and
-# the CLI tools on PATH from packages/ai.nix.
+# opencode, and wired the same way: MCP servers, instructions, skills and the CLI
+# tools all come from the shared sources (packages/ai.nix for the last of them).
 #
 # Not shared: rtk. `rtk hook` has backends for claude, cursor, gemini, copilot,
 # droid and vibe, but not codex, so compression here is manual - AGENTS.md says
 # so. icm *is* wired, because `icm hook` speaks codex's event schema.
 #
-# Auth is manual and outside nix: `codex login` opens a browser and signs in
-# with ChatGPT, which is what bills sessions to the Plus subscription instead of
-# to an API key. It writes ~/.codex/auth.json, the one file in that directory
-# nix does not own. `codex login --device-auth` is the fallback with no browser.
+# Auth is manual and outside nix: `codex login` opens a browser and signs in with
+# ChatGPT, which is what bills sessions to the Plus subscription instead of to an
+# API key. It writes ~/.codex/auth.json, the one file in that directory nix does
+# not own. `codex login --device-auth` is the fallback with no browser.
 {
   config,
   pkgs,
@@ -23,10 +20,9 @@ let
   icm = lib.getExe pkgs.icm;
 
   # herdr's Codex integration: the SessionStart hook that reports the session id
-  # to the local herdr socket, so herdr reopens this exact conversation after its
-  # server restarts. Same shape as the Claude Code one in claude-code.nix, and
-  # like it the path and the command string are what herdr looks for when it
-  # decides the integration is installed.
+  # to the local socket so herdr reopens this conversation after its server
+  # restarts. Same shape as the Claude Code one, and the same path-and-command
+  # lookup is what tells herdr the integration is installed.
   herdrCodexHook = "${config.home.homeDirectory}/.codex/herdr-agent-state.sh";
   herdrCodexCommand = "bash '${herdrCodexHook}' session";
 
@@ -50,10 +46,9 @@ let
     }
   ];
 
-  # Codex hashes the normalized hook before allowing it to run. Generate the
-  # same hash so reviewed nix configuration is the trust boundary. `groupIndex`
-  # is where the entry sits in its event's array - codex keys trust by position,
-  # so a second hook on the same event has to say so.
+  # Codex hashes the normalized hook before allowing it to run; these hashes are
+  # how reviewed nix configuration becomes the trust boundary. `groupIndex` is
+  # where the entry sits in its event's array, since codex keys trust by position.
   trustedHook =
     {
       event,
@@ -87,11 +82,10 @@ in
     # Pulls funes + fff from programs.mcp.servers.
     enableMcpIntegration = true;
 
-    # NOTE: config.toml becomes a mode-444 symlink into the nix store, same as
-    # ~/.claude/settings.json. So `/model`, `/approvals` and `codex features
-    # enable` cannot persist their choice - every change comes through here plus
-    # a rebuild. `codex update` fails for the same reason; bump the llm-agents
-    # input instead.
+    # NOTE: config.toml becomes a mode-444 store symlink, so `/model`,
+    # `/approvals` and `codex features enable` cannot persist their choice -
+    # every change comes through here plus a rebuild, and `codex update` fails
+    # outright. Bump the llm-agents input instead.
     settings = {
       # GPT-6 Luna is the faster/cheaper tier of the GPT-6 family; Sol and
       # Astra are the quality-first ones.
@@ -147,22 +141,19 @@ in
       ];
     };
 
-    # icm's wake-up pack only, same as claude-code.nix.
-    #
-    # Trust is derived above from each normalized command. The `icm hook pre`
-    # auto-allow hook is left off because it returns permission decisions, which
-    # is a bypass driven by a third-party binary.
-    #
-    # The post/compact/end extraction hooks are off: their rule-based extraction
-    # filled icm with sentence fragments and restatements of the repo, which then
-    # crowded the wake-up pack. Memories are stored by hand with `icm store`.
+    # icm's wake-up pack only, same as claude-code.nix. Trust is derived above
+    # from each normalized command. The `icm hook pre` auto-allow hook is left
+    # off because it returns permission decisions, a bypass driven by a
+    # third-party binary, and the post/compact/end extraction hooks are off
+    # because their rule-based extraction filled icm with repo restatements that
+    # then crowded the wake-up pack. Memories are stored by hand with `icm store`.
     hooks = {
       SessionStart = cmd "${icm} hook start" ++ cmd herdrCodexCommand;
     };
 
-    # -> ~/.codex/rules/default.rules, the Git section of ai-context.nix
-    # enforced rather than merely asked for - the same denies claude-code.nix
-    # and opencode.nix already carry.
+    # -> ~/.codex/rules/default.rules, the Git section of ai-context.nix enforced
+    # rather than merely asked for - the same denies claude-code.nix and
+    # opencode.nix already carry.
     #
     # Two limits worth knowing. Rules govern commands run *outside* the sandbox,
     # so inside workspace-write it is the protected .git path that stops a

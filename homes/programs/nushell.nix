@@ -8,18 +8,14 @@ let
   # Only the commands carapace cannot complete. These define `extern`s, and
   # nushell prefers a known extern over the external completer, so anything
   # listed here shadows carapace - trading its live values (real branches, real
-  # units, real containers) for a static flag list.
-  #
-  # `man` is here despite carapace shipping a man completer: carapace's shells
-  # out to `apropos`, which needs an mandb index this machine does not build
-  # (programs.man.generateCaches = false), so it only ever answers "nothing
-  # appropriate". The nu_scripts one walks `man -w` directly and finds ~6000.
+  # units) for a static flag list. `man` is here despite carapace shipping a man
+  # completer, because that one shells out to `apropos` and needs a mandb index
+  # this machine does not build (programs.man.generateCaches = false).
   #
   # NOTE: these are `use`d, which happens at PARSE time. A path that doesn't
-  # exist aborts the whole of config.nu - which silently takes starship,
-  # keybindings, aliases and every custom command down with it. That's what the
-  # old `tealdeer/tldr-completions.nu` entry was doing (upstream renamed the
-  # directory to `tldr/`). Verified against nu_scripts 2026-07-19.
+  # exist aborts the whole of config.nu - silently taking starship, keybindings,
+  # aliases and every custom command down with it. That is what the old
+  # `tealdeer/tldr-completions.nu` entry was doing (upstream renamed the dir).
   completions = [
     "btm/btm-completions.nu"
     "man/man-completions.nu"
@@ -31,9 +27,8 @@ let
     map (c: "use ${pkgs.nu_scripts}/share/nu_scripts/custom-completions/${c} *") completions
   );
 
-  # home-manager's own nushell integration regenerates this at every shell
-  # start; building it once here keeps that off the startup path. Same package
-  # the module installs.
+  # home-manager's own integration regenerates this at every shell start;
+  # building it once here keeps that off the startup path.
   intelliShellInit = pkgs.runCommand "intelli-shell-init.nu" { } ''
     # `init` insists on creating its data dir before printing anything, and
     # $HOME is not writable in the sandbox.
@@ -45,16 +40,13 @@ in
   enable = true;
   package = pkgs.nushell;
 
-  # Declarative plugin registry. home-manager builds plugin.msgpackz at build
+  # Declarative plugin registry: home-manager builds plugin.msgpackz at build
   # time and links it into place, so there is no `plugin add` to run by hand and
   # nothing for the garbage collector to eat.
   #
-  # Nushell plugins are ABI-locked to the exact nushell version. As of nushell
-  # 0.115.0 these four are the only ones in nixpkgs built against it; skim
-  # (0.114.0), hcl (0.114.1), semver (0.113.0), highlight and
-  # desktop_notifications are all stale, and net/units/dbus are marked broken.
-  # Re-test with `nu --plugin-config /tmp/t --commands 'plugin add <exe>'`
-  # after a nixpkgs bump before adding any of them back.
+  # Plugins are ABI-locked to the exact nushell version, and as of 0.115.0 these
+  # four are the only nixpkgs ones built against it - skim, hcl, semver, highlight
+  # and desktop_notifications are stale, net/units/dbus are marked broken.
   plugins = with pkgs.nushellPlugins; [
     formats # from/to ini, eml, vcf, ics, plist
     query # query json/xml/html with xpath + css selectors
@@ -63,9 +55,9 @@ in
   ];
 
   envFile.text = ''
-    # helix.nix's `defaultEditor` only writes EDITOR into hm-session-vars.sh,
-    # a POSIX script nushell never sources - so yazi and friends fell through
-    # to their `EDITOR-or-vi` default and opened vim.
+    # helix.nix's `defaultEditor` only writes EDITOR into hm-session-vars.sh, a
+    # POSIX script nushell never sources - so yazi and friends fell through to
+    # their `EDITOR-or-vi` default and opened vim.
     $env.EDITOR = "hx"
     $env.VISUAL = "hx"
 
@@ -73,15 +65,14 @@ in
 
     # `crw search` from the shell. Without it crw falls back to its built-in
     # guess of 127.0.0.1:8080 and reports "could not connect to the backend".
-    # This is the CLI's own spelling; the crw serve unit in
-    # homes/programs/crw.nix takes the same value as CRW_SEARCH__SEARCH_BACKEND_URL.
+    # The crw serve unit in homes/programs/crw.nix takes the same value.
     $env.CRW_SEARCH_BACKEND_URL = "http://127.0.0.1:8888"
   '';
 
   # Assigned leaf-by-leaf onto $env.config, so nushell's own defaults for
   # anything not named here stay intact. The old config replaced $env.config
-  # wholesale with a snapshot of nushell ~0.8x defaults, which meant every new
-  # upstream default was silently discarded.
+  # wholesale with a snapshot of ~0.8x defaults, so every new upstream default
+  # was silently discarded.
   settings = {
     edit_mode = "vi";
     show_banner = false;
@@ -169,8 +160,8 @@ in
         type: { layout: columnar, columns: 4, col_width: 20, col_padding: 2 }
         style: { text: green, selected_text: green_reverse, description_text: yellow }
         source: { |buffer, position|
-          # `$nu.scope` was removed in nushell 0.77; this is the modern form.
-          # The old config still used it, so these menus errored on every use.
+          # `$nu.scope` was removed in nushell 0.77; this is the modern form, and
+          # the old config's use of it made these menus error on every use.
           scope commands
           | where name =~ $buffer
           | each { |it| { value: $it.name, description: $it.description } }
@@ -224,7 +215,7 @@ in
 
     ${lib.optionalString config.programs.intelli-shell.enable ''
       # Must be set before the source below, which reads it. Left unset,
-      # intelli-shell binds ESC to "select all, delete" in vi_insert - with
+      # intelli-shell binds ESC to "select all, delete" in vi_insert, and with
       # edit_mode = "vi" that turns leaving insert mode into wiping the line.
       $env.INTELLI_SKIP_ESC_BIND = "1"
 
@@ -374,12 +365,11 @@ in
 
     # citations alone can't rank a finance paper against a physics one. FWCI is
     # citations received over citations expected for the same year, type and
-    # subfield, where 1.0 is world average. Undefined below ~4 years old - that
-    # is the window it is computed over - so it says nothing about a new preprint.
-    #
-    # Lists every record instead of picking one: a paper's arXiv preprint and its
-    # published version are separate rows, and only the published one carries the
-    # citations. mailto buys OpenAlex's faster "polite" pool.
+    # subfield, where 1.0 is world average - undefined below ~4 years old, the
+    # window it is computed over, so it says nothing about a new preprint.
+    # Lists every record because a paper's arXiv preprint and its published
+    # version are separate rows and only the latter carries the citations;
+    # mailto buys OpenAlex's faster "polite" pool.
     def fwci [title: string] {
       let q = ($title | url encode)
       http get $"https://api.openalex.org/works?filter=title.search:($q)&select=display_name,publication_year,type,cited_by_count,fwci,primary_location&per-page=10&mailto=openalex@megzari.com"

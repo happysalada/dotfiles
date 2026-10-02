@@ -1,31 +1,12 @@
-# reasonix - the DeepSeek-native terminal agent, wired to the same tooling the
-# other three clients get instead of being left as a bare binary on PATH.
+# reasonix - the DeepSeek-native terminal agent, wired to the same shared sources
+# the other three clients read (ai-mcp, ai-context, ai-agents, ai-skills, plus
+# the CLI tools in packages/ai.nix).
 #
-# Everything shared comes through the source that already owns it: MCP servers
-# read back out of programs.mcp.servers (the five in ai-mcp.nix, plus crw, which
-# registers itself beside the port its unit listens on), global instructions and
-# subagent roles rendered from ai-context.nix and ai-agents.nix, the skill set
-# from ai-skills.nix, and the CLI tools on PATH from packages/ai.nix.
-#
-# Not shared: hooks. reasonix defines its own hook events, none are wired here,
-# and neither `rtk hook` nor `icm hook` has a reasonix backend - so no output
-# compression and no icm wake-up pack in a reasonix session. The Git rules
-# survive as permission.deny below and the .env block as `secrets`.
-#
-# NOTE: this file generates three things under ~/.reasonix. Two are store
-# symlinks - config.toml and the skill directories - and the third, the
-# instructions file, has to be copied by an activation instead, because reasonix
-# ignores an instruction document whose symlink resolves outside its own home.
-# Either way they are read-only, so `reasonix setup`, `reasonix mcp add`, the
-# desktop settings page and `reasonix subagent create --scope global` now fail
-# and every change has to come through here plus a rebuild. The first activation
-# renames the hand-written config.toml to config.toml.hm-bak rather than
-# deleting it.
-#
-# All three are rendered a second time under ~/.reasonix-nono, for the
-# `nono-reasonix` launcher in homes/programs/nono.nix, which sets REASONIX_HOME
-# to it. That home differs in one value: `[sandbox] bash = "off"`. See the
-# `sandboxed` binding below for why it cannot stay "enforce" there.
+# Everything it generates is read-only, so `reasonix setup`, `reasonix mcp add`,
+# the desktop settings page and `reasonix subagent create` all fail and every
+# change comes through here plus a rebuild. Rendered twice, for the two homes:
+# ~/.reasonix for `reasonix` and ~/.reasonix-nono for `nono-reasonix`, which
+# differ in `sandbox.bash` alone.
 {
   config,
   pkgs,
@@ -36,23 +17,19 @@ let
   # Subagent roles, shared with claude-code, codex and opencode.
   aiAgents = import ./ai-agents.nix { inherit lib pkgs; };
 
-  # Global instructions, shared with the other three. reasonix loads user-global
-  # instructions out of its own home directory - REASONIX.md, AGENTS.md or
-  # CLAUDE.md, whichever it finds there - so this is a fourth rendering of
-  # ai-context.nix rather than a symlink to one of the other three.
+  # A fourth rendering of ai-context.nix rather than a symlink to one of the
+  # others: reasonix loads global instructions out of its own home directory,
+  # whichever of REASONIX.md, AGENTS.md or CLAUDE.md it finds there.
   aiContext = import ./ai-context.nix { inherit lib; };
 
   # The same skill set the other three get, from the same single source.
   aiSkills = import ./ai-skills.nix { inherit pkgs; };
 
-  # Some of those skills carry `allowed-tools` in Claude Code's vocabulary,
-  # which is not a known tool identity in reasonix - it warns about each one and
-  # ignores the list, so the whitelist is silently inert. Translating it is what
-  # the copies under ~/.reasonix/skills are for.
-  #
-  # An unmapped name is passed through with a build warning rather than dropped:
-  # a source bump that introduces one should surface here, in the file that has
-  # to be edited, not as a doctor warning nobody reads.
+  # Claude Code's `allowed-tools` vocabulary is not a known tool identity in
+  # reasonix, which warns about each name and ignores the list - hence the
+  # translated copies under ~/.reasonix/skills. An unmapped name is passed
+  # through with a build warning rather than dropped, so a source bump surfaces
+  # here, in the file that has to be edited.
   toolNames = {
     Read = "read_file";
     Write = "write_file";
@@ -67,13 +44,12 @@ let
     toolNames.${name}
       or (lib.warn "reasonix: no reasonix identity for allowed-tools ${name}; passing it through unmapped" name);
 
-  # `allowed-tools: Read Write Edit Bash` becomes `allowed-tools: [read_file,
-  # write_file, edit_file, bash]` - the flow list reasonix's own profile editor
-  # writes. The value arrives space- or comma-separated and sometimes quoted
-  # (shap writes `"Read Bash"`), so the quotes come off only after the whitespace
-  # that follows the colon: a leading space would otherwise leave the opening
-  # quote attached to the first name. The separator shows up in builtins.split's
-  # output as an empty list between the names.
+  # `Read Write Edit Bash` becomes the flow list `[read_file, write_file,
+  # edit_file, bash]` that reasonix's own profile editor writes. The value
+  # arrives space- or comma-separated and sometimes quoted, so the quotes come
+  # off only after the whitespace following the colon - a leading space would
+  # leave the opening quote attached to the first name. The separator appears in
+  # builtins.split's output as an empty list between the names.
   translateAllowedTools =
     line:
     let
@@ -86,14 +62,11 @@ let
     in
     "allowed-tools: [${lib.concatStringsSep ", " (map translateToolName names)}]";
 
-  # A skill lands in ~/.reasonix/skills as itself unless it needs that
-  # translation, in which case it is copied with only SKILL.md rewritten. The
-  # copy is of the whole directory, not of the file alone: several of these
-  # skills ship scripts/ and references/ beside their SKILL.md.
-  #
-  # Note the skills that come from a package rather than from a source tree
-  # (revdiff, hyperresearch's deep-research and terminal-browser) are read out of
-  # their built store paths here, so this evaluation depends on them.
+  # A skill lands in ~/.reasonix/skills as itself unless it needs that rewrite, in
+  # which case the whole directory is copied so scripts/ and references/ come
+  # along. Skills that come from a package rather than a source tree (revdiff,
+  # hyperresearch's deep-research and terminal-browser) are read out of their
+  # built store paths, so this evaluation depends on them.
   renderSkill =
     name: src:
     if !(lib.hasInfix "allowed-tools:" (builtins.readFile "${src}/SKILL.md")) then
@@ -113,18 +86,14 @@ let
         } $out/SKILL.md
       '';
 
-  # The MCP registry, in reasonix's `[[plugins]]` dialect. Reading
-  # programs.mcp.servers back rather than listing the servers again means
-  # anything registered with home-manager's tool-agnostic programs.mcp - by
-  # ai-mcp.nix or by a module that owns its own endpoint - reaches reasonix with
-  # nothing to keep in sync. Home Manager renders the claude-code, codex and
-  # opencode dialects itself but has no reasonix one, so this is that dialect.
+  # The MCP registry in reasonix's `[[plugins]]` dialect - Home Manager renders
+  # the other three but not this one. Reading programs.mcp.servers back rather
+  # than relisting the servers means anything registered with the tool-agnostic
+  # programs.mcp reaches reasonix with nothing to keep in sync.
   #
-  # A `url` entry is remote and a `command` entry is a subprocess. Reasonix's
-  # `http` transport is Streamable HTTP, which is what those three urls speak.
-  # Empty args/env are dropped because they are the zero values in TOML and
-  # `reasonix mcp add` writes the same shape. `type = "stdio"` is the default,
-  # so it is left implicit.
+  # `url` is remote (Streamable HTTP, which those three speak) and `command` a
+  # subprocess. Empty args/env are dropped because they are the zero values in
+  # TOML, and stdio is the default `type`, so it stays implicit.
   plugins = lib.mapAttrsToList (
     name: server:
     {
@@ -148,13 +117,9 @@ let
 
   # The same seven language servers, at the same store paths with the same
   # arguments as claude-code.nix's lspServers, so the agent and the editor can
-  # never disagree about a version. `extensions` is reasonix's spelling of
-  # Claude Code's extensionToLanguage map. Servers launch lazily on first use.
-  #
-  # It also keeps reasonix off its npm fallback: when it cannot find a
-  # typescript-language-server it offers `npm i -g typescript-language-server
-  # typescript`, which on NixOS would land a second copy outside the store. The
-  # store path above is what it finds instead.
+  # never disagree about a version. Keeping typescript-language-server on a store
+  # path is also what stops reasonix offering its `npm i -g` fallback, which on
+  # NixOS would land a second copy outside the store.
   lspServers = with pkgs; {
     nixd = {
       command = "${nixd}/bin/nixd";
@@ -200,16 +165,12 @@ let
     };
   };
 
-  # Carried over verbatim from the `reasonix setup` scaffold this replaces, so
-  # the desktop app keeps the preferences it was configured with. Two values are
-  # deliberately not what the scaffold wrote:
-  #
-  #   - check_updates is off, for the same reason codex.nix sets
-  #     check_for_update_on_startup = false and opencode.nix sets
-  #     autoupdate = false: the store path is read-only, so an update can only
-  #     be a nag. Bump the llm-agents input instead.
-  #   - desktop telemetry/metrics are off, matching both the CLI metrics setting
-  #     below and the REASONIX_TELEMETRY=0 the package wrapper sets.
+  # Carried over verbatim from the `reasonix setup` scaffold this replaces, so the
+  # desktop app keeps the preferences it was configured with. Two values are
+  # deliberately not what the scaffold wrote: check_updates is off because the
+  # store path is read-only, so an update can only be a nag (bump the llm-agents
+  # input instead), and the telemetry/metrics pair is off to match the CLI
+  # metrics setting below and the REASONIX_TELEMETRY=0 the wrapper sets.
   desktop = {
     layout_style = "workbench";
     theme = "auto";
@@ -245,9 +206,8 @@ let
 
   # DeepSeek direct, one entry per model, which is what /model switches between.
   # The key itself is never here: agenix decrypts DEEPSEEK_API_KEY to
-  # ~/.reasonix/.env (machines/strix/default.nix) and `api_key_env` names it.
-  # Prices are per 1M tokens and only feed the cost readout - balance_url is
-  # what the status bar's balance item reads.
+  # ~/.reasonix/.env and `api_key_env` names it. Prices are per 1M tokens and only
+  # feed the cost readout; balance_url is what the status bar's balance item reads.
   deepseek = name: model: price: {
     inherit name model;
     kind = "openai";
@@ -259,9 +219,8 @@ let
     billing_currency = "USD";
     thinking = "enabled";
     web_search = true;
-    # The levels /effort offers for this provider. Every effort a subagent
-    # carries has to be one of these or reasonix only warns and drops it -
-    # see the efforts table in ai-agents.nix.
+    # Every effort a subagent carries has to be one of these or reasonix only
+    # warns and drops it - see the efforts table in ai-agents.nix.
     supported_efforts = [
       "disabled"
       "low"
@@ -291,16 +250,13 @@ let
       ask_request = true;
     };
 
-    # Content-free CLI usage metrics, off. `auto` - the default - turns them on
-    # whenever the terminal is interactive, which is how this tool is used here.
-    # The overlay's reasonix wrapper already sets REASONIX_TELEMETRY=0 in
-    # machines/strix/default.nix; this is the same switch for when it is
-    # launched some other way.
+    # `auto`, the default, turns metrics on whenever the terminal is interactive,
+    # which is how this tool is used here. The wrapper in machines/strix/default.nix
+    # sets REASONIX_TELEMETRY=0; this is the same switch for other launches.
     telemetry.cli_metrics = "off";
 
-    # Proxy settings are inert while proxy_mode is auto/env - carried because
-    # they were active in the scaffold, so switching to `custom` does not need
-    # a second visit to this file.
+    # Inert while proxy_mode is auto/env - carried because they were active in
+    # the scaffold, so switching to `custom` does not need a second visit here.
     network = {
       proxy_mode = "auto";
       proxy.type = "socks5";
@@ -316,10 +272,9 @@ let
       # The only automatic compaction trigger: near this fraction of the
       # provider's context window.
       compact_ratio = 0.8;
-      # subagent_model / subagent_effort stay unset, so a subagent that names
-      # neither - the four built-ins - inherits default_model. The three roles
-      # in ~/.reasonix/skills/ carry their own model and effort, which outranks
-      # both of those settings.
+      # subagent_model / subagent_effort stay unset, so a subagent naming neither -
+      # the four built-ins - inherits default_model. The roles in
+      # ~/.reasonix/skills carry their own model and effort, which outranks both.
     };
 
     providers = [
@@ -351,38 +306,29 @@ let
       servers = lspServers;
     };
 
-    # The CLI's own browser tools stay off: crw is the browser on this machine,
-    # already wired above, and it is the one sharing a renderer between sessions.
+    # Off: crw is the browser on this machine, already wired above, and it is the
+    # one sharing a renderer between sessions.
     browser.enabled = false;
 
-    # reasonix also finds these skills through ~/.claude/skills, one of its
-    # convention roots. That copy is excluded because it is the one the other
-    # three clients need - Claude Code's own tool names in `allowed-tools` - and
-    # reading both roots would leave two definitions of every skill, one of them
-    # the source of the doctor warnings the copies above exist to remove.
-    #
-    # Only the home root: a project's `.claude/skills`, which is what
-    # `hyperresearch install` writes, is a different path and still loads.
+    # The ~/.claude/skills copy - the one the other three clients need, carrying
+    # Claude Code's tool names - is excluded, because reading both roots would
+    # leave two definitions of every skill, one of them the source of the doctor
+    # warnings the translated copies exist to remove. Only the home root: a
+    # project's `.claude/skills`, which `hyperresearch install` writes, still loads.
     skills.excluded_paths = [ "~/.claude/skills" ];
 
     # The Git section of ai-context.nix, enforced rather than merely asked for -
-    # the same denies claude-code.nix (permissions.deny), codex.nix
-    # (rules/default.rules) and opencode.nix (permission.bash) already carry.
-    #
-    # `:*` is reasonix's command-prefix form, and a prefix rule it recognises as
-    # such refuses a later command that introduces a shell operator, so
-    # `Bash(git push:*)` does not also cover `git push && rm -rf .`. The legacy
-    # `Bash(git push*)` spelling still loads.
+    # the same denies claude-code.nix, codex.nix and opencode.nix carry. `:*` is
+    # reasonix's command-prefix form, and a prefix rule refuses a later command
+    # that introduces a shell operator, so `Bash(git push:*)` does not also cover
+    # `git push && rm -rf .`. The legacy `Bash(git push*)` spelling still loads.
     #
     # Not airtight, same as the other three: the pattern is a literal prefix, so
-    # `git -c user.name=x commit` slips past. The prose in ai-context.nix is
-    # still what carries the rule.
-    #
-    # mode stays "ask" - the posture this config already had. Note what that
-    # means for automation: `reasonix run` and `reasonix -p` cannot prompt, so
-    # an unmatched command there fails closed rather than running, which is why
-    # the headless lanes (orx, hyperresearch) still belong to codex and
-    # claude-code. The equivalent of their blanket approvals would be
+    # `git -c user.name=x commit` slips past, and the prose in ai-context.nix is
+    # still what carries the rule. mode stays "ask" - `reasonix run` and
+    # `reasonix -p` cannot prompt, so an unmatched command there fails closed
+    # rather than running, which is why the headless lanes (orx, hyperresearch)
+    # still belong to codex and claude-code. Their blanket approvals would be
     # mode = "allow"; the denies below still win in that mode.
     permissions = {
       mode = "ask";
@@ -400,15 +346,15 @@ let
     };
 
     # The .env block opencode.nix carries as read."*.env" and claude-code.nix as
-    # Read(**/.env), done the way reasonix implements it: the read tools hide
-    # .env, .git-credentials, key files and ~/.ssh rather than a path glob
-    # matching them. Broader than the other two - and, as its own config comment
-    # warns, able to get in the way of a legitimate read of one of those files.
+    # Read(**/.env), done the way reasonix implements it: the read tools hide .env,
+    # .git-credentials, key files and ~/.ssh rather than a path glob matching
+    # them. Broader than the other two, and as its own config comment warns, able
+    # to get in the way of a legitimate read of one of those files.
     secrets.protect_sensitive_files = true;
 
-    # The bot gateway (QQ, Feishu, WeChat) stays off, and the rest of its
-    # settings are left at reasonix's defaults rather than carried over as a
-    # wall of empty allowlists.
+    # The bot gateway (QQ, Feishu, WeChat) stays off, and the rest of its settings
+    # are left at reasonix's defaults rather than carried over as a wall of empty
+    # allowlists.
     bot.enabled = false;
 
     sandbox = {
@@ -421,14 +367,13 @@ let
   }
   // lib.optionalAttrs (plugins != [ ]) { inherit plugins; };
 
-  # The ~/.reasonix-nono copy of `settings` - identical but for one value, which
-  # is the entire reason that home exists. nono's Landlock ruleset grants
-  # /proc/<pid> read-only, and bubblewrap has to write /proc/self/uid_map, so
-  # `bash = "enforce"` cannot start inside a nono session: it fails with "bwrap:
-  # setting up uid map: Permission denied", and reasonix then refuses to run bash
-  # rather than falling back to an unconfined shell. The launcher in
-  # homes/programs/nono.nix points REASONIX_HOME here, which is what leaves plain
-  # `reasonix` with the jail it has always had.
+  # The ~/.reasonix-nono copy of `settings`, identical but for one value, which is
+  # the entire reason that home exists. nono's Landlock ruleset grants /proc/<pid>
+  # read-only and bubblewrap has to write /proc/self/uid_map, so `bash = "enforce"`
+  # cannot start inside a nono session: it fails with "bwrap: setting up uid map:
+  # Permission denied", and reasonix then refuses to run bash rather than falling
+  # back. Pointing REASONIX_HOME here is what leaves plain `reasonix` with the
+  # jail it has always had.
   sandboxed = settings // {
     sandbox = settings.sandbox // {
       bash = "off";
@@ -438,10 +383,8 @@ let
   instructions = pkgs.writeText "REASONIX.md" (aiContext.mkContext { tool = "reasonix"; });
 
   # The global Skill root is also reasonix's profile root, which is why the roles
-  # land beside the skills - see the reasonix renderer in ai-agents.nix.
-  #
-  # Rendered twice, for the two homes: ~/.reasonix for typing `reasonix`, and
-  # ~/.reasonix-nono for `nono-reasonix`, which differs in `sandbox.bash` alone.
+  # land beside the skills - see the reasonix renderer in ai-agents.nix. Rendered
+  # twice, once per home.
   renderHome =
     dir: cfg:
     {
@@ -461,9 +404,9 @@ in
   # store, and reasonix ignores an instruction document whose symlink resolves
   # outside its own home ("rejected instruction document ... outside boundary").
   # A symlink to a file inside ~/.reasonix loads and a store symlink does not -
-  # measured, not assumed. So these are installed as real files instead, at the
-  # same 444 the store would give them, and rewritten on every activation. Both
-  # homes, because "its own home" is now whichever REASONIX_HOME names.
+  # measured, not assumed. So these are installed as real files at the same 444
+  # the store would give them, and rewritten on every activation. Both homes,
+  # because "its own home" is now whichever REASONIX_HOME names.
   #
   # Nothing else here has that problem: the config loads from a store symlink,
   # and so do the skill directories.

@@ -4,11 +4,10 @@
 #
 # Built from GitHub, not PyPI: Codex support is on main but not released yet.
 #
-# The same derivation carries upstream's bootstrap skill, `deep-research`, under
+# The same derivation carries upstream's `deep-research` skill under
 # share/hyperresearch/skill, which homes/programs/ai-skills.nix registers for
-# claude-code, codex and opencode. On first use it runs `hyperresearch install`
-# in the project, which writes the pipeline into that project's .claude/ or
-# .agents/ - never into the generated files under ~/.
+# claude-code, codex and opencode. First use installs the pipeline into the
+# project's .claude/ or .agents/, never into the generated files under ~/.
 {
   lib,
   python3Packages,

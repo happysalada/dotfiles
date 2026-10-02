@@ -1,7 +1,6 @@
-# `scb-check` reports the two SlopCodeBench metrics - verbosity and erosion -
-# for Python, Rust, JavaScript, TypeScript, Zig, Haskell and C++. The paper's own
-# harness shells out to this same CLI (`uvx scb-check==V check --report PATH`),
-# so the numbers here are the published ones rather than a reimplementation.
+# `scb-check` reports the SlopCodeBench verbosity and erosion metrics for Python,
+# Rust, JS, TS, Zig, Haskell and C++. The paper's harness shells out to this same
+# CLI, so the numbers are its published ones rather than a reimplementation.
 {
   ast-grep,
   fetchFromGitHub,
@@ -82,10 +81,9 @@ python3Packages.buildPythonPackage (finalAttrs: {
   # Upstream pins every dependency with `==`; nixpkgs tracks its own versions.
   pythonRelaxDeps = true;
 
-  # ast-grep-cli is a wheel carrying a Rust binary. nixpkgs already ships
-  # ast-grep, so this is dropped and picked up from PATH instead - see the
-  # substitute below, which is also what stops NixOS's setgid `sg` utility being
-  # mistaken for ast-grep's own `sg` alias.
+  # ast-grep-cli is a wheel carrying a Rust binary; nixpkgs already ships
+  # ast-grep, so this is dropped and picked up from PATH. The substitute below
+  # is also what stops NixOS's setgid `sg` being mistaken for ast-grep's alias.
   pythonRemoveDeps = [ "ast-grep-cli" ];
 
   postPatch = ''

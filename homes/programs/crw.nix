@@ -1,20 +1,9 @@
-# One crw engine for the whole machine, instead of one per agent session.
-#
-# `crw-mcp` in embedded mode calls `browser::spawn_all_headless()` before it
-# serves a single request (crates/crw-mcp/src/main.rs:509) and holds the
-# browsers for the process lifetime. Every Claude Code and opencode session
-# starts its own MCP server, so embedded mode means a headless Chromium and a
-# LightPanda resident per session - which, with several `wt` worktrees open at
-# once, multiplies fast.
-#
-# Setting CRW_API_URL flips crw-mcp to proxy mode, which skips the spawn
-# entirely and forwards to the server below. Same tools, same capabilities,
-# one browser pair.
-#
-# `crw serve` owns no browser of its own (crw-cli/src/main.rs:198), so the two
-# renderers are their own units and are handed to it as CDP endpoints. crw
-# resolves each `ws_url` to a browser-level endpoint via /json/version at first
-# use, so a plain host:port is all it wants.
+# One crw engine for the machine, not one per agent session: embedded `crw-mcp`
+# holds a headless Chromium and a LightPanda per process
+# (crates/crw-mcp/src/main.rs:509) and every session starts its own MCP server,
+# so it multiplies across `wt` worktrees - CRW_API_URL flips it to proxy mode.
+# The renderers are their own units handed to `crw serve` as CDP endpoints; it
+# owns no browser (crw-cli/src/main.rs:198) and resolves a plain host:port.
 { pkgs, lib, ... }:
 let
   crw = pkgs.callPackage ../../packages/ai/crw.nix { };
@@ -29,10 +18,9 @@ let
     chrome = 9223;
   };
 
-  # Copied from crw's LIGHTPANDA_EXTRA_BLOCK_CIDRS: the ranges crw_core's URL
-  # safety check rejects that LightPanda's own --block-private-networks group
-  # does not cover. crw applies these when it spawns LightPanda itself; running
-  # it as a unit moves that hardening here.
+  # Copied from crw's LIGHTPANDA_EXTRA_BLOCK_CIDRS: ranges crw_core's URL check
+  # rejects but LightPanda's --block-private-networks does not cover. crw applies
+  # these when spawning LightPanda; as a unit, the hardening lives here.
   blockedCidrs = lib.concatStringsSep "," [
     "0.0.0.0/8"
     "10.0.0.0/8"
@@ -58,8 +46,7 @@ let
   ];
 
   # No [Install]: crw.service's Wants= pulls these in, and PartOf sends its
-  # stop/restart back down. Enabling them separately would just be a second
-  # place for the dependency to drift.
+  # stop/restart back down. Enabling them separately is a second place to drift.
   unit = description: {
     Unit = {
       Description = description;
@@ -68,8 +55,7 @@ let
   };
 in
 {
-  # crw registers itself here rather than in ai-mcp.nix, because the client and
-  # the server have to agree on the endpoint and one file should own it.
+  # Registered here, not ai-mcp.nix: client and server must agree on the endpoint.
   programs.mcp.servers.crw = {
     command = "${crw}/bin/crw-mcp";
     args = [ ];
@@ -100,17 +86,15 @@ in
       };
 
       Service = {
-        # `always`, not `on-failure`: a plain SIGTERM is a clean exit, so
-        # on-failure leaves the engine down and nothing brings it back. That is
-        # not hypothetical - it sat stopped for three days that way, while the
-        # two browsers (SIGKILLed, so "failed") restarted immediately.
+        # `always`, not `on-failure`: a SIGTERM is a clean exit, so on-failure
+        # leaves the engine down and nothing brings it back - it sat stopped for
+        # three days that way, while the SIGKILLed browsers restarted immediately.
         ExecStart = "${lib.getExe crw} serve --host ${host} --port ${toString ports.api}";
         Environment = [
           "CRW_RENDERER__LIGHTPANDA__WS_URL=ws://${host}:${toString ports.lightpanda}/"
           "CRW_RENDERER__CHROME__WS_URL=ws://${host}:${toString ports.chrome}/"
-          # crw's search is nothing but a SearXNG proxy, so this line is what
-          # turns `crw_search` from `search_disabled` into a working tool.
-          # The system instance from modules/searx-local.nix.
+          # crw's search is a SearXNG proxy: this line turns `crw_search` from
+          # `search_disabled` into a working tool (the modules/searx-local.nix one).
           "CRW_SEARCH__SEARCH_BACKEND_URL=http://127.0.0.1:8888"
           # Ollama ignores the key, but fastCRW requires a non-empty value before
           # it enables its LLM-backed extraction routes.
@@ -152,11 +136,9 @@ in
           "--disable-gpu"
           "--disable-dev-shm-usage"
           "--no-first-run"
-          # RuntimeDirectory is tmpfs, so the profile is RAM and is re-fetched
-          # on every restart. None of what Chrome pulls in the background -
-          # Safe Browsing lists, component CRX cache, a TTS engine, on-device
-          # suggest models - is used to render a page. Off, this profile idles
-          # at 2.4M instead of 105M.
+          # RuntimeDirectory is tmpfs, so the profile is RAM, re-fetched per
+          # restart, and none of Chrome's background fetches (Safe Browsing lists,
+          # CRX cache, TTS engine, suggest models) render a page. Off: 2.4M vs 105M.
           "--disable-background-networking"
           "--disable-component-update"
           "--safebrowsing-disable-auto-update"

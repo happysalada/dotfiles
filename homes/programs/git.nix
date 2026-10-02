@@ -1,6 +1,5 @@
 { pkgs }:
-# returns two programs: `delta` was split out of `programs.git.delta` into its
-# own top-level module in home-manager 26.x
+# returns two programs: delta moved to its own top-level module in home-manager 26.x
 {
   git = {
     enable = true;
@@ -31,8 +30,7 @@
       status.submoduleSummary = true;
       submodule.recurse = true;
 
-      # breaks cargo update function for some reason
-      # find out how to do something about it someday
+      # breaks cargo update function for some reason; see
       # https://github.com/rust-lang/cargo/issues/3381
       url = {
         "git@github.com:happysalada" = {
@@ -59,10 +57,10 @@
       merge.conflictStyle = "zdiff3";
 
       credential = {
-        # `store` wrote credentials in PLAINTEXT to ~/.git-credentials.
-        # libsecret talks to gnome-keyring's Secret Service instead.
-        # Note github.com goes over ssh here anyway (see url.insteadOf
-        # above), so this only covers other https remotes.
+        # `store` wrote credentials in PLAINTEXT to ~/.git-credentials; libsecret
+        # talks to gnome-keyring's Secret Service instead. github.com goes over ssh
+        # here anyway (see url.insteadOf above), so this only covers other https
+        # remotes.
         helper = "${pkgs.gitFull}/share/git/contrib/credential/libsecret/git-credential-libsecret";
       };
     };

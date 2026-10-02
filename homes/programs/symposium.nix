@@ -1,13 +1,10 @@
 # Symposium's user config, declared rather than produced by `cargo agents init`.
 #
-# init writes this same file, but it also registers hooks, and at its default
+# init also registers hooks, and at its default
 # `hook-scope = "global"` that means merging entries into ~/.claude/settings.json
-# - a mode-444 store symlink here, so the write fails outright. Pinning the
-# scope to "project" keeps it out of the home directory entirely.
-#
-# The cost of that choice: hooks are per-project, so a new checkout needs one
-# `cargo agents sync` before Symposium activates in it. After that `auto-sync`
-# keeps the installed skills current on its own.
+# - a mode-444 store symlink here, so the write fails. Scope "project" keeps it
+# out of the home dir; the cost is one `cargo agents sync` before Symposium
+# activates in a new checkout.
 { ... }:
 {
   home.file.".symposium/config.toml".text = ''

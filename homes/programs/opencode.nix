@@ -1,19 +1,14 @@
 # opencode - second terminal agent, sharing this box's AI tooling with Claude
-# Code and codex.
+# Code and codex: MCP servers (ai-mcp.nix), instructions (ai-context.nix) and the
+# CLI tools on PATH from packages/ai.nix. Hooks are not shared: `rtk hook` and
+# `icm hook` have no opencode backend (opencode extends via TypeScript plugins, a
+# different event shape), so rtk compression and icm's automatic memory belong to
+# claude-code and codex, and AGENTS.md tells the agent to invoke both by hand.
 #
-# Shared: MCP servers (homes/programs/ai-mcp.nix), instructions
-# (homes/programs/ai-context.nix), and the CLI tools on PATH from packages/ai.nix.
-#
-# Not shared: hooks. `rtk hook` and `icm hook` have no opencode backend
-# (opencode extends via TypeScript plugins, a different event shape), so rtk
-# compression and icm's automatic memory belong to claude-code and codex.
-# AGENTS.md tells the agent to invoke both by hand instead.
-#
-# Auth is manual and outside nix: run `opencode auth login`, pick OpenAI, then
-# "ChatGPT Plus/Pro". That is the same subscription codex signs into, and it is
-# native here - the Anthropic equivalent is not, because opencode dropped the
-# Claude Pro/Max plugins in 1.3.0 after Anthropic prohibited them. Credentials
-# land in ~/.local/share/opencode/auth.json.
+# Auth is manual: `opencode auth login`, pick OpenAI then "ChatGPT Plus/Pro" -
+# the subscription codex signs into, native here; the Anthropic equivalent is
+# not, because opencode dropped the Claude Pro/Max plugins in 1.3.0 after
+# Anthropic prohibited them. Credentials land in ~/.local/share/opencode/auth.json.
 { pkgs, lib, ... }:
 let
   aiContext = import ./ai-context.nix { inherit lib; };
@@ -37,11 +32,9 @@ in
     enableMcpIntegration = true;
 
     settings = {
-      # models.dev ids, and the ChatGPT subscription rather than an API key -
-      # so the same GPT-5.6 family codex.nix picks from. Sol is the flagship;
-      # Terra and Luna stretch the five-hour window much further, so drop down
-      # here when Sol runs out. Run `/models` after logging in to see what the
-      # account is actually offered.
+      # models.dev ids, on the ChatGPT subscription so it is the same GPT-5.6
+      # family codex.nix picks from. Sol is the flagship; drop to Terra/Luna when
+      # its five-hour window runs out. `/models` shows what the account offers.
       model = "openai/gpt-5.6-sol";
       default_agent = "build";
       # Titles and summaries, so they don't cost flagship tokens.
@@ -107,19 +100,16 @@ in
       mode = "system";
     };
 
-    # herdr's TUI plugin. `herdr integration install opencode` writes this key
-    # into this same file, which is a store symlink, so that command fails - see
-    # the note in packages/ai.nix.
+    # herdr's TUI plugin. `herdr integration install opencode` writes into this
+    # store-symlink file, so that command fails - see packages/ai.nix.
     plugins = [ "./herdr-opencode" ];
   };
 
-  # The plugin sources the herdr derivation ships, at the paths its installer
-  # uses. `tui.js` is the entrypoint opencode resolves from the registered V2
-  # directory and it re-exports the session reporter beside it;
-  # plugins/herdr-agent-state.js is the state reporter opencode loads by
-  # directory, and the file whose version marker `herdr integration status`
-  # reads. The V1 registration (tui.jsonc -> ./herdr-tui-session.js) is left
-  # out deliberately: this machine runs V2 only.
+  # The plugin sources the herdr derivation ships, at its installer's paths.
+  # `tui.js` is the V2 entrypoint opencode resolves (and re-exports the session
+  # reporter beside it); plugins/herdr-agent-state.js is the state reporter
+  # loaded by directory, whose version marker `herdr integration status` reads.
+  # V1 (tui.jsonc -> ./herdr-tui-session.js) is left out: this machine is V2 only.
   xdg.configFile."opencode/herdr-opencode/tui.js".source =
     "${pkgs.herdr}/share/herdr/integrations/opencode/tui.js";
   xdg.configFile."opencode/herdr-tui-session.js".source =
