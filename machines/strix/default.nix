@@ -147,15 +147,15 @@
         loadModels = [ "mistral-nemo" ];
       };
 
-      # services.ollaya = {
-      #   enable = true;
-      #   package = pkgs.ollaya.override {
-      #     onnxruntime = pkgs.onnxruntime.override { cudaSupport = true; };
-      #     llama-cpp = pkgs.llama-cpp.override { cudaSupport = true; };
-      #   };
-      #   loadModels = [ "winnow:e4b" ];
-      #   environmentVariables.OLLAYA_DEVICE = "auto";
-      # };
+      services.ollaya = {
+        enable = true;
+        package = pkgs.ollaya.override {
+          onnxruntime = pkgs.onnxruntime.override { cudaSupport = true; };
+          llama-cpp = pkgs.llama-cpp.override { cudaSupport = true; };
+        };
+        loadModels = [ "winnow:e4b" ];
+        settings.OLLAYA_DEVICE = "auto";
+      };
 
       # asus: rgb off + battery charge limit
       services.asusd.enable = true;
@@ -381,9 +381,10 @@
       nix = {
         package = pkgs.nixVersions.latest;
         settings = {
-          # Four builds may each use all 32 threads, oversubscribing CPU and memory.
-          cores = 0;
-          max-jobs = 4;
+          # cores = 0 gave each cuda build all 32 threads - one cicc per .cu at
+          # 1-2GB - and two such jobs at once (llama-cpp + onnxruntime) took 33GB.
+          cores = 8;
+          max-jobs = 2;
           auto-optimise-store = true;
           download-buffer-size = 104857600; # 100 Mb
           experimental-features = [
@@ -727,6 +728,7 @@
             ++ (import ../../packages/ai.nix { inherit pkgs; })
             ++ (import ../../packages/linux_cli_set.nix { inherit pkgs; })
             ++ (import ../../packages/gui.nix { inherit pkgs; })
+            ++ (import ../../packages/office.nix { inherit pkgs; })
             ++ (import ../../packages/package_managers.nix { inherit pkgs; })
             ++ (import ../../packages/dev/rust.nix { inherit pkgs; })
             # rustc/cargo/clippy/rustfmt/rust-analyzer at stable latest, plus the
