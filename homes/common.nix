@@ -173,6 +173,8 @@
 
   yazi = import ./programs/yazi.nix { inherit pkgs; };
 
+  bottom = import ./programs/bottom.nix { };
+
   jujutsu = {
     enable = true;
     settings = {
@@ -231,6 +233,11 @@
 
   mise = {
     enable = true;
+    # home-manager renders mise's nushell activation in a build, where mise bakes
+    # /homeless-shelter and stdenv's PATH into it: every nushell then ran without
+    # the per-user profile, so atuin and zoxide were not on PATH.
+    # programs/nushell.nix renders it with real values instead.
+    enableNushellIntegration = false;
     globalConfig = {
       tools = {
         "ubi:tigerbeetle/tigerbeetle" = "latest";

@@ -50,6 +50,17 @@
     # rust
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Logitech HID++ control for the MX Master 3S. Upstream owns the NixOS
+    # module that installs the package, its udev rules and the agent unit, so
+    # the module is the reason for the input - `pkgs.openlogi` in nixpkgs is
+    # a few releases behind what these settings are written against. Both
+    # follows are load-bearing: it builds with rust-overlay's stable.latest
+    # because nixpkgs' rustc lags the workspace's rust-version, and its own
+    # nixpkgs would otherwise be a second evaluation of the same tree.
+    openlogi.url = "github:AprilNEA/OpenLogi";
+    openlogi.inputs.nixpkgs.follows = "nixpkgs";
+    openlogi.inputs.rust-overlay.follows = "rust-overlay";
   };
 
   outputs =
@@ -64,6 +75,7 @@
       rust-overlay,
       nix-index-database,
       llm-agents,
+      openlogi,
       ...
     }:
     {
@@ -80,6 +92,7 @@
             rust-overlay
             nix-index-database
             llm-agents
+            openlogi
             ;
         };
       };

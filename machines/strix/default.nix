@@ -5,6 +5,7 @@
   rust-overlay,
   nix-index-database,
   llm-agents,
+  openlogi,
 }:
 [
   (
@@ -30,6 +31,12 @@
         # prefect's server on 127.0.0.1:4200 - the UI and run history for
         # the flows in homes/programs/starred-digest.
         ../../modules/prefect-local.nix
+
+        # Logitech HID++ control for the MX Master 3S. The module is the point
+        # of the flake input: it installs the package, the udev rules that
+        # grant the desktop user uaccess on the mouse's /dev/hidraw, uinput and
+        # event node (so no `input` group is involved), and the agent unit.
+        openlogi.nixosModules.default
 
         # modules/kanata.nix is deliberately NOT imported: its chord processing
         # reorders ordinary typing. The header of that file has the detail.
@@ -245,6 +252,20 @@
       # Without this stanza it rejects every password and the only way out of
       # the lock screen is a VT switch.
       security.pam.services.swaylock = { };
+
+      # Remap the MX Master 3S over HID++. launchAtLogin would put the agent on
+      # graphical-session.target, which GNOME reaches too, so it is off here and
+      # the agent is started by niri.service instead - the same treatment the
+      # bar and the idle daemon get in homes/niri/. partOf is what stops it
+      # again on logout rather than leaving it to the user manager's linger.
+      programs.openlogi = {
+        enable = true;
+        launchAtLogin = false;
+      };
+      systemd.user.services.openlogi-agent = {
+        wantedBy = [ "niri.service" ];
+        partOf = [ "niri.service" ];
+      };
 
       # Handy (packages/gui.nix) types by injecting below the compositor, which
       # is the only path that reaches native Wayland windows here - XTest
@@ -497,6 +518,7 @@
               opencode2 = lm.opencode2;
               rtk = lm.rtk;
               icm = lm.icm;
+              funes = lm.funes;
               nono = lm.nono;
               terminal-browser = lm.terminal-browser;
               openresearch = lm.openresearch;
@@ -504,6 +526,7 @@
               ccusage = lm.ccusage;
               codegraph = lm.codegraph;
               jscpd = lm.jscpd;
+              ck = lm.ck;
               semble = lm.semble;
               plannotator-tui = lm.plannotator-tui;
               agent-browser = lm.agent-browser;
@@ -538,22 +561,20 @@
               };
 
               # llm-agents wraps reasonix with codegraph, ripgrep and bubblewrap
-              # on PATH but leaves the environment alone. Two defaults go on top:
+              # on PATH but leaves the environment alone. Two things go on top,
+              # both in reasonix.nu, which is what stands in front of the binary:
               #
               # REASONIX_TELEMETRY=0 is this machine's standing choice - see
               # homes/programs/ai-context.nix for the other tools it is set for.
               #
-              # TERMUX_VERSION=1 is not about Termux. reasonix has exactly one
-              # renderer that stays out of the alternate screen and appends to the
-              # terminal's own scrollback, and that is the one it picks when it
-              # detects Termux. Unset, a zellij pane running reasonix has no
-              # scrollback at all: the pane keeps alt-screen content only, so
-              # Ctrl+S and the wheel stop at the top of the current frame. Set,
-              # reasonix renders inline and leaves the mouse to the pane. 1.39.6
-              # still has no flag for it - checked, `reasonix --help` offers
-              # neither that nor a [ui] key - and `TERMUX_VERSION= reasonix` opts
-              # a single run back out. Delete this when reasonix grows the real
-              # switch (codex's --no-alt-screen is the shape to ask for).
+              # The other is the renderer. reasonix has exactly one that stays
+              # out of the alternate screen and appends to the terminal's own
+              # scrollback, and since 2.28.0 `reasonix tui --inline` is the only
+              # way to ask for it: the Termux sniff that used to select it is
+              # gone from the binary, so the TERMUX_VERSION this wrapper set for
+              # the same purpose went inert on that bump. Unasked, a zellij pane
+              # running reasonix keeps alt-screen content only, and Ctrl+S and
+              # the wheel stop at the top of the current frame.
               #
               # Wrapped as a symlinkJoin rather than an overrideAttrs so the Go
               # binary stays the one llm-agents built, which substitutes; an
@@ -561,11 +582,11 @@
               reasonix = final.symlinkJoin {
                 name = "reasonix-${lm.reasonix.version}";
                 paths = [ lm.reasonix ];
-                nativeBuildInputs = [ final.makeBinaryWrapper ];
                 postBuild = ''
-                  wrapProgram "$out/bin/reasonix" \
-                    --set-default REASONIX_TELEMETRY 0 \
-                    --set-default TERMUX_VERSION 1
+                  # reasonix-bin is llm-agents' own entry point, left beside the
+                  # router, which finds it by its own directory.
+                  mv "$out/bin/reasonix" "$out/bin/reasonix-bin"
+                  install -m 755 ${./reasonix.nu} "$out/bin/reasonix"
                 '';
                 inherit (lm.reasonix) version meta;
               };
@@ -702,6 +723,12 @@
           # The ccusage prompt segment. Separate from homes/common.nix's starship
           # block because it needs a package only strix has.
           ../../homes/programs/ccusage.nix
+          # Seeds ~/.config/openlogi/config.toml for the MX Master 3S, once.
+          ../../homes/programs/openlogi.nix
+          # ~/.config/terminal-browser/settings.json, which no upstream module
+          # writes, so the render settings it would otherwise take by default
+          # are declared there instead.
+          ../../homes/programs/terminal-browser.nix
         ];
 
         home = {

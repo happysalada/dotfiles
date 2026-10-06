@@ -35,6 +35,24 @@ let
     export HOME="$PWD"
     ${config.programs.intelli-shell.package}/bin/intelli-shell init nushell > $out
   '';
+
+  # mise's activation prints the environment it is generated in: $HOME decides
+  # the shims dir it prepends, $PATH decides what it restores later. home-manager
+  # generates it inside a build, where those are /homeless-shelter and stdenv's
+  # PATH - every nushell then ran without the per-user profile, and with it atuin
+  # and zoxide. common.nix turns that integration off; same command, real values.
+  miseInit = pkgs.runCommand "mise-init.nu" { } ''
+    # The login PATH from /etc/set-environment, in its order and complete. mise
+    # records this list and restores it on every prompt, so anything left out is
+    # missing from every nushell - /run/wrappers/bin above all, where the setuid
+    # sudo lives, and without it sudo resolves to the non-setuid copy in the
+    # system path and refuses to run.
+    export PATH=/run/wrappers/bin:${config.home.homeDirectory}/.nix-profile/bin:/nix/profile/bin:${config.home.homeDirectory}/.local/state/nix/profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin
+    # mise warns it cannot create ~/.local/share/mise/migrations under a $HOME
+    # that is read-only here; the activation it prints is the same either way.
+    export HOME=${config.home.homeDirectory}
+    ${config.programs.mise.package}/bin/mise activate nu > $out
+  '';
 in
 {
   enable = true;
@@ -149,6 +167,10 @@ in
 
   extraConfig = ''
     ${useLines}
+
+    # mise's activation is built in miseInit above rather than by home-manager,
+    # whose copy bakes the build sandbox's HOME and PATH.
+    source ${miseInit}
 
     # keybindings and menus are lists: append, never assign, or nushell's
     # defaults (and atuin's ctrl-r, sourced later) are lost

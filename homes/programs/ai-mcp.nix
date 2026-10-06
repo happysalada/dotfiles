@@ -7,11 +7,6 @@
 # appears in both on the next rebuild. crw.nix registers its own entry, because
 # that one must name the port its systemd unit listens on.
 { pkgs, lib, ... }:
-let
-  # Same callPackage call as packages/ai.nix, so it is the same store path -
-  # listing it twice does not duplicate anything.
-  funes = pkgs.callPackage ../../packages/ai/funes.nix { };
-in
 {
   programs.mcp = {
     enable = true;
@@ -24,7 +19,7 @@ in
       # Local servers use absolute store paths, so they do not depend on PATH.
       funes = {
         # No memory argument: recall reads the local memory, never the Hub.
-        command = lib.getExe funes;
+        command = lib.getExe pkgs.funes;
         args = [ "mcp" ];
       };
 
@@ -33,15 +28,21 @@ in
         args = [ ];
       };
 
-      # Semantic code search - the one search that answers a question rather than
-      # matching a string: fff is fuzzy, ripgrep lexical, ast-grep structural.
-      # `semble-mcp` is the entry point llm-agents exposes beside the `semble` CLI,
-      # so a store path needs nothing from PATH and declaring it covers all four
-      # agents. Not via `semble install`, which writes this same entry into each
-      # agent's generated config; first use caches a small embedding model.
-      semble = {
-        command = lib.getExe' pkgs.semble "semble-mcp";
-        args = [ ];
+      # Semantic code search - the one search that answers a question rather
+      # than matching a string: fff is fuzzy, ripgrep lexical, ast-grep
+      # structural. `--serve` speaks MCP over stdio and captures its cwd at
+      # launch as the sandbox root, so each agent searches the repo it was
+      # started in; CK_MCP_ALLOWED_ROOTS is the only way to widen that. It takes
+      # the slot semble held, whose `install` was the hazard - here it is the
+      # README's `claude mcp add ck-search`, which writes the same entry into a
+      # ~/.claude/settings.json this repo generates.
+      #
+      # First use downloads bge-small to ~/.cache/ck/models, and the agent
+      # sandboxes leave $HOME read-only, so warm that cache from a plain shell
+      # before the first jailed session or the embedder fails to start.
+      ck = {
+        command = lib.getExe pkgs.ck;
+        args = [ "--serve" ];
       };
     };
   };

@@ -52,15 +52,6 @@ with pkgs;
 
   # ---- not in nixpkgs, built from packages/ai/ ----
 
-  (callPackage ./ai/funes.nix { }) # memory of past agent sessions, MCP server
-  # is `funes mcp` (registered in homes/programs/ai-mcp.nix). Local Lance index
-  # plus pinned embedding/reranking models it downloads on first run.
-  #
-  # Do NOT run `funes add <agent>`, `funes update` or the curl installer - the
-  # first writes hooks and MCP entries into the generated agent configs, the
-  # others target the read-only store. And never `funes push`: it publishes
-  # the memory to the Hugging Face Hub.
-
   (callPackage ./ai/symposium.nix { }) # `cargo agents`: matches the workspace
   # dependency graph against plugin manifests and installs the skills, hooks and
   # MCP servers those crates ship for their own version. Rust-specific, and the
@@ -201,17 +192,46 @@ with pkgs;
   # usage block (notional cost and time until it resets) as a starship segment.
   # `ccusage daily --json -O` is the cross-agent report to run by hand.
 
+  ck # semantic + hybrid grep: `ck --sem` finds code by meaning, `ck -n` is
+  # drop-in ripgrep, and `ck --hybrid` fuses the two with reciprocal rank
+  # fusion - the fusion is the part nothing else here does. `ck --tui` is also
+  # the only interactive search UI in this file: fff is MCP-only, and semble,
+  # codegraph and graphify are one-shot CLIs.
+  #
+  # Registered as an MCP server in homes/programs/ai-mcp.nix, in the
+  # semantic-search slot semble used to hold.
+  #
+  # Four things 0.7.11 does that surprise: it AST-chunks only 14 languages (no
+  # nix, no nushell, so a nix repo falls back to plain text); the index is
+  # `<search-root>/.ck/` and is NOT relocatable - CK_INDEX_DIR does nothing - so
+  # a repo wants that path ignored and a read-only root fails outright; there is
+  # no execution provider at all (upstream #77, GPU unused); and it hardcodes one
+  # intra-op thread per core, which thrashes on a busy box - pinned to 4 cores
+  # it ran 2.7x faster than with 32. First use downloads bge-small (~128 MiB)
+  # to ~/.cache/ck/models.
+
   semble # semantic code search - meaning, not lexical. `semble search "<query>"`
   # returns ranked snippets, and it indexes an average repo in about half a
-  # second on CPU with no API key. The gap it fills: fff above is fuzzy and
-  # frequency-ranked, ripgrep is lexical, ast-grep is structural, and none of
-  # them answer "how is authentication handled?".
+  # second on CPU with no API key.
   #
-  # Registered as an MCP server for every agent in homes/programs/ai-mcp.nix.
-  # First use downloads a small embedding model from Hugging Face and caches it;
-  # after that it is offline. Do NOT run `semble install`: it writes MCP config
-  # and sub-agent files for each agent it finds, which ai-mcp.nix already
-  # declares.
+  # Kept but now unwired: ck above took its MCP slot, and ck covers the same
+  # ground with hybrid and regex modes on top. Nothing declares semble any more,
+  # so it is a 570 MiB CLI with no caller - drop it here and the overlay binding
+  # in machines/strix/default.nix if ck holds up. Do NOT run `semble install`: it
+  # writes MCP config and sub-agent files for each agent it finds.
+
+  funes # memory of past agent sessions: a local Lance index plus pinned
+  # embedding/reranking models, exposed as `recall`/`get` over MCP from
+  # homes/programs/ai-mcp.nix. The semantic half of the pair with `icm` above,
+  # which is keyed and cheap.
+  #
+  # llm-agents carries the AVX-512 VNNI patch lance needs, so nothing here swaps
+  # the rust toolchain in any more.
+  #
+  # Do NOT run `funes add <agent>`, `funes update` or the curl installer: the
+  # first writes hooks and MCP entries into agent config generated here, the
+  # others target the read-only store. Never `funes push` - it publishes the
+  # memory to the Hugging Face Hub.
 
   jscpd # copy-paste detection. Overlaps scb-check's `clone_loc`, but where that
   # is one aggregate number jscpd names the pairs: each clone carries first and
