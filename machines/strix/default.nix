@@ -10,6 +10,8 @@
 [
   (
     {
+      config,
+      lib,
       pkgs,
       ...
     }:
@@ -485,26 +487,121 @@
         operation = "switch";
         dates = "04:30";
 
+        # Off, as nix-gc's is above: a missed night must not become a catch-up
+        # activation at the next boot. Skipping one costs nothing here, since the
+        # next run resolves the newest inputs anyway.
+        persistent = false;
+
         # --upgrade drives nix-channel and nothing else, which it warns about for
         # a flake: the bump is the preStart below.
         upgrade = false;
       };
 
+      # The job writes flake.lock in my working tree, so it runs as me, and only
+      # the flip is elevated. No narrower grant exists to hand out: the flip is
+      # "choose what root boots into", and nixos-rebuild re-execs into the
+      # nixos-rebuild built from this flake before it ever gets there, so every
+      # rule that could match is root-equivalent. Binaries rather than argument
+      # lists, so the same grant covers the nightly run and my own switch
+      # instead of going stale the next time either flag set changes.
+      security.sudo.extraRules = [
+        {
+          users = [ "yt" ];
+          commands = [
+            # as my shell resolves it, and as the unit's ExecStart names it.
+            {
+              command = "/run/current-system/sw/bin/nixos-rebuild";
+              options = [ "NOPASSWD" ];
+            }
+            {
+              command = "/nix/store/*-nixos-rebuild-ng-*/bin/nixos-rebuild";
+              options = [ "NOPASSWD" ];
+            }
+          ];
+        }
+      ];
+
       systemd.services.nixos-upgrade = {
-        # Left in the tree for review, never committed. Runs as root, so
-        # flake.lock comes back root-owned.
-        preStart = "nix flake update --flake /home/yt/dotfiles";
+        # sudo is a setuid wrapper, and the module's PATH has neither it nor
+        # /run/wrappers on it.
+        path = [ "/run/wrappers" ];
+
+        # mkForce: the module's own script is this one command, minus the sudo.
+        # `-n` so a rule that stops matching fails loudly instead of prompting
+        # into a tty that is not there.
+        script = lib.mkForce ''
+          sudo -n ${config.system.build.nixos-rebuild}/bin/nixos-rebuild \
+            ${config.system.autoUpgrade.operation} \
+            ${toString config.system.autoUpgrade.flags}
+        '';
+
+        # A bump that never built must not be left in the tree - that lock is what
+        # my own `n switch` reads, and one broken night would leave me unable to
+        # build at all. The snapshot goes down before the bump, and one still here
+        # at the start of a run means an earlier run was cut short before it could
+        # put its bump back, so that gets undone first.
+        preStart = ''
+          if [ -f /var/lib/nixos-upgrade/flake.lock.prev ]; then
+            cp -p /var/lib/nixos-upgrade/flake.lock.prev /home/yt/dotfiles/flake.lock
+          fi
+          cp -p /home/yt/dotfiles/flake.lock /var/lib/nixos-upgrade/flake.lock.prev
+          nix flake update --flake /home/yt/dotfiles
+        '';
+
+        # Built and flipped, so the bump stands and the snapshot is spent.
+        postStart = "rm -f /var/lib/nixos-upgrade/flake.lock.prev";
+
+        # Stop-post commands run whether the run succeeded or not, and
+        # $SERVICE_RESULT is what tells the two apart - hence the early exit rather
+        # than an unconditional restore. The failed attempt is kept for the diff.
+        postStop = ''
+          if [ "$SERVICE_RESULT" = success ]; then
+            exit 0
+          fi
+          cp -p /home/yt/dotfiles/flake.lock /var/lib/nixos-upgrade/flake.lock.failed
+          cp -p /var/lib/nixos-upgrade/flake.lock.prev /home/yt/dotfiles/flake.lock
+          rm -f /var/lib/nixos-upgrade/flake.lock.prev
+          echo "run failed ($SERVICE_RESULT): flake.lock reverted, attempt kept in /var/lib/nixos-upgrade/flake.lock.failed"
+        '';
 
         # The wake is unconditional, the work is not: on battery the bump, the
         # build and the activation are all skipped, so a night in a bag costs the
         # wake and not a cuda build. Conditions are [Unit] keys, and they run
         # before the preStart, so the lock is left alone too.
-        unitConfig.ConditionACPower = true;
+        #
+        # StartLimit is what bounds the retry below: something that is not the
+        # network - a config that stops evaluating - must not be retried all
+        # night with a cuda build on every attempt.
+        unitConfig = {
+          ConditionACPower = true;
+          StartLimitIntervalSec = 3600;
+          StartLimitBurst = 10;
+        };
+
+        # The bump is mine, so that half has to look in my home; the elevated
+        # half gets root's environment from sudo either way.
+        environment.HOME = lib.mkForce "/home/yt";
 
         serviceConfig = {
-          # The module's Persistent default stands, unlike nix-gc's, so a night
-          # the laptop was off retries at the next boot - with `switch` that is a
-          # live activation mid-session. Idle CPU covers the build, not a restart.
+          # 04:30 lands about a second after resume, and nix said so itself on the
+          # one night this ran: "you don't have Internet access", half a second
+          # before the error. Nothing here waits for a link - network-online.target
+          # has no provider, and would not re-run on resume anyway - so the retry
+          # is the barrier. The whole unit retries rather than the bump alone, so a
+          # drop after the bump is covered too; a run that gets far enough to build
+          # resumes from what it already realised.
+          Restart = "on-failure";
+          RestartSec = "30s";
+
+          # Where the lock snapshots below live. The scripts name this path
+          # literally rather than through $STATE_DIRECTORY, so nothing depends on
+          # what environment stop-post commands are handed.
+          StateDirectory = "nixos-upgrade";
+
+          User = "yt";
+
+          # The build yields to whatever is awake at 04:30; the activation that
+          # follows runs in nixos-rebuild's own transient unit and does not.
           CPUSchedulingPolicy = "idle";
           IOSchedulingClass = "idle";
         };
@@ -515,6 +612,16 @@
       # land together. Nothing arms a sleep afterwards: the machine stays up
       # until something else suspends it.
       systemd.timers.nixos-upgrade.timerConfig.WakeSystem = true;
+
+      # Root runs the build above and the checkout is mine, so libgit2 refused to
+      # open the work tree at all ("not owned by current user", its
+      # post-CVE-2022-24765 check) and the nightly run died right there. Root
+      # cannot own the repo, so allowlist the path - the system gitconfig is what
+      # libgit2 reads safe.directory from.
+      environment.etc."gitconfig".text = ''
+        [safe]
+          directory = /home/yt/dotfiles
+      '';
 
       # Without a ceiling the OOM killer takes the desktop instead: user@.service
       # carries OOMScoreAdjust=100 while nixbld sits at 0, so a 12 GB rustc outranks
@@ -574,17 +681,19 @@
               ccusage = lm.ccusage;
               codegraph = lm.codegraph;
               jscpd = lm.jscpd;
-              # ck is wrapped, not taken as-is, because it opens ~49 threads here
-              # whatever the core count and spins them through an index. Nothing
-              # configures that: no ck flag, and no env var either binary reads -
-              # OMP_NUM_THREADS, ORT_NUM_THREADS, RAYON_NUM_THREADS and
-              # TOKIO_WORKER_THREADS appear in neither ck nor libonnxruntime, and
-              # this onnxruntime is not an OpenMP build, so OMP could never have
-              # worked. Affinity does not resize the pool, it starves it, which
-              # turns out to be enough: on the dotfiles repo 32 CPUs burned 6m34s
-              # to finish in 13.1s, and 16 burned 3m27s to finish in 13.2s. The
-              # cost is that the 49 threads are confined to 0-15 rather than
-              # merely capped, so widen the range for a large one-off index.
+              # ck is wrapped because it opens ~50 threads here - 16 named
+              # tokio-rt-worker plus 33 unnamed - and spins them through an
+              # index. Nothing configures that, and the reason sits one level
+              # below ck: ck passes no thread count to fastembed (its InitOptions
+              # is built with model, cache dir and max_length only), and
+              # fastembed's own InitOptions has no thread field to pass - it
+              # hardcodes available_parallelism() in text_embedding/impl.rs. So
+              # no ck flag, no env var (the only two named ones are
+              # CK_MCP_ALLOWED_ROOTS and CK_CHUNK_QUERY_DIR) and no config file
+              # other than ck/tui.json can reach it. Confining the process is
+              # what works: on the dotfiles repo 32 CPUs burned 6m34s to finish
+              # in 13.1s, and 16 burned 3m27s to finish in 13.2s. The cost is
+              # that the threads are confined to 0-15 rather than merely capped.
               ck = final.writeShellScriptBin "ck" ''
                 exec ${final.util-linux}/bin/taskset -c 0-15 ${lm.ck}/bin/ck "$@"
               '';
