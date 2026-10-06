@@ -195,30 +195,26 @@ with pkgs;
   ck # semantic + hybrid grep: `ck --sem` finds code by meaning, `ck -n` is
   # drop-in ripgrep, and `ck --hybrid` fuses the two with reciprocal rank
   # fusion - the fusion is the part nothing else here does. `ck --tui` is also
-  # the only interactive search UI in this file: fff is MCP-only, and semble,
-  # codegraph and graphify are one-shot CLIs.
+  # the only interactive search UI in this file: fff is MCP-only, and codegraph
+  # and graphify are one-shot CLIs.
   #
-  # Registered as an MCP server in homes/programs/ai-mcp.nix, in the
-  # semantic-search slot semble used to hold.
+  # Registered as an MCP server in homes/programs/ai-mcp.nix, where it holds the
+  # semantic-search slot.
   #
-  # Four things 0.7.11 does that surprise: it AST-chunks only 14 languages (no
-  # nix, no nushell, so a nix repo falls back to plain text); the index is
+  # Things 0.7.11 does that surprise: it AST-chunks only 14 languages (no nix,
+  # no nushell, so a nix repo falls back to plain text); the index is
   # `<search-root>/.ck/` and is NOT relocatable - CK_INDEX_DIR does nothing - so
   # a repo wants that path ignored and a read-only root fails outright; there is
-  # no execution provider at all (upstream #77, GPU unused); and it hardcodes one
-  # intra-op thread per core, which thrashes on a busy box - pinned to 4 cores
-  # it ran 2.7x faster than with 32. First use downloads bge-small (~128 MiB)
-  # to ~/.cache/ck/models.
-
-  semble # semantic code search - meaning, not lexical. `semble search "<query>"`
-  # returns ranked snippets, and it indexes an average repo in about half a
-  # second on CPU with no API key.
+  # no execution provider at all (upstream #77, GPU unused); and it sizes its ort
+  # thread pool from the core count, which is why the overlay wraps it in
+  # `taskset` rather than leaving it to take all 32 here.
   #
-  # Kept but now unwired: ck above took its MCP slot, and ck covers the same
-  # ground with hybrid and regex modes on top. Nothing declares semble any more,
-  # so it is a 570 MiB CLI with no caller - drop it here and the overlay binding
-  # in machines/strix/default.nix if ck holds up. Do NOT run `semble install`: it
-  # writes MCP config and sub-agent files for each agent it finds.
+  # Cost measured on this machine: first index of the 56-file `homes/` tree, 13s
+  # and 6m34s of CPU; the same query again, 1.5s. bge-small is the speed pick -
+  # the docs' words are "trades some accuracy for speed", 400-token chunks,
+  # ~128 MiB - and `--switch-model jina-code|nomic-v1.5` re-indexes at 1024-token
+  # chunks for ~500 MiB. No custom model or external-embedding-API path exists
+  # yet; `--rerank` is the cheaper quality lever if bge-small proves too blunt.
 
   funes # memory of past agent sessions: a local Lance index plus pinned
   # embedding/reranking models, exposed as `recall`/`get` over MCP from

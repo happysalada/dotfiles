@@ -468,6 +468,54 @@
         IOSchedulingClass = "idle";
       };
 
+      # RTC alarm, so the 03:15 GC runs with the lid shut rather than at whatever
+      # resume - a suspended laptop fires the missed 03:15 at the 04:30 wake below
+      # anyway, so this buys the hour and costs a second wake, nothing
+      # re-suspending in between. A machine off at 03:15 still skips it; no alarm
+      # can help there.
+      systemd.timers.nix-gc.timerConfig.WakeSystem = true;
+
+      # Nightly bump, build and activation - nothing to wait for during the day.
+      # `switch`: it takes effect in the running system rather than at the next
+      # boot, restarting whatever changed under whatever is awake at 04:30, and
+      # `nixos-rebuild switch --rollback` undoes it.
+      system.autoUpgrade = {
+        enable = true;
+        flake = "/home/yt/dotfiles#strix";
+        operation = "switch";
+        dates = "04:30";
+
+        # --upgrade drives nix-channel and nothing else, which it warns about for
+        # a flake: the bump is the preStart below.
+        upgrade = false;
+      };
+
+      systemd.services.nixos-upgrade = {
+        # Left in the tree for review, never committed. Runs as root, so
+        # flake.lock comes back root-owned.
+        preStart = "nix flake update --flake /home/yt/dotfiles";
+
+        # The wake is unconditional, the work is not: on battery the bump, the
+        # build and the activation are all skipped, so a night in a bag costs the
+        # wake and not a cuda build. Conditions are [Unit] keys, and they run
+        # before the preStart, so the lock is left alone too.
+        unitConfig.ConditionACPower = true;
+
+        serviceConfig = {
+          # The module's Persistent default stands, unlike nix-gc's, so a night
+          # the laptop was off retries at the next boot - with `switch` that is a
+          # live activation mid-session. Idle CPU covers the build, not a restart.
+          CPUSchedulingPolicy = "idle";
+          IOSchedulingClass = "idle";
+        };
+      };
+
+      # RTC alarm, so 04:30 happens with the lid shut instead of at the next
+      # resume - which also un-skips nix-gc's 03:15, so the night's GC and build
+      # land together. Nothing arms a sleep afterwards: the machine stays up
+      # until something else suspends it.
+      systemd.timers.nixos-upgrade.timerConfig.WakeSystem = true;
+
       # Without a ceiling the OOM killer takes the desktop instead: user@.service
       # carries OOMScoreAdjust=100 while nixbld sits at 0, so a 12 GB rustc outranks
       # every session process. Kill inside the build cgroup instead.
@@ -526,14 +574,26 @@
               ccusage = lm.ccusage;
               codegraph = lm.codegraph;
               jscpd = lm.jscpd;
-              ck = lm.ck;
-              semble = lm.semble;
+              # ck is wrapped, not taken as-is, because it opens ~49 threads here
+              # whatever the core count and spins them through an index. Nothing
+              # configures that: no ck flag, and no env var either binary reads -
+              # OMP_NUM_THREADS, ORT_NUM_THREADS, RAYON_NUM_THREADS and
+              # TOKIO_WORKER_THREADS appear in neither ck nor libonnxruntime, and
+              # this onnxruntime is not an OpenMP build, so OMP could never have
+              # worked. Affinity does not resize the pool, it starves it, which
+              # turns out to be enough: on the dotfiles repo 32 CPUs burned 6m34s
+              # to finish in 13.1s, and 16 burned 3m27s to finish in 13.2s. The
+              # cost is that the 49 threads are confined to 0-15 rather than
+              # merely capped, so widen the range for a large one-off index.
+              ck = final.writeShellScriptBin "ck" ''
+                exec ${final.util-linux}/bin/taskset -c 0-15 ${lm.ck}/bin/ck "$@"
+              '';
               plannotator-tui = lm.plannotator-tui;
               agent-browser = lm.agent-browser;
               handy = lm.handy;
 
-              # llm-agents' herdr, relinked with lld - the one binding in this
-              # block that is not their derivation untouched. Theirs does not link
+              # llm-agents' herdr, relinked with lld - the one binding here that
+              # is rebuilt rather than merely repackaged. Theirs does not link
               # on this machine: rustc passes `-Wl,--eh-frame-hdr`, and ld.bfd then
               # rejects the FDEs in the vendored zig-built libghostty-vt with
               # ".eh_frame_hdr refers to overlapping FDEs". mold gets past that and
@@ -553,7 +613,14 @@
               opencode = final.symlinkJoin {
                 name = "opencode-${lm.opencode2.version}";
                 paths = [ lm.opencode2 ];
-                postBuild = ''ln -s opencode2 "$out/bin/opencode"'';
+                # The link has to be absolute because the second line removes
+                # its target: symlinkJoin links every file of the input, so
+                # llm-agents' `opencode2` name comes along and would sit on PATH
+                # next to this one. Nothing here asks for that name.
+                postBuild = ''
+                  ln -s ${lm.opencode2}/bin/opencode2 "$out/bin/opencode"
+                  rm "$out/bin/opencode2"
+                '';
                 inherit (lm.opencode2) version;
                 meta = lm.opencode2.meta // {
                   mainProgram = "opencode";

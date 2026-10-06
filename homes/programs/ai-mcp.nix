@@ -32,10 +32,9 @@
       # than matching a string: fff is fuzzy, ripgrep lexical, ast-grep
       # structural. `--serve` speaks MCP over stdio and captures its cwd at
       # launch as the sandbox root, so each agent searches the repo it was
-      # started in; CK_MCP_ALLOWED_ROOTS is the only way to widen that. It takes
-      # the slot semble held, whose `install` was the hazard - here it is the
-      # README's `claude mcp add ck-search`, which writes the same entry into a
-      # ~/.claude/settings.json this repo generates.
+      # started in; CK_MCP_ALLOWED_ROOTS is the only way to widen that. The
+      # README's `claude mcp add ck-search` is the do-not-run here: it writes
+      # this same entry into a ~/.claude/settings.json the repo generates.
       #
       # First use downloads bge-small to ~/.cache/ck/models, and the agent
       # sandboxes leave $HOME read-only, so warm that cache from a plain shell
