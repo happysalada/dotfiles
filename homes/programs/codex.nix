@@ -32,15 +32,30 @@ let
   # Subagent roles, shared with claude-code and opencode.
   aiAgents = import ./ai-agents.nix { inherit lib pkgs; };
 
+  # The SessionStart hooks, each with the timeout codex has to see. One list
+  # feeds both hooks.json and the hashes below, because codex hashes the
+  # *normalized* hook: a timeout declared here but left out of the file is a
+  # different hook, and the file's entry silently keeps codex's 600s default.
+  sessionStartHooks = [
+    {
+      command = "${icm} hook start";
+      timeout = 600;
+    }
+    {
+      command = herdrCodexCommand;
+      timeout = 10;
+    }
+  ];
+
   # One matcher-less hook entry (fires on every event of its kind). Codex reuses
   # Claude Code's event names and JSON shape, which is why icm needs no
   # per-tool wiring beyond this.
-  cmd = command: [
+  cmd = { command, timeout }: [
     {
       hooks = [
         {
           type = "command";
-          inherit command;
+          inherit command timeout;
         }
       ];
     }
@@ -53,7 +68,7 @@ let
     {
       event,
       command,
-      timeout ? 600,
+      timeout,
       groupIndex ? 0,
     }:
     {
@@ -117,28 +132,29 @@ in
       };
 
       # Codex otherwise tries to persist this choice into the generated,
-      # read-only config.toml and asks again on the next launch.
-      projects."/home/yt/dotfiles".trust_level = "trusted";
+      # read-only config.toml and asks again on the next launch - or, in the
+      # agents view, fails the write outright and reports it as an error.
+      projects = {
+        "/home/yt/dev/agent-run".trust_level = "trusted";
+        "/home/yt/dev/commonage".trust_level = "trusted";
+        "/home/yt/dev/stound".trust_level = "trusted";
+        "/home/yt/dotfiles".trust_level = "trusted";
+      };
 
       # `/hooks` cannot persist trust into the read-only config.toml. These
       # hashes admit exactly the hooks declared below and follow icm upgrades.
-      hooks.state = builtins.listToAttrs [
-        (trustedHook {
-          event = "session_start";
-          command = "${icm} hook start";
-        })
-
-        # herdr's, as the second group in the same event - hence :1:0, and the
-        # 10s timeout the herdr installer uses. Without this hash codex reports
-        # the hook as untrusted and never runs it, and the prompt that would
-        # record trust cannot write this file.
-        (trustedHook {
-          event = "session_start";
-          command = herdrCodexCommand;
-          timeout = 10;
-          groupIndex = 1;
-        })
-      ];
+      # Without them codex reports each hook as untrusted, and the prompt that
+      # would record trust cannot write this file.
+      hooks.state = builtins.listToAttrs (
+        lib.imap0 (
+          groupIndex: hook:
+          trustedHook {
+            event = "session_start";
+            inherit groupIndex;
+            inherit (hook) command timeout;
+          }
+        ) sessionStartHooks
+      );
     };
 
     # icm's wake-up pack only, same as claude-code.nix. Trust is derived above
@@ -148,7 +164,7 @@ in
     # because their rule-based extraction filled icm with repo restatements that
     # then crowded the wake-up pack. Memories are stored by hand with `icm store`.
     hooks = {
-      SessionStart = cmd "${icm} hook start" ++ cmd herdrCodexCommand;
+      SessionStart = lib.concatMap cmd sessionStartHooks;
     };
 
     # -> ~/.codex/rules/default.rules, the Git section of ai-context.nix enforced
