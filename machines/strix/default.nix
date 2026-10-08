@@ -487,7 +487,7 @@
         enable = true;
         flake = "/home/yt/dotfiles#strix";
         operation = "switch";
-        dates = "Sun 04:30";
+        dates = "Sun 00:30";
 
         # Off, as nix-gc's is above: a missed Sunday must not become a catch-up
         # activation at the next boot. Skipping one costs nothing here, since the
