@@ -16,6 +16,10 @@ with pkgs;
       # std's sources. rust-analyzer cannot resolve anything in std without
       # them, so every std symbol reads as an error and completion is dead.
       "rust-src"
+      # llvm-cov and llvm-profdata, which cargo-llvm-cov shells out to. It
+      # locates them under this toolchain's sysroot, so without the component
+      # the command fails no matter that its own package is installed.
+      "llvm-tools-preview"
     ];
   })
 
@@ -34,8 +38,33 @@ with pkgs;
   cargo-machete # dependencies still declared in Cargo.toml but no longer used,
   # a common leftover once a module gets refactored away.
 
-  # cargo-semver-checks # whether a change to a published crate is breaking,
-  # before the version number is picked.
+  cargo-modules # the crate's real module tree, item visibility and orphaned
+  # items, parsed by rust-analyzer rather than by text, so it resolves through
+  # macros and generics that the same question in ast-grep cannot.
+
+  cargo-hack # builds every feature combination, not just the default set. The
+  # only thing that catches code added behind a #[cfg(feature = "...")] that a
+  # plain `cargo check` never compiles.
+
+  cargo-semver-checks # whether a change to a published crate is breaking,
+  # before the version number is picked. Runs on the stable toolchain above -
+  # the nightly rustdoc JSON its documentation calls for is not needed.
+
+  cargo-deny # advisories, licenses, bans and sources in one check. Supersedes
+  # cargo-audit, which covers the first of those alone.
+
+  cargo-mutants # mutates the source and reports the mutations the tests still
+  # pass, which is the difference between a test that asserts something and one
+  # that merely runs the line.
+
+  cargo-insta # reviews and accepts `insta` snapshots; without it a changed
+  # snapshot is a file to hand-edit rather than a diff to confirm.
+
+  cargo-llvm-cov # line and branch coverage. Needs llvm-tools-preview from the
+  # toolchain above - package alone is not enough, see the note there.
+
+  cargo-watch # rebuilds on save. For interactive use, not for an agent, which
+  # runs `cargo check` once and reads the result.
 
   # Compilation caching - without it every `cargo clean`, fresh clone and wiped
   # target/ recompiles the whole dependency graph. Selected in

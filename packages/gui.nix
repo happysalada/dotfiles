@@ -12,7 +12,10 @@ with pkgs;
   # Implementation has to move off the default `tauri` to `handy_keys`, because
   # the default registers an X11 grab, which never fires under niri while a
   # native Wayland window is focused. Overlay Position wants None, since the
-  # overlay takes focus and then stops the paste.
+  # overlay takes focus and then stops the paste. A third thing its settings
+  # cannot do at all is end a recording that never stops - there is no
+  # max-duration setting to point at - so homes/programs/handy-recording-timeout.nix
+  # cancels one after ten minutes.
   handy
 
   # What Handy shells out to for the paste keystroke, so what has to be on PATH.

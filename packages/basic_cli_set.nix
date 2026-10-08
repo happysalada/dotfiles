@@ -32,6 +32,7 @@ with pkgs;
   ouch # painless (de)compression
   unzip # what scripts and agents call, whatever ouch can do
   zip
+  b3sum # blake3 sums, when that is the hash a project publishes
   tree
   solo2-cli # updating solokeys
   sqlite

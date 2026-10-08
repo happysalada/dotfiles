@@ -674,6 +674,21 @@
         generated, instead of inferring it from the macro's documentation.
       - `cargo machete` for dependencies left in `Cargo.toml` after a refactor,
         and `cargo semver-checks` before picking a version for a published crate.
+      - `cargo modules structure` (also `orphans`, `dependencies`) for the crate's
+        real shape; it parses with rust-analyzer, so it resolves through macros
+        and generics that reading the source cannot.
+      - `cargo hack check --each-feature` after adding anything behind a
+        `#[cfg(feature = "...")]`. A plain `cargo check` compiles the default
+        feature set only, so a feature-gated mistake passes it.
+      - `cargo mutants` when the question is whether the tests assert anything,
+        `cargo deny check` for advisories and licenses, `cargo insta` for `insta`
+        snapshots, `cargo llvm-cov` for line coverage.
+      - `cargo watch -x check` rebuilds on save, for interactive use only.
+
+      There is no nightly toolchain here and no `rustup`, only the stable one
+      above, so the subcommands needing either do not run at all - `cargo udeps`,
+      `cargo public-api` and `cargo careful` fail outright rather than degrade.
+      For dead dependencies reach for `cargo machete` and `cargo modules orphans`.
 
       Prefer `ast-grep` over `rg` for Rust: it parses the language, so a pattern
       matches a real call or impl rather than the same word in a doc comment.

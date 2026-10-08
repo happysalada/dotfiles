@@ -99,6 +99,30 @@
         kernel.sysctl."vm.page-cluster" = 0;
       };
 
+      # The DDR5 SPD hub sits on the i801 SMBus, where the firmware's SPD Write
+      # Disable bit blocks writes, and i801 restores that bit on every sleep
+      # cycle. The page-register write spd5118 makes on resume is therefore
+      # NAKed - the `failed to resume async: error -6` after every wake.
+      # Unbinding across the sleep window skips that write and keeps the
+      # temperature sensor for the awake hours, which is when anything reads it.
+      #
+      # sleep.target rather than powerManagement.powerUpCommands, which nixpkgs
+      # deprecated in 26.11 in favour of exactly this.
+      systemd.services.spd5118-power-cycle = {
+        description = "Unbind the DDR5 SPD hub across sleep";
+        before = [ "sleep.target" ];
+        wantedBy = [ "sleep.target" ];
+        unitConfig.StopWhenUnneeded = true;
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          # `-`: an already-unloaded module is not a reason to fail a unit that
+          # the sleep is ordered behind
+          ExecStart = "-${pkgs.kmod}/bin/modprobe -r spd5118";
+          ExecStop = "${pkgs.kmod}/bin/modprobe spd5118";
+        };
+      };
+
       # A compressed swap device held in RAM. Buys roughly 3x its own footprint
       # back as headroom for the cold, highly compressible pages a wide rustc
       # fan-out leaves behind, and absorbs the spike far faster than the 8 GB
@@ -896,6 +920,16 @@
           ../../homes/programs/intelli-shell
           # Monday-morning digest of releases in my starred repos.
           ../../homes/programs/starred-digest
+          # `programs.gh`'s config.yml, plus the agenix PAT that nushell exports
+          # as GH_TOKEN. A module rather than a `programs.gh = ...` fragment
+          # because it also declares a secret and an env file line.
+          ../../homes/programs/gh.nix
+          # Three user timers keeping an immutable copy of what the SEC
+          # published, under $HOME/commonage. Invokes the project's own cargo
+          # release build rather than a package, deliberately and temporarily:
+          # a version of the SEC's derived data not taken today cannot be bought
+          # back later, and packaging it can follow.
+          ../../homes/programs/commonage.nix
           # The pueued user service and ~/.config/pueue/pueue.yml, so a queue
           # outlives the terminal that started it.
           ../../homes/programs/pueue.nix
@@ -904,6 +938,9 @@
           ../../homes/programs/ccusage.nix
           # Seeds ~/.config/openlogi/config.toml for the MX Master 3S, once.
           ../../homes/programs/openlogi.nix
+          # The ten-minute stop Handy has no setting for. A tap on the shortcut
+          # locks a recording on until the next press, and nothing else ends it.
+          ../../homes/programs/handy-recording-timeout.nix
           # ~/.config/terminal-browser/settings.json, which no upstream module
           # writes, so the render settings it would otherwise take by default
           # are declared there instead.
