@@ -471,25 +471,28 @@
       };
 
       # RTC alarm, so the 03:15 GC runs with the lid shut rather than at whatever
-      # resume - a suspended laptop fires the missed 03:15 at the 04:30 wake below
-      # anyway, so this buys the hour and costs a second wake, nothing
-      # re-suspending in between. A machine off at 03:15 still skips it; no alarm
-      # can help there.
+      # resume - and it is now the only nightly wake, since the upgrade's 04:30
+      # alarm below fires on Sundays only. That night it buys the hour before the
+      # build and costs a second wake, nothing re-suspending in between. A machine
+      # off at 03:15 still skips it; no alarm can help there.
       systemd.timers.nix-gc.timerConfig.WakeSystem = true;
 
-      # Nightly bump, build and activation - nothing to wait for during the day.
-      # `switch`: it takes effect in the running system rather than at the next
-      # boot, restarting whatever changed under whatever is awake at 04:30, and
-      # `nixos-rebuild switch --rollback` undoes it.
+      # Weekly bump, build and activation - nothing to wait for during the day,
+      # and Sunday because a bad bump then has the week to be noticed rather than
+      # landing on a working morning. `switch`: it takes effect in the running
+      # system rather than at the next boot, restarting whatever changed under
+      # whatever is awake at 04:30, and `nixos-rebuild switch --rollback` undoes
+      # it.
       system.autoUpgrade = {
         enable = true;
         flake = "/home/yt/dotfiles#strix";
         operation = "switch";
-        dates = "04:30";
+        dates = "Sun 04:30";
 
-        # Off, as nix-gc's is above: a missed night must not become a catch-up
+        # Off, as nix-gc's is above: a missed Sunday must not become a catch-up
         # activation at the next boot. Skipping one costs nothing here, since the
-        # next run resolves the newest inputs anyway.
+        # next run resolves the newest inputs anyway - it just means a week on
+        # inputs that are a week old.
         persistent = false;
 
         # --upgrade drives nix-channel and nothing else, which it warns about for
@@ -502,7 +505,7 @@
       # "choose what root boots into", and nixos-rebuild re-execs into the
       # nixos-rebuild built from this flake before it ever gets there, so every
       # rule that could match is root-equivalent. Binaries rather than argument
-      # lists, so the same grant covers the nightly run and my own switch
+      # lists, so the same grant covers the weekly run and my own switch
       # instead of going stale the next time either flag set changes.
       security.sudo.extraRules = [
         {
@@ -536,7 +539,7 @@
         '';
 
         # A bump that never built must not be left in the tree - that lock is what
-        # my own `n switch` reads, and one broken night would leave me unable to
+        # my own `n switch` reads, and one broken run would leave me unable to
         # build at all. The snapshot goes down before the bump, and one still here
         # at the start of a run means an earlier run was cut short before it could
         # put its bump back, so that gets undone first.
@@ -565,7 +568,7 @@
         '';
 
         # The wake is unconditional, the work is not: on battery the bump, the
-        # build and the activation are all skipped, so a night in a bag costs the
+        # build and the activation are all skipped, so a Sunday in a bag costs the
         # wake and not a cuda build. Conditions are [Unit] keys, and they run
         # before the preStart, so the lock is left alone too.
         #
@@ -608,14 +611,14 @@
       };
 
       # RTC alarm, so 04:30 happens with the lid shut instead of at the next
-      # resume - which also un-skips nix-gc's 03:15, so the night's GC and build
+      # resume - which also un-skips nix-gc's 03:15, so Sunday's GC and build
       # land together. Nothing arms a sleep afterwards: the machine stays up
       # until something else suspends it.
       systemd.timers.nixos-upgrade.timerConfig.WakeSystem = true;
 
       # Root runs the build above and the checkout is mine, so libgit2 refused to
       # open the work tree at all ("not owned by current user", its
-      # post-CVE-2022-24765 check) and the nightly run died right there. Root
+      # post-CVE-2022-24765 check) and the run died right there. Root
       # cannot own the repo, so allowlist the path - the system gitconfig is what
       # libgit2 reads safe.directory from.
       environment.etc."gitconfig".text = ''
