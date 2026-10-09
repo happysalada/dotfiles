@@ -300,8 +300,9 @@ in
     ];
   };
 
-  # Workspace 5. Deliberately *not* restore-on-start: every launch comes back
-  # to these three and nothing else, whatever was open when it closed.
+  # Workspace 6, the bottom one. Deliberately *not* restore-on-start: every
+  # launch comes back to these three and nothing else, whatever was open when
+  # it closed.
   profiles.kids = taskProfile {
     id = 2;
     startupPage = 1;
@@ -318,6 +319,23 @@ in
     startupPage = 3;
     urls = [
       "TODO-timeseries-momentum-url"
+    ];
+  };
+
+  # Workspace 5. The Microsoft RustTraining books plus rust-exercises, the set
+  # that used to live as ad-hoc tabs in the default `yt` profile - which had no
+  # window rule, so they landed on whatever workspace was focused. Restores
+  # like trading and research, so reading position survives a logout.
+  profiles.rust = taskProfile {
+    id = 4;
+    startupPage = 3;
+    urls = [
+      "https://microsoft.github.io/RustTraining/"
+      "https://microsoft.github.io/RustTraining/async-book/"
+      "https://microsoft.github.io/RustTraining/rust-patterns-book/ch01-generics-the-full-picture.html"
+      "https://microsoft.github.io/RustTraining/type-driven-correctness-book/"
+      "https://microsoft.github.io/RustTraining/engineering-book/"
+      "https://rust-exercises.com/100-exercises/04_traits/09_from.html"
     ];
   };
 }

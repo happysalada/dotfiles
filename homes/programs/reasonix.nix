@@ -376,8 +376,9 @@ let
 
     sandbox = {
       # bubblewrap jail for every bash call, with egress allowed so `nix build`
-      # and crw still work. Writers are confined to the workspace root; add
-      # `allow_write` here if a writer has to reach further.
+      # and crw still work. Writers reach the launch directory and nothing else:
+      # doctor's `write_roots` is read from the cwd, and setting it here does
+      # nothing — so the way to write elsewhere is to launch there.
       bash = "enforce";
       network = true;
     };

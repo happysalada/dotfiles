@@ -187,8 +187,8 @@ in
   // ---------------------------------------------------------------------
   // workspaces
   //
-  // Naming them creates all five at login, in this order, so they hold
-  // indices 1-5 for Mod+1..5 even while empty. The window rules further down
+  // Naming them creates all six at login, in this order, so they hold
+  // indices 1-6 for Mod+1..6 even while empty. The window rules further down
   // place windows by these names, which is why nothing here depends on what
   // happens to open first.
   // ---------------------------------------------------------------------
@@ -196,6 +196,7 @@ in
   workspace "research"
   workspace "trading"
   workspace "nixos"
+  workspace "rust"
   workspace "kids"
 
   // ---------------------------------------------------------------------
@@ -229,6 +230,7 @@ in
   spawn-at-startup "${firefox}" "-P" "research" "--name" "yt.browser.research"
   spawn-at-startup "${firefox}" "-P" "trading" "--name" "yt.browser.trading"
   spawn-at-startup "${firefox}" "-P" "kids" "--name" "yt.browser.kids"
+  spawn-at-startup "${firefox}" "-P" "rust" "--name" "yt.browser.rust"
 
   environment {
       DISPLAY ":0"
@@ -298,6 +300,12 @@ in
   window-rule {
       match app-id=r#"^yt\.browser\.kids$"#
       open-on-workspace "kids"
+      open-maximized true
+  }
+
+  window-rule {
+      match app-id=r#"^yt\.browser\.rust$"#
+      open-on-workspace "rust"
       open-maximized true
   }
 
