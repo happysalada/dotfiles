@@ -47,6 +47,48 @@ let
     }
   ];
 
+  # A project's own .codex/hooks.json is not a nix file, but its trust entries
+  # have to be: codex reads hook trust from the user layer only, so a project
+  # cannot vouch for itself. These four are what symposium's `cargo agents sync`
+  # writes there - the hash covers the command and the timeout, not the file, so
+  # changing what cargo-agents emits means re-deriving them here.
+  projectHooks = {
+    "/home/yt/dev/commonage" = [
+      {
+        event = "pre_tool_use";
+        command = "cargo-agents hook codex pre-tool-use";
+        timeout = 10;
+        matcher = "";
+      }
+      {
+        event = "post_tool_use";
+        command = "cargo-agents hook codex post-tool-use";
+        timeout = 10;
+        matcher = "";
+      }
+      {
+        event = "session_start";
+        command = "cargo-agents hook codex session-start";
+        timeout = 10;
+        matcher = "";
+      }
+      {
+        event = "user_prompt_submit";
+        command = "cargo-agents hook codex user-prompt-submit";
+        timeout = 10;
+        matcher = "";
+      }
+    ];
+  };
+
+  # For these events codex takes no matcher and drops whatever the file carries,
+  # so hashing the file's matcher here would produce a hash codex never computes.
+  matcherlessEvents = [
+    "user_prompt_submit"
+    "stop"
+    "interrupt"
+  ];
+
   # One matcher-less hook entry (fires on every event of its kind). Codex reuses
   # Claude Code's event names and JSON shape, which is why icm needs no
   # per-tool wiring beyond this.
@@ -66,28 +108,54 @@ let
   # where the entry sits in its event's array, since codex keys trust by position.
   trustedHook =
     {
+      path,
       event,
       command,
       timeout,
+      matcher ? null,
       groupIndex ? 0,
     }:
+    let
+      normalizedMatcher = if builtins.elem event matcherlessEvents then null else matcher;
+    in
     {
-      name = "${config.home.homeDirectory}/.codex/hooks.json:${event}:${toString groupIndex}:0";
+      name = "${path}:${event}:${toString groupIndex}:0";
       value.trusted_hash = "sha256:${
         builtins.hashString "sha256" (
-          builtins.toJSON {
-            event_name = event;
-            hooks = [
-              {
-                type = "command";
-                inherit command timeout;
-                async = false;
-              }
-            ];
-          }
+          builtins.toJSON (
+            {
+              event_name = event;
+              hooks = [
+                {
+                  type = "command";
+                  inherit command timeout;
+                  async = false;
+                }
+              ];
+            }
+            // lib.optionalAttrs (normalizedMatcher != null) {
+              matcher = normalizedMatcher;
+            }
+          )
         )
       }";
     };
+
+  # One trust entry per hook in one hooks.json, keyed the way codex keys trust:
+  # the file it came from, the event, the hook's position in that event's array,
+  # then its position in the matcher group. Each hook here is its own group, so
+  # only its event's own ordering counts.
+  trustedHooks =
+    path: hooks:
+    builtins.listToAttrs (
+      lib.imap0 (
+        index: hook:
+        trustedHook (hook // {
+          inherit path;
+          groupIndex = lib.count (other: other.event == hook.event) (lib.take index hooks);
+        })
+      ) hooks
+    );
 in
 {
   programs.codex = {
@@ -142,19 +210,16 @@ in
       };
 
       # `/hooks` cannot persist trust into the read-only config.toml. These
-      # hashes admit exactly the hooks declared below and follow icm upgrades.
+      # hashes admit exactly the hooks declared above and follow icm upgrades.
       # Without them codex reports each hook as untrusted, and the prompt that
       # would record trust cannot write this file.
-      hooks.state = builtins.listToAttrs (
-        lib.imap0 (
-          groupIndex: hook:
-          trustedHook {
-            event = "session_start";
-            inherit groupIndex;
-            inherit (hook) command timeout;
-          }
-        ) sessionStartHooks
-      );
+      hooks.state =
+        trustedHooks "${config.home.homeDirectory}/.codex/hooks.json" (
+          map (hook: hook // { event = "session_start"; }) sessionStartHooks
+        )
+        // lib.concatMapAttrs (
+          dir: hooks: trustedHooks "${dir}/.codex/hooks.json" hooks
+        ) projectHooks;
     };
 
     # icm's wake-up pack only, same as claude-code.nix. Trust is derived above

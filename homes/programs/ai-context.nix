@@ -117,7 +117,7 @@
       rtkManual = ''
         There is **no automatic rewriting here** - `rtk hook` has no backend for
         this tool, so nothing intercepts your bash calls the way it does under
-        Claude Code. If you want the compression you have to ask for it:
+        Claude Code. Prefix the commands whose output is large by nature:
 
         ```sh
         rtk git status        # instead of `git status`
@@ -125,9 +125,10 @@
         rtk grep <pattern>
         ```
 
-        Worth doing for commands whose output is large and repetitive (test
-        runs, `git status` in a dirty tree, dependency trees). Not worth doing
-        for short output - the wrapper costs more than it saves.
+        Do that without judging the size first: you cannot see the output until
+        after the command has run, and a dirty tree, a failing suite and a
+        dependency tree are large every time. Everything else runs unwrapped -
+        on short output the wrapper costs more than it saves.
       '';
 
       rtkSection =
@@ -458,12 +459,36 @@
       Reach for bash only when the script has to run somewhere nu is not
       installed - and say that is why when you do.
 
+      `nu -c '<pipeline>'` is the same thing as a one-liner, and is what the
+      Tooling table below reaches for when a command has to convert or filter
+      structured data.
+
       ## Tooling
 
-      These tools are installed system-wide (packages/ai.nix,
-      packages/basic_cli_set.nix). Prefer them where they apply, but none of
-      them override the git rules above, and none of them are worth a detour
-      when a plain `rg`/read already answers the question.
+      Installed system-wide (packages/ai.nix, packages/basic_cli_set.nix) and
+      preferred over the POSIX command in the same slot. Each row below is a
+      *substitution*, so using one is fewer steps and not a detour - but none
+      of them overrides the git rules above.
+
+      | you are about to | use instead |
+      | --- | --- |
+      | `sed -i`, or a loop over files | `sd 'old' 'new' <files>` - in place, `-p` previews |
+      | `cut -f`, `awk '{print $2}'` on delimited output | `choose 1 -f ','` - 0-indexed, `-f` is a regex, reads stdin or `-i` |
+      | `find . -name '*.py'` | `fd -e py` |
+      | `cat`, or `cat -n`, on a file | `read_file`, or `bat` when line numbers matter |
+      | `python -c` to convert or filter JSON/YAML/TOML/CSV | `nu -c` - `open x.yaml \| to json` |
+      | `jq` field selection | `jg` |
+      | `grep` for a code *shape* rather than a string | `ast-grep -p 'foo($$$ARGS)'` |
+      | `curl` | `xh` |
+      | `grep` inside a PDF or .docx | `rga` |
+      | per-language line counts, disk usage, a flag you have forgotten | `tokei`, `dua`, `tldr <cmd>` |
+
+      Never reach for `python -c`, `awk`, `sed -i` or a heredoc script to do
+      text or structured-data plumbing: the rows above cover it in one step.
+      `rg` stays the default for "does this string appear anywhere", and these
+      are for the shapes where it is not enough. The rest of the installed
+      toolbox - the tools whose job is not guessable from the name - is the
+      `cli-toolbox` skill.
 
       ### xh - HTTP client
 

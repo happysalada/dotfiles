@@ -69,6 +69,11 @@ let
   # manual: it tells the agent to run `orx skill`, which prints the real guide
   # out of the installed binary, so it cannot drift from the CLI version.
   #
+  # cli-toolbox holds the installed tools whose job is not guessable from the
+  # name. A skill rather than more prose because the always-on Tooling table in
+  # ai-context.nix carries only the substitutions, and the rest of the toolbox
+  # is worth loading in full only for the task that needs it.
+  #
   # Deliberately not the eleven modules of `--full`: always-listed, they would
   # crowd the sixteen below. Upstream defaults to the shim alone for the same
   # reason.
@@ -77,6 +82,7 @@ let
     orx = ./skills/orx;
     diff-metrics = ./skills/diff-metrics;
     condense-comments = ./skills/condense-comments;
+    cli-toolbox = ./skills/cli-toolbox;
   };
 
   # Built into its package with the script paths pinned to the store, so the
