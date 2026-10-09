@@ -764,8 +764,8 @@
               };
 
               # llm-agents wraps reasonix with codegraph, ripgrep and bubblewrap
-              # on PATH but leaves the environment alone. Two things go on top,
-              # both in reasonix.nu, which is what stands in front of the binary:
+              # on PATH but leaves the environment alone. Three things go on top,
+              # all in reasonix.nu, which is what stands in front of the binary:
               #
               # REASONIX_TELEMETRY=0 is this machine's standing choice - see
               # homes/programs/ai-context.nix for the other tools it is set for.
@@ -778,6 +778,10 @@
               # the same purpose went inert on that bump. Unasked, a zellij pane
               # running reasonix keeps alt-screen content only, and Ctrl+S and
               # the wheel stop at the top of the current frame.
+              #
+              # The third is the approval posture: YOLO for the interactive
+              # sessions the router starts itself, since no config key can set
+              # it - see the note at the top of reasonix.nu.
               #
               # Wrapped as a symlinkJoin rather than an overrideAttrs so the Go
               # binary stays the one llm-agents built, which substitutes; an

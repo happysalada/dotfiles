@@ -25,22 +25,6 @@ let
   # The same skill set the other three get, from the same single source.
   aiSkills = import ./ai-skills.nix { inherit pkgs; };
 
-  # The command behind `[statusline]` below. A .nu file rather than a string in
-  # here because it is long enough to want a `nu homes/programs/
-  # reasonix-statusline.nu` of its own; curl and starship arrive on its PATH
-  # through the wrapper, so no store path appears in the file.
-  statuslineCommand = pkgs.writers.writeNuBin "reasonix-statusline" {
-    makeWrapperArgs = [
-      "--prefix"
-      "PATH"
-      ":"
-      (lib.makeBinPath [
-        pkgs.curl
-        pkgs.starship
-      ])
-    ];
-  } (builtins.readFile ./reasonix-statusline.nu);
-
   # Claude Code's `allowed-tools` vocabulary is not a known tool identity in
   # reasonix, which warns about each name and ignores the list - hence the
   # translated copies under ~/.reasonix/skills. An unmapped name is passed
@@ -259,25 +243,6 @@ let
 
     inherit desktop;
 
-    # The footer's data row, rebuilt. reasonix hands a statusline command
-    # {"model","contextUsed","contextWindow","cwd"} on stdin and prints its first
-    # stdout line in place of that row - the one carrying context, compaction,
-    # cache, cost, the peak/off-peak band and the wallet balance - so the script
-    # reprints every one of those numbers and adds the directory, which
-    # reasonix's own row shows only inside a git repo and there only as the
-    # repository name. Measured on 2.31.0: with this set the row that read
-    # `CTX 6.4K (0%)  COMPACT 80%` read only the command's line, while the row
-    # above it (permission mode, MODEL, EFFORT) and the repository segment beside
-    # it were untouched. `[statusline]` is user/global only, so a project
-    # reasonix.toml cannot set it, and it is part of `settings` because both
-    # homes want it - the nono one included, though nothing has verified the
-    # script's reads and its balance call under nono's Landlock ruleset yet.
-    #
-    # `/bin/` on the end: `writeNuBin "x"` is `writeNu "/bin/x"`, whose store
-    # path is a *directory* holding bin/x - pointed at the directory itself, a
-    # shell answers "Is a directory" (measured against the built store path).
-    statusline.command = "${statuslineCommand}/bin/reasonix-statusline";
-
     notifications = {
       enabled = false;
       turn_done = true;
@@ -376,7 +341,9 @@ let
     # `reasonix -p` cannot prompt, so an unmatched command there fails closed
     # rather than running, which is why the headless lanes (orx, hyperresearch)
     # still belong to codex and claude-code. Their blanket approvals would be
-    # mode = "allow"; the denies below still win in that mode.
+    # mode = "allow"; the denies below still win in that mode. Interactively the
+    # posture is YOLO instead, injected by machines/strix/reasonix.nu: nothing
+    # prompts there, and these denies plus the sandbox are what still answer.
     permissions = {
       mode = "ask";
       deny = [
@@ -388,7 +355,10 @@ let
         "Bash(git stash:*)"
       ];
       # `git checkout -b` is fine when asked for, `git checkout -- path` destroys
-      # work. One prefix cannot tell them apart, so this one prompts.
+      # work. One prefix cannot tell them apart, so this one is a prompt - which
+      # the YOLO posture machines/strix/reasonix.nu opens interactive sessions in
+      # then skips, because only deny rules and fresh decisions outlive that.
+      # Move this to `deny` if it has to hold beside the posture.
       ask = [ "Bash(git checkout:*)" ];
     };
 
