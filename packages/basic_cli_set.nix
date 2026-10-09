@@ -47,7 +47,10 @@ with pkgs;
   # rustypaste # file sharing service
   killport # kill a service on a port
   igrep
-  gh
+  # gh moved to `programs.gh` (homes/programs/gh.nix) so its config.yml stops
+  # being an imperative file on every host that has it. That module is wired on
+  # strix only as of now, so this list deliberately leaves the CLI out: a host
+  # that wants it adds the same import rather than getting the bare binary back.
   jjui
   prek # pre-commit in rust; runs this repo's .pre-commit-config.yaml
   bat

@@ -10,10 +10,12 @@
     };
     settings = {
       server = {
+        # The hostname lives here and nowhere else: upstream removed `DOMAIN`
+        # and derives it from this, and a leftover DOMAIN is a hard assertion
+        # failure at eval time rather than a warning.
         ROOT_URL = "https://git.megzari.com";
         HTTP_PORT = 3030;
         HTTP_ADDR = "127.0.0.1";
-        DOMAIN = "git.megzari.com";
       };
       repository = {
         PREFERRED_LICENSES = "AGPL-3.0,GPL-3.0,GPL-2.0,LGPL-3.0,LGPL-2.1";

@@ -2,7 +2,10 @@
 {
   services.meilisearch = {
     enable = true;
-    dumplessUpgrade = true;
+    # The old top-level `dumplessUpgrade` still maps here, but nixpkgs marks it
+    # obsolete and warns on every evaluation, so the settings spelling is the
+    # one to keep.
+    settings.experimental_dumpless_upgrade = true;
   };
 
   services.caddy.virtualHosts = {
