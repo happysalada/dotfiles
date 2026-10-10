@@ -36,15 +36,31 @@ let
 in
 {
   # The SEC's ceiling is ten requests a second and each process keeps its own token
-  # gate, so two overlapping units add rather than share. Four plus two plus two
-  # leaves headroom; the numbers below are chosen to keep the sum under ten.
+  # gate, so two overlapping units add rather than share. Two plus one plus one
+  # leaves six for a corpus walk, which the queue pins there for this reason: what
+  # is bounded is the sum, across units and walks together, not any one number.
   systemd.user.services.commonage-recent = {
     Unit.Description = "archive SEC filings from the last few days";
+
+    # Every unit here is a oneshot that runs for minutes, and home-manager's
+    # activation waits on the start job it creates: a changed definition would
+    # block the switch until the crawl ends and die on its 5-minute timeout
+    # first. keep-old leaves a run alone; the new definition reaches it at the
+    # next timer fire.
+    Unit.X-SwitchMethod = "keep-old";
+
+    # `sweep` holds the store's writer lock for minutes at a stretch and
+    # `recent` fires every fifteen, so a start that lands inside one exits 1 on
+    # the lock instead of archiving. `Wants` is what puts sweep in this unit's
+    # transaction, and `After` orders units only inside one, so the pair
+    # together is what makes recent wait its turn instead of failing.
+    Unit.After = [ "commonage-sweep.service" ];
+    Unit.Wants = [ "commonage-sweep.service" ];
 
     Service = {
       Type = "oneshot";
       ExecStart = "${binary} recent --days 2 --limit 300";
-      Environment = environment ++ [ "COMMONAGE_RPS=4" ];
+      Environment = environment ++ [ "COMMONAGE_RPS=2" ];
       # Three hundred filings is up to six hundred requests, and a 10-K
       # submission is tens of MB, so this is bounded by bytes rather than by
       # request count.
@@ -68,11 +84,12 @@ in
 
   systemd.user.services.commonage-sweep = {
     Unit.Description = "refresh the derived datasets of the filers that changed";
+    Unit.X-SwitchMethod = "keep-old";
 
     Service = {
       Type = "oneshot";
       ExecStart = "${binary} sweep --limit 800";
-      Environment = environment ++ [ "COMMONAGE_RPS=2" ];
+      Environment = environment ++ [ "COMMONAGE_RPS=1" ];
       TimeoutStartSec = "40min";
     };
   };
@@ -95,13 +112,14 @@ in
 
   systemd.user.services.commonage-indexes = {
     Unit.Description = "keep the SEC's quarterly index files";
+    Unit.X-SwitchMethod = "keep-old";
 
     Service = {
       Type = "oneshot";
       # Nine index files at ~50 MB each, so this is the one unit that is
       # bandwidth-bound rather than request-bound.
       ExecStart = "${binary} indexes --months 24";
-      Environment = environment ++ [ "COMMONAGE_RPS=2" ];
+      Environment = environment ++ [ "COMMONAGE_RPS=1" ];
       TimeoutStartSec = "40min";
     };
   };

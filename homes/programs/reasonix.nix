@@ -376,9 +376,9 @@ let
 
     sandbox = {
       # bubblewrap jail for every bash call, with egress allowed so `nix build`
-      # and crw still work. Writers reach the launch directory and nothing else:
-      # doctor's `write_roots` is read from the cwd, and setting it here does
-      # nothing — so the way to write elsewhere is to launch there.
+      # and crw still work. Writers reach the launch directory and nothing else,
+      # plus whatever `allow_write` names; `write_roots` is what `doctor` reports
+      # and is read from the cwd, so launching is how a session gets its grant.
       bash = "enforce";
       network = true;
     };

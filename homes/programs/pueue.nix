@@ -12,6 +12,23 @@
       # ghostty, helix and zellij are all #000000 here.
       client.dark_mode = true;
 
+      # A task that spans a suspend comes back wedged rather than dead: on
+      # 2026-10-10 the archiver sat for hours on a retry that never fired, still
+      # holding the group's only slot. So hold sleep off for as long as a task
+      # runs - per task, not per daemon, because the task's own command is what
+      # holds it. The lid goes too, so a long job keeps running with the lid
+      # shut.
+      daemon.shell_command = [
+        "${pkgs.systemd}/bin/systemd-inhibit"
+        "--what=sleep:handle-lid-switch"
+        "--mode=block"
+        "--why=pueue task running"
+        "--"
+        "sh"
+        "-c"
+        "{{ pueue_command_string }}"
+      ];
+
       # The point of a queue is that you can walk away from it, so say something
       # when it stops making progress. `result` is the pueue TaskResult variant -
       # Success, Failed, FailedToSpawn, Killed, Errored, DependencyFailed - and
