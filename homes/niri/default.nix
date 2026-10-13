@@ -38,6 +38,15 @@ let
       ${pkgs.coreutils}/bin/sleep 60
     done
   '';
+
+  # swayidle execs its commands with wordexp+execvp rather than a shell, so a
+  # `|| true` in the config string would arrive at systemctl as an argument. The
+  # shell has to live here instead: `--collect` unloads the unit the moment the
+  # suspend script exits, so by the time this runs there is usually nothing left
+  # to stop - which systemctl reports as a failed stop on every single wake.
+  cancelDeferredSuspend = pkgs.writeShellScript "cancel-deferred-suspend" ''
+    ${systemctl} --user stop deferred-suspend 2>/dev/null || true
+  '';
 in
 {
   home.packages = with pkgs; [
@@ -163,7 +172,7 @@ in
       {
         timeout = 1800; # 30 min - suspend, unless something is still running
         command = "${systemdRun} --user --quiet --collect --unit=deferred-suspend ${deferredSuspend}";
-        resumeCommand = "${systemctl} --user stop deferred-suspend";
+        resumeCommand = "${cancelDeferredSuspend}";
       }
     ];
   };

@@ -28,8 +28,9 @@ in
 {
   "deepseek.api.key.age".publicKeys = [ yt_at_strix ];
 
-  # A fine-grained, read-only GitHub PAT, for `$env.GH_TOKEN` in nushell
-  # (homes/programs/gh.nix). strix only for now: it is the machine with a
+  # A fine-grained, read-only GitHub PAT, read as `$env.GH_TOKEN` by the agent
+  # entry points at launch (declared in homes/programs/gh.nix, read by nono.nix
+  # and machines/strix/reasonix.nu). strix only for now: it is the machine with a
   # keyring login to fall back on, and bee/hetz read nothing from it yet - this
   # list grows only when a server needs the token itself. The ciphertext is
   # created with an empty plaintext and stays empty until a token is pasted in;

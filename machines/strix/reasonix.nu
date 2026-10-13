@@ -30,6 +30,16 @@ def --wrapped main [...args] {
 
   # `--set-default`, which is what the wrapper this replaced did.
   if ($env.REASONIX_TELEMETRY? | is-empty) { $env.REASONIX_TELEMETRY = "0" }
+
+  # gh.nix no longer exports the PAT through the shell - it outranks the keyring
+  # and every gh call in an interactive session was authenticating with it - so
+  # the agent reads the decrypted file itself. nono-reasonix already has the
+  # variable by the time this runs, and a value the caller set is left alone.
+  if ($env.GH_TOKEN? | is-empty) {
+    let ghToken = (try { open $"($env.HOME)/.config/gh/token" | str trim } catch { "" })
+    if ($ghToken | is-not-empty) { $env.GH_TOKEN = $ghToken }
+  }
+
   if ($env.REASONIX_NO_INLINE? | default "") != "" { exec $real ...$args }
 
   # YOLO unless the caller named a mode themselves - see the header, and note

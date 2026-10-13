@@ -120,8 +120,13 @@
     };
 
     # asusd stops charging at 80%, so "full" here means 80 and the battery will
-    # normally sit just under it while plugged in
+    # normally sit just under it while plugged in.
+    #
+    # Pinned to BAT0: auto-detect also picks up the Logitech mouse's
+    # hidpp_battery_N, and when the mouse sleeps that node is deleted - the
+    # failing inotify watch on it aborts waybar outright (5 cores since 09-28).
     battery = {
+      bat = "BAT0";
       states = {
         warning = 25;
         critical = 10;

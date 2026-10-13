@@ -15,6 +15,34 @@
       pkgs,
       ...
     }:
+    let
+      # The M.2 drive on root port 00:1b.0 reports a correctable Receiver Error
+      # about once a second: 519k journal lines in the nine days to 2026-10-13,
+      # which is most of what an error scan has to wade through. The identical
+      # drive behind 00:1d.4 is silent and this link trains at its full
+      # 16 GT/s x4, and both real fixes are closed - the platform disables ASPM
+      # outright ("ACPI FADT declares the system doesn't support PCIe ASPM")
+      # and both drives already run the newest firmware LVFS has.
+      #
+      # So mask the three bits that actually fire - RxErr (0), Bad TLP (6), Bad
+      # DLLP (7) - in the endpoint's AER Correctable Error Mask. That stops the
+      # ERR_COR message reaching the port and nothing else: a replay timer
+      # timeout (12) or an advisory non-fatal (13) is the link genuinely
+      # degrading and still logs, and uncorrectables are untouched. The counters
+      # keep counting whether or not they are masked, so `aer_dev_correctable`
+      # under the device stays the way to tell if it is still happening.
+      aerMask = pkgs.writeShellScript "nvme-aer-mask" ''
+        setpci=${pkgs.pciutils}/bin/setpci
+        dev=0000:6c:00.0
+
+        # read-modify-write, so whatever the firmware masked stays masked
+        mask=$($setpci -s $dev ECAP_AER+0x14.L)
+        test -n "$mask" || { echo "$dev exposes no AER correctable mask" >&2; exit 1; }
+        new=$(printf '%08x' $(( 0x$mask | 0xc1 )))
+        $setpci -s $dev ECAP_AER+0x14.L=$new
+        echo "AER correctable mask on $dev: $mask -> $new"
+      '';
+    in
     {
       imports = [
         ./hardware-configuration.nix
@@ -120,6 +148,59 @@
           # the sleep is ordered behind
           ExecStart = "-${pkgs.kmod}/bin/modprobe -r spd5118";
           ExecStop = "${pkgs.kmod}/bin/modprobe spd5118";
+        };
+      };
+
+      # The Thunderbolt controller's xHCI fails its own resume on every wake -
+      # `xHC error in resume, USBSTS 0x401, Reinit` - and resets its two root
+      # hubs getting back up. Nothing is attached to them (buses 3 and 4 are
+      # empty), and no newer controller firmware is on offer, so all that is
+      # left is the message: 31 of them across the 31 wakes to 2026-10-13.
+      # Unbinding across the sleep window skips the resume callback that
+      # complains, and the rebind is an ordinary probe. A docked device would
+      # come back re-enumerated - which is what the kernel's reinit does anyway.
+      systemd.services.xhci-sleep-cycle = {
+        description = "Unbind the Thunderbolt xHCI across sleep";
+        before = [ "sleep.target" ];
+        wantedBy = [ "sleep.target" ];
+        unitConfig.StopWhenUnneeded = true;
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          # `-`: as above, a device already in the state we want is not a reason
+          # to fail a unit that the sleep is ordered behind
+          ExecStart = "-${pkgs.bash}/bin/bash -c 'echo 0000:38:00.0 > /sys/bus/pci/drivers/xhci_hcd/unbind'";
+          ExecStop = "-${pkgs.bash}/bin/bash -c 'echo 0000:38:00.0 > /sys/bus/pci/drivers/xhci_hcd/bind'";
+        };
+      };
+
+      # Applied at boot...
+      systemd.services.nvme-aer-mask = {
+        description = "Mask the false-alarm AER correctables on nvme0";
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = aerMask;
+        };
+      };
+
+      # ...and again on the way back up, rather than trusting the mask to
+      # survive a sleep: it lives in extended config space, which is well
+      # outside the standard config the sleep path restores. No-op writes are
+      # free, so this rewrites it on both edges of the sleep window - the same
+      # shape as spd5118 above, which is the one on this machine we have watched
+      # run at every wake.
+      systemd.services.nvme-aer-mask-resume = {
+        description = "Re-mask the nvme0 AER correctables after resume";
+        before = [ "sleep.target" ];
+        wantedBy = [ "sleep.target" ];
+        unitConfig.StopWhenUnneeded = true;
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "-${aerMask}";
+          ExecStop = "-${aerMask}";
         };
       };
 
@@ -924,9 +1005,9 @@
           ../../homes/programs/intelli-shell
           # Monday-morning digest of releases in my starred repos.
           ../../homes/programs/starred-digest
-          # `programs.gh`'s config.yml, plus the agenix PAT that nushell exports
-          # as GH_TOKEN. A module rather than a `programs.gh = ...` fragment
-          # because it also declares a secret and an env file line.
+          # `programs.gh`'s config.yml, plus the agenix PAT that the agent entry
+          # points read as GH_TOKEN at launch. A module rather than a
+          # `programs.gh = ...` fragment because it also declares a secret.
           ../../homes/programs/gh.nix
           # Three user timers keeping an immutable copy of what the SEC
           # published, under $HOME/commonage. Invokes the project's own cargo

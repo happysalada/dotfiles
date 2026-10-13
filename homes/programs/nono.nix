@@ -26,10 +26,18 @@ let
   # Same package, and so the same store path, as packages/ai.nix.
   reasonix = pkgs.reasonix;
 
+  # The fine-grained PAT gh.nix decrypts, handed to each launcher rather than to
+  # the shell. Reading it defensively matters because the file is absent until
+  # the first activation: the empty result leaves GH_TOKEN set but empty, which
+  # gh reads as no token at all, so the keyring login still applies until a
+  # token is pasted in.
+  githubToken = ''(try { open "${config.xdg.configHome}/gh/token" | str trim } catch { "" })'';
+
   launchers = {
     claude = mkLauncher {
       name = "claude";
       command = lib.getExe' config.programs.claude-code.finalPackage "claude";
+      env.GH_TOKEN = githubToken;
     };
 
     codex = mkLauncher {
@@ -45,6 +53,7 @@ let
         "--ask-for-approval"
         "on-request"
       ];
+      env.GH_TOKEN = githubToken;
     };
 
     reasonix = mkLauncher {
@@ -54,6 +63,7 @@ let
       # config, skills and sessions from <Reasonix home>: the wrapped one keeps
       # ~/.reasonix and the bwrap jail reasonix.nix configures there.
       env.REASONIX_HOME = ''$"($env.HOME)/.reasonix-nono"'';
+      env.GH_TOKEN = githubToken;
     };
   };
 

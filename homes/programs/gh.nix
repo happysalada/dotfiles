@@ -21,13 +21,13 @@
 #
 #   3. The token itself, from secrets/github.token.age. gh has no "token file"
 #      option, so a stored credential can only arrive through the environment:
-#      the secret is decrypted to ~/.config/gh/token and nushell's env file
-#      exports it as GH_TOKEN, which takes precedence over the keyring.
+#      the secret is decrypted to ~/.config/gh/token and the agent entry points
+#      read it from there at launch.
 { config, ... }:
 let
   # Absolute, concrete path rather than agenix's ${XDG_RUNTIME_DIR} default:
-  # the env file below interpolates it into nushell source, where a literal
-  # `${...}` would never expand.
+  # nono.nix interpolates it into nushell source, where a literal `${...}`
+  # would never expand.
   tokenPath = "${config.xdg.configHome}/gh/token";
 in
 {
@@ -63,14 +63,12 @@ in
     path = tokenPath;
   };
 
-  # GH_TOKEN wins over the keyring, so every gh call from a nushell shell - and
-  # every process that shell starts, agents included - uses the PAT instead of
-  # the `gh auth login` entry. Reading it defensively is deliberate: the file is
-  # absent until the first activation, and while the ciphertext is still empty
-  # the variable has to stay *unset* rather than become "" or a stale value, so
-  # that gh falls back to the keyring exactly as it did before.
-  programs.nushell.extraEnv = ''
-    let ghToken = (try { open "${tokenPath}" | str trim } catch { "" })
-    if ($ghToken | is-not-empty) { $env.GH_TOKEN = $ghToken }
-  '';
+  # Deliberately no env export here. GH_TOKEN outranks the keyring and nushell's
+  # env file is read by every shell it starts, so exporting it here also put the
+  # read-only PAT in front of interactive commands - which is how
+  # `nixpkgs-review --post-result` came to authenticate with it. The PAT belongs
+  # to the agents: nono.nix's launchers and machines/strix/reasonix.nu read this
+  # file at launch. Both leave gh on the keyring while the ciphertext is empty -
+  # reasonix.nu by leaving the variable unset, the nono launchers by setting it
+  # to "", which gh reads as no token at all.
 }
