@@ -57,6 +57,33 @@ let
     hash = "sha256-pQlFMnIihLMGEfvOxG1DQlT7y/mA9qt7fAq0L8flA/U=";
   };
 
+  # The anti-slop design skill for public-facing pages: it deals one of twenty
+  # researched art directions instead of letting the model pick the category
+  # default, then checks its own work in a real browser.
+  #
+  # One of fourteen skills in that repo, and the only one taken. The rest are
+  # image-generation-only (brandkit, imagegen-frontend-web/mobile), model-specific
+  # (gpt-taste) or narrower variants (minimalist, brutalist, soft, redesign,
+  # output, stitch), and every one of them is another description competing for
+  # the 1% listing budget above.
+  #
+  # Pinned by tag for the same reason as the two above, and it matters more
+  # here: scripts/ is Node the agent runs with Bash, and scripts/inspect.mjs
+  # drives a real Chrome over the DevTools protocol to measure the page. Its
+  # scripts/lib/cdp.mjs reads CHROME_PATH (or PUPPETEER_EXECUTABLE_PATH) before
+  # its list of well-known paths - which is why machines/strix/default.nix sets
+  # it; /usr/bin/chromium, the one Linux path it does probe, does not exist on
+  # NixOS. Node 22+ comes from nodejs-slim in packages/ai.nix.
+  #
+  # 1.7MB, most of it the direction library under library/.
+  taste = pkgs.fetchFromGitHub {
+    owner = "Leonxlnx";
+    repo = "taste-skill";
+    rev = "v2.0.0";
+    sparseCheckout = [ "skills/taste-skill" ];
+    hash = "sha256-EnawE8tQRGP5Oodn+8TP/rB1+bemdKIGaQO0WCIC9u0=";
+  };
+
   # Ours, plus one vendored. writing-plans is upstream's, edited to strip every
   # instruction to commit and end each task at a review checkpoint - the change
   # that makes it usable under the Git rules. diff-metrics measures a change with
@@ -118,4 +145,10 @@ fromRepo scientific-agent-skills quantitative
   # derivation ships the integrations but not this file, so it comes from the
   # release source the binary was built from - the same pin, so they cannot drift.
   herdr = "${pkgs.herdr.src}/skills/herdr";
+
+  # The key is the skill's own frontmatter `name`, not the folder it came from:
+  # v2 renamed the skill to design-taste-frontend while the directory under
+  # skills/ stayed taste-skill, and an agent resolves a skill by that name, so
+  # the installed directory has to carry it.
+  design-taste-frontend = "${taste}/skills/taste-skill";
 }

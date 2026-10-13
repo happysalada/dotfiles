@@ -26,6 +26,15 @@ let
   herdrCodexHook = "${config.home.homeDirectory}/.codex/herdr-agent-state.sh";
   herdrCodexCommand = "bash '${herdrCodexHook}' session";
 
+  # Clickable "Codex is done" notification, the same one claude-code and
+  # reasonix fire; see homes/programs/ai-notify.nix.
+  stopNotify = aiNotify.mkStopNotify {
+    app = "codex";
+    summary = "Codex is done";
+  };
+
+  aiNotify = import ./ai-notify.nix { inherit lib pkgs; };
+
   # Global instructions, shared with claude-code and opencode.
   aiContext = import ./ai-context.nix { inherit lib; };
 
@@ -44,6 +53,15 @@ let
     {
       command = herdrCodexCommand;
       timeout = 10;
+    }
+  ];
+
+  # The turn is over, so the pane is about to stop talking. `stop` is one of the
+  # matcher-less events below, so this list needs no matcher either.
+  stopHooks = [
+    {
+      command = "${stopNotify}";
+      timeout = 5;
     }
   ];
 
@@ -216,6 +234,7 @@ in
       hooks.state =
         trustedHooks "${config.home.homeDirectory}/.codex/hooks.json" (
           map (hook: hook // { event = "session_start"; }) sessionStartHooks
+          ++ map (hook: hook // { event = "stop"; }) stopHooks
         )
         // lib.concatMapAttrs (
           dir: hooks: trustedHooks "${dir}/.codex/hooks.json" hooks
@@ -230,6 +249,7 @@ in
     # then crowded the wake-up pack. Memories are stored by hand with `icm store`.
     hooks = {
       SessionStart = lib.concatMap cmd sessionStartHooks;
+      Stop = lib.concatMap cmd stopHooks;
     };
 
     # -> ~/.codex/rules/default.rules, the Git section of ai-context.nix enforced

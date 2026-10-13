@@ -61,6 +61,18 @@ with pkgs;
   ripgrep-all # ripgrep for pdf and all docs
   systemctl-tui # browse/control systemd units and their logs
 
+  # Secrets, one CLI over many providers (age identity files, the keyring, cloud
+  # stores). Nothing is configured here: the providers and their values live in a
+  # per-project fnox.toml, which `fnox init` writes. Its age provider reads an
+  # identity file itself, so `age`/`rage` is only needed to *create* one.
+  fnox
+
+  # For fnox's age provider, and only for making that identity file: fnox
+  # encrypts and decrypts in-process - it vendors the age crate - and merely
+  # tells you to `age-keygen -o ...`. rage will not do: it ships `rage-keygen`,
+  # and this is the package that provides the name fnox prints.
+  age
+
   # nixpkgs has no bookokrat (its init PR, NixOS/nixpkgs#488100, was closed
   # unmerged), so the package comes from upstream's own flake through the
   # overlay in each machine's nixpkgs.overlays. It replaces the commented-out

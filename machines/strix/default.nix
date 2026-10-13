@@ -6,7 +6,7 @@
   nix-index-database,
   llm-agents,
   openlogi,
-  bookokrat,
+  bookokratOverlay,
 }:
 [
   (
@@ -605,7 +605,7 @@
         enable = true;
         flake = "/home/yt/dotfiles#strix";
         operation = "switch";
-        dates = "Sun 00:30";
+        dates = "Sat 00:30";
 
         # Off, as nix-gc's is above: a missed Sunday must not become a catch-up
         # activation at the next boot. Skipping one costs nothing here, since the
@@ -933,12 +933,9 @@
           })
 
           # bookokrat, the terminal EPUB/PDF/DJVU reader. Not in nixpkgs, so it
-          # comes from its own flake - flake.nix says why that is an input and
-          # what it brings in. Read here only, so packages/basic_cli_set.nix
-          # goes on listing `bookokrat` without knowing where it came from.
-          (final: prev: {
-            bookokrat = bookokrat.packages.${final.stdenv.hostPlatform.system}.default;
-          })
+          # comes from its own flake - flake.nix holds the why, the input and
+          # the test override.
+          bookokratOverlay
         ];
         flake = {
           setFlakeRegistry = true;
@@ -1051,6 +1048,33 @@
           # writes, so the render settings it would otherwise take by default
           # are declared there instead.
           ../../homes/programs/terminal-browser.nix
+
+          # The `taste` skill's browser inspector (registered in
+          # homes/programs/ai-skills.nix) drives a real Chrome over the DevTools
+          # protocol, and its scripts/lib/cdp.mjs resolves that browser from
+          # CHROME_PATH before falling back to a list of well-known paths -
+          # whose only Linux entries are /usr/bin/chromium and friends, none of
+          # which exist on NixOS. Without this the agent gets "No Chrome/Edge/
+          # Chromium found" and the measured half of the skill is dead.
+          #
+          # A module rather than `programs.nushell.extraEnv` beside `home`
+          # below, because `programs` is already built by the `//` merge at the
+          # bottom of this block and a second `programs` in the same attrset is
+          # a redefinition. A module also merges per-option, so
+          # homes/common.nix's nushell set survives untouched.
+          #
+          # Strix only, deliberately: homes/common.nix shares
+          # homes/programs/nushell.nix with bee and hetz, and naming
+          # pkgs.chromium there would pull its closure onto two servers that
+          # have no agents to run the inspector with. chromium is already in
+          # strix's closure - packages/ai/crw.nix builds against it - so this is
+          # a reference to a path that exists, not a new build. Node 22+ for the
+          # rest of the skill's scripts comes from nodejs-slim in packages/ai.nix.
+          ({ pkgs, lib, ... }: {
+            programs.nushell.extraEnv = ''
+              $env.CHROME_PATH = "${lib.getExe pkgs.chromium}"
+            '';
+          })
         ];
 
         home = {

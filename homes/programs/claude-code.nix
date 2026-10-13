@@ -40,50 +40,14 @@ let
     exit 0
   '';
 
-  # Clickable "Claude is done" notification that focuses the niri window AND the
-  # zellij pane the session runs in. The window is found by title, not at
-  # SessionStart - `niri msg focused-window` only names the terminal if you
-  # happened to be looking at it - and zellij's session-name prefix
-  # ("main | <tab>") is focus-independent, where ghostty is single-instance and
-  # PIDs cannot tell windows apart. No zellij (`claude --bg`) falls back to focus.
-  stopNotify = pkgs.writers.writeNu "claude-stop-notify" ''
-    def main [] {
-      let zsession = $env.ZELLIJ_SESSION_NAME? | default ""
-      let pane = $env.ZELLIJ_PANE_ID? | default ""
+  # Clickable "Claude is done" notification, fired from the Stop hook below.
+  stopNotify = aiNotify.mkStopNotify {
+    app = "claude";
+    summary = "Claude is done";
+  };
 
-      let by_title = if $zsession == "" { null } else {
-        try { ${niri} msg --json windows | from json } catch { [] }
-        | where {|w| ($w.title? | default "") | str starts-with $"($zsession) | " }
-        | get -o 0.id
-      }
-      let wid = $by_title | default (
-        try { ${niri} msg --json focused-window | from json | get -o id } catch { null }
-      )
-
-      # -f: notify-send -A blocks until answered, so the waiter must outlive us
-      ${setsid} -f ${focusWaiter} ($wid | default "" | into string) $pane $zsession ($env.PWD | path basename) o+e> /dev/null
-    }
-  '';
-
-  # Blocks on the notification; a click focuses, a dismissal does nothing.
-  focusWaiter = pkgs.writers.writeNu "claude-focus-waiter" ''
-    def main [wid: string, pane: string, zsession: string, body: string] {
-      let answer = ${notifySend} -a claude -A default=Focus "Claude is done" $body | complete | get stdout | str trim
-      if $answer != "default" { return }
-
-      if $wid != "" { ${niri} msg action focus-window --id $wid | complete | ignore }
-      # zellij resolves the target session from the env, so this works from
-      # outside the pane
-      if $pane != "" {
-        with-env { ZELLIJ_SESSION_NAME: $zsession } { ${zellij} action focus-pane-id $pane | complete | ignore }
-      }
-    }
-  '';
-
-  niri = "^${lib.getExe pkgs.niri}";
-  zellij = "^${lib.getExe pkgs.zellij}";
-  notifySend = "^${pkgs.libnotify}/bin/notify-send";
-  setsid = "^${pkgs.util-linux}/bin/setsid";
+  # The same notification codex and reasonix fire from their own Stop hooks.
+  aiNotify = import ./ai-notify.nix { inherit lib pkgs; };
 
   # Global instructions, shared with opencode.
   aiContext = import ./ai-context.nix { inherit lib; };

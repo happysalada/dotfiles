@@ -17,23 +17,27 @@
     margin = "10";
     width = 380;
     height = 160;
-    default-timeout = 6000;
-    ignore-timeout = false;
+    # Nothing expires, by default or on request: a toast that vanished while you
+    # were looking at another pane is one you never saw, and 0 is mako's "no
+    # timeout". ignore-timeout is what applies that to the expire time an
+    # application asks for as well, so a plain `notify-send -t 3000` sticks too
+    # and only a click or Mod+Shift+N clears it.
+    default-timeout = 0;
+    ignore-timeout = true;
     anchor = "top-right";
     layer = "overlay";
     max-visible = 5;
     icons = true;
     max-icon-size = 48;
 
-    # urgency=critical (low battery, failed units): stay until dismissed, coloured border
+    # urgency=critical (low battery, failed units): coloured border. No timeout
+    # of its own any more - the default above is already "until dismissed".
     "urgency=critical" = {
       border-color = "#ee5396";
-      default-timeout = 0;
     };
 
     "urgency=low" = {
       text-color = "#8d8d8d";
-      default-timeout = 3000;
     };
   };
 }

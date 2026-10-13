@@ -1,6 +1,32 @@
 { pkgs }:
 with pkgs;
 [
+  # A second browser, for the pages firefox cannot do - deliberately not a
+  # handler for anything. chromium's own desktop file claims http/https,
+  # text/html, PDFs and images, and firefox is currently the only registrant for
+  # x-scheme-handler/https, which is what lets machines/strix/default.nix leave
+  # the default browser unpinned (see the commented xdg.mimeApps block there).
+  # `MimeType` comes off the file here so the profile's mimeinfo.cache gains no
+  # chromium entry and every link and file opens exactly as it did; launch it
+  # from the launcher, or `chromium <url>`.
+  #
+  # symlinkJoin rather than `chromium.overrideAttrs`: the desktop file is written
+  # by the base build, so patching it there would rebuild chromium from source.
+  (symlinkJoin {
+    name = "chromium-no-handlers";
+    paths = [ chromium ];
+    postBuild = ''
+      # chromium's own share/applications is a symlink into chromium-unwrapped,
+      # which the join reproduces as a symlink, so it is replaced with a real
+      # directory rather than written through.
+      rm $out/share/applications
+      mkdir -p $out/share/applications
+      ${gnused}/bin/sed '/^MimeType=/d' \
+        ${chromium}/share/applications/chromium-browser.desktop \
+        > $out/share/applications/chromium-browser.desktop
+    '';
+  })
+
   # Dictation: hold a key, speak, and the text is pasted at the cursor. From the
   # llm-agents overlay rather than nixpkgs, which the overlay block in
   # machines/strix/default.nix binds and flake.nix explains why - the flake has
