@@ -682,6 +682,31 @@
       And do not run `crw setup`, `crw-mcp install` or `npx crw-mcp` - like the
       other tools above, they write into the two generated files.
 
+      ### pueue - background jobs
+
+      A background job - a build, a test suite, a fetch sweep, anything that
+      will run for more than about a minute - goes through
+      `pueue add -l <label> -p -- <cmd>` rather than a tool's own background
+      mode or a bare `&`. The daemon outlives the session, so every run has a
+      log and a status that can be inspected from any session, not only the one
+      that started it; `-p` prints the id it was given, and the id is what you
+      clean it up by.
+
+      `pueue status` is the queue. `pueue log <id>` reads a finished task's
+      output (`-f` for all of it) and `pueue follow <id>` tails a running one.
+      Read the log before calling a job done either way - a task can succeed
+      while printing warnings that matter.
+
+      A task that succeeded with a log you have read and found nothing in has
+      served its purpose: `pueue remove <id>`, for the ids you added and no
+      others. Never `pueue clean` - it is list-wide, so it would take another
+      process's jobs with it. Failures, and anything whose log is still unread,
+      stay in the list for me.
+
+      The daemon is strix's (`homes/programs/pueue.nix`); a machine without it
+      has no queue to add to. It holds sleep and the lid switch off while a task
+      runs, so queue work you mean to run rather than work you are parking.
+
       ### Rust
 
       The toolchain is rust-overlay's `stable.latest`, not nixpkgs', so `rustc`,

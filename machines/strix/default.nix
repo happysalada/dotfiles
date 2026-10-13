@@ -495,10 +495,10 @@
       };
 
       # RTC alarm, so the 03:15 GC runs with the lid shut rather than at whatever
-      # resume - and it is now the only nightly wake, since the upgrade's 04:30
-      # alarm below fires on Sundays only. That night it buys the hour before the
-      # build and costs a second wake, nothing re-suspending in between. A machine
-      # off at 03:15 still skips it; no alarm can help there.
+      # resume - and it is the only every-night wake, since the upgrade's 00:30
+      # alarm below fires on Sundays only. It no longer buys the build anything:
+      # that one now lands at 00:30, ahead of this. A machine off at 03:15 still
+      # skips it; no alarm can help there.
       systemd.timers.nix-gc.timerConfig.WakeSystem = true;
 
       # Weekly bump, build and activation - nothing to wait for during the day,
@@ -634,10 +634,10 @@
         };
       };
 
-      # RTC alarm, so 04:30 happens with the lid shut instead of at the next
-      # resume - which also un-skips nix-gc's 03:15, so Sunday's GC and build
-      # land together. Nothing arms a sleep afterwards: the machine stays up
-      # until something else suspends it.
+      # RTC alarm, so Sunday 00:30 happens with the lid shut instead of at the
+      # next resume - and the GC at 03:15 now follows the build rather than the
+      # two landing back to back. Nothing arms a sleep afterwards: the machine
+      # stays up until something else suspends it.
       systemd.timers.nixos-upgrade.timerConfig.WakeSystem = true;
 
       # Root runs the build above and the checkout is mine, so libgit2 refused to
