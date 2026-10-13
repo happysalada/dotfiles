@@ -61,6 +61,23 @@
     openlogi.url = "github:AprilNEA/OpenLogi";
     openlogi.inputs.nixpkgs.follows = "nixpkgs";
     openlogi.inputs.rust-overlay.follows = "rust-overlay";
+
+    # bookokrat, a terminal EPUB/PDF/DJVU reader. Not in nixpkgs: the init PR
+    # (NixOS/nixpkgs#488100, "init at 0.3.5") was closed unmerged, so the
+    # package comes from upstream's own flake - the same one its README tells
+    # people to `nix run`. That flake is the packaging: it is the only place
+    # that knows the default `pdf` and `svg` features need mupdf (through
+    # bindgen, hence clang), resvg, freetype, harfbuzz, openjpeg, jbig2dec,
+    # gumbo and fontconfig as build inputs.
+    #
+    # Both follows are load-bearing. Without the nixpkgs one, this input is a
+    # second full evaluation of the same tree, and the package would be built
+    # by a rustc that is not the one every other rust tool here uses; with it,
+    # `bookokrat.packages.<system>.default` is a derivation over our nixpkgs,
+    # so it stays inside the same `nix flake update` as everything else.
+    bookokrat.url = "github:bugzmanov/bookokrat";
+    bookokrat.inputs.nixpkgs.follows = "nixpkgs";
+    bookokrat.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs =
@@ -76,6 +93,7 @@
       nix-index-database,
       llm-agents,
       openlogi,
+      bookokrat,
       ...
     }:
     {
@@ -93,18 +111,32 @@
             nix-index-database
             llm-agents
             openlogi
+            bookokrat
             ;
         };
       };
 
       nixosConfigurations.bee = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = import ./machines/bee { inherit home-manager agenix megzari_com; };
+        modules = import ./machines/bee {
+          inherit
+            home-manager
+            agenix
+            megzari_com
+            bookokrat
+            ;
+        };
       };
 
       nixosConfigurations.hetz = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = import ./machines/hetz { inherit home-manager agenix; };
+        modules = import ./machines/hetz {
+          inherit
+            home-manager
+            agenix
+            bookokrat
+            ;
+        };
       };
     };
 }

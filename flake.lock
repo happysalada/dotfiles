@@ -20,6 +20,29 @@
         "type": "github"
       }
     },
+    "bookokrat": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791889718,
+        "narHash": "sha256-khraRnVmLj0NEqaIoS4EDOIIERzZc39NEBz3kWeWrMc=",
+        "owner": "bugzmanov",
+        "repo": "bookokrat",
+        "rev": "4fdeb5c938fdcfe1c84ee59e912875d724ab5714",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bugzmanov",
+        "repo": "bookokrat",
+        "type": "github"
+      }
+    },
     "bun2nix": {
       "inputs": {
         "flake-parts": [
@@ -312,6 +335,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "bookokrat": "bookokrat",
         "flake-utils": "flake-utils",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",

@@ -60,5 +60,10 @@ with pkgs;
   tabiew # tui viewer for csv/parquet/json, sql over files
   ripgrep-all # ripgrep for pdf and all docs
   systemctl-tui # browse/control systemd units and their logs
-  # epy # ebook cli reader
+
+  # nixpkgs has no bookokrat (its init PR, NixOS/nixpkgs#488100, was closed
+  # unmerged), so the package comes from upstream's own flake through the
+  # overlay in each machine's nixpkgs.overlays. It replaces the commented-out
+  # `epy` this list used to carry.
+  bookokrat # terminal EPUB/PDF/DJVU reader
 ]

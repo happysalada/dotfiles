@@ -44,7 +44,61 @@
           hide_session_name = true;
         };
       };
+
+      # The Ctrl keys unbound at the bottom of this block are the ones a pane
+      # wants for itself - Ctrl p/n/h are shell and readline keys, Ctrl q is
+      # XON, Ctrl g aborts - so the mode switches went to Ctrl+Alt, one
+      # modifier further out: bare Alt is taken by zellij's own pane keys
+      # (Alt n new pane, Alt h/l/j/k focus) and by the shell's word movement.
       keybinds = {
+        # _children, not a "normal" key: the Ctrl keys these replace worked
+        # from most modes, and the generator needs a list to repeat "bind".
+        _children = [
+          {
+            shared_except = {
+              _args = [ "locked" ];
+              # Move is v, not h: a terminal sends Ctrl+Alt+h/j/i/m as
+              # Alt+Backspace, Alt+LF, Alt+Tab and Alt+Enter, so zellij never
+              # sees the Ctrl, whatever mode is bound to it.
+              _children = [
+                {
+                  bind = {
+                    _args = [ "Ctrl Alt p" ];
+                    SwitchToMode = "Pane";
+                  };
+                }
+                {
+                  bind = {
+                    _args = [ "Ctrl Alt v" ];
+                    SwitchToMode = "Move";
+                  };
+                }
+                {
+                  bind = {
+                    _args = [ "Ctrl Alt g" ];
+                    SwitchToMode = "Locked";
+                  };
+                }
+              ];
+            };
+          }
+        ];
+
+        # The unbind below reaches locked mode too, so it needs its own way out
+        # or locking would be one-way.
+        locked = {
+          bind = {
+            _args = [ "Ctrl Alt g" ];
+            SwitchToMode = "Normal";
+          };
+        };
+
+        normal = {
+          unbind = {
+            _args = [ "Ctrl b" ];
+          };
+        };
+
         unbind = {
           _args = [
             "Ctrl n"
@@ -53,11 +107,6 @@
             "Ctrl h"
             "Ctrl q"
           ];
-        };
-        normal = {
-          unbind = {
-            _args = [ "Ctrl b" ];
-          };
         };
       };
       theme = "black";

@@ -2,6 +2,7 @@
   home-manager,
   agenix,
   megzari_com,
+  bookokrat,
 }:
 let
   raphaelSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQSeQ0CV/qhZPre37+Nd0E9eW+soGs+up6a/bwggoP raphael@RAPHAELs-MacBook-Pro.local";
@@ -180,6 +181,13 @@ in
         overlays = [
           megzari_com.overlays.x86_64-linux.default
           # monorepo.overlays.x86_64-linux.default
+
+          # bookokrat, from its own flake rather than nixpkgs - flake.nix says
+          # why. Read here only, so packages/basic_cli_set.nix can list
+          # `bookokrat` without knowing where it came from.
+          (final: prev: {
+            bookokrat = bookokrat.packages.${final.stdenv.hostPlatform.system}.default;
+          })
         ];
         config = {
           allowUnfree = true;

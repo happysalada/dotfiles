@@ -6,6 +6,7 @@
   nix-index-database,
   llm-agents,
   openlogi,
+  bookokrat,
 }:
 [
   (
@@ -929,6 +930,14 @@
                 });
               })
             ];
+          })
+
+          # bookokrat, the terminal EPUB/PDF/DJVU reader. Not in nixpkgs, so it
+          # comes from its own flake - flake.nix says why that is an input and
+          # what it brings in. Read here only, so packages/basic_cli_set.nix
+          # goes on listing `bookokrat` without knowing where it came from.
+          (final: prev: {
+            bookokrat = bookokrat.packages.${final.stdenv.hostPlatform.system}.default;
           })
         ];
         flake = {
