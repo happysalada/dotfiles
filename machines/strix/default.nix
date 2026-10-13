@@ -42,6 +42,25 @@
         $setpci -s $dev ECAP_AER+0x14.L=$new
         echo "AER correctable mask on $dev: $mask -> $new"
       '';
+
+      # `asusctl aura effect ...` resets brightness back to Med, so the effect
+      # and the per-zone power states go first and `leds set off` goes last -
+      # the other way round leaves the keyboard lit. `aura power <zone>` with no
+      # flags sets boot/awake/sleep/shutdown all false, i.e. off in every state.
+      asusTuning = pkgs.writeShellScript "asus-tuning" ''
+        asusctl=${pkgs.asusctl}/bin/asusctl
+
+        $asusctl aura effect static -c 000000 || true
+        for zone in keyboard lightbar logo lid rear-glow; do
+          $asusctl aura power "$zone" || true
+        done
+        # last, so nothing above can raise it again
+        $asusctl leds set off
+
+        # asusd owns the charge threshold and re-applies its own stored value
+        # at boot, so set it through asusctl rather than only via sysfs
+        $asusctl battery limit 80
+      '';
     in
     {
       imports = [
@@ -279,24 +298,11 @@
       # or `asusctl battery oneshot` for a single full charge before travel.
       hardware.asus.battery.chargeUpto = 80;
 
-      # Applied after asusd is up, and again after resume.
-      #
-      # ORDER MATTERS: `asusctl aura effect ...` resets brightness back to Med,
-      # so the effect and the per-zone power states go first and `leds set off`
-      # goes last. Doing it the other way round leaves the keyboard lit.
-      #
-      # `asusctl aura power <zone>` with no flags sets boot/awake/sleep/shutdown
-      # all false, i.e. off in every power state.
+      # Applied after asusd is up, and again after resume by the unit below.
       systemd.services.asus-tuning = {
         description = "Aura RGB off + battery charge limit";
-        wantedBy = [
-          "multi-user.target"
-          "post-resume.target"
-        ];
-        after = [
-          "asusd.service"
-          "post-resume.target"
-        ];
+        wantedBy = [ "multi-user.target" ];
+        after = [ "asusd.service" ];
         requires = [ "asusd.service" ];
         startLimitBurst = 5;
         startLimitIntervalSec = 60;
@@ -306,21 +312,27 @@
           # asusd needs a moment to claim the dbus name after boot
           Restart = "on-failure";
           RestartSec = 3;
+          ExecStart = asusTuning;
         };
-        script = ''
-          asusctl=${pkgs.asusctl}/bin/asusctl
+      };
 
-          $asusctl aura effect static -c 000000 || true
-          for zone in keyboard lightbar logo lid rear-glow; do
-            $asusctl aura power "$zone" || true
-          done
-          # last, so nothing above can raise it again
-          $asusctl leds set off
-
-          # asusd owns the charge threshold and re-applies its own stored value
-          # at boot, so set it through asusctl rather than only via sysfs
-          $asusctl battery limit 80
-        '';
+      # `post-resume.target` is not a unit this machine has, so the resume half of
+      # the above never ran: the aura came back lit on wake and nothing turned it
+      # off again. Re-applied through the sleep window instead - the same shape
+      # as spd5118 and nvme-aer-mask-resume, and the shape the journal shows
+      # actually running at every wake.
+      systemd.services.asus-tuning-resume = {
+        description = "Re-apply the aura settings after resume";
+        before = [ "sleep.target" ];
+        wantedBy = [ "sleep.target" ];
+        unitConfig.StopWhenUnneeded = true;
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          # `-`: the keyboard colour must never hold up a sleep
+          ExecStart = "-${asusTuning}";
+          ExecStop = "-${asusTuning}";
+        };
       };
 
       # desktop (gnome, as installed)
