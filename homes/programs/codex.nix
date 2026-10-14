@@ -188,9 +188,9 @@ in
     # every change comes through here plus a rebuild, and `codex update` fails
     # outright. Bump the llm-agents input instead.
     settings = {
-      # GPT-6 Luna is the faster/cheaper tier of the GPT-6 family; Sol and
-      # Astra are the quality-first ones.
-      model = "gpt-6-luna";
+      # GPT-6.1 Sol is the current workhorse of the GPT-6.1 family; Astra is
+      # the quality-first tier above it, and Terra/Luna the cheaper ones.
+      model = "gpt-6.1-sol";
       model_reasoning_effort = "high";
 
       # Matches claude-code's default posture: edits inside the workspace go

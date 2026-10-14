@@ -212,6 +212,14 @@ in
   // system connections) silently fails instead of prompting.
   spawn-at-startup "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
+  // KDE Connect's daemon starts itself at login and needs nothing here - its
+  // XDG autostart entry, explained in machines/strix/default.nix. This is the
+  // other half: on Plasma the plasmoid is the UI, and on niri nothing would
+  // show that the phone is connected or offer to pair it. waybar's tray module
+  // is the host, so the icon only exists in this session; in GNOME, whose tray
+  // is an extension, `kdeconnect-app` from the launcher is the device list.
+  spawn-at-startup "${pkgs.kdePackages.kdeconnect-kde}/bin/kdeconnect-indicator"
+
   // The session: one terminal per zellij session, one browser per firefox
   // profile. `attach --create` resurrects a saved zellij session when there
   // is one and starts it fresh when there is not, so the same line covers

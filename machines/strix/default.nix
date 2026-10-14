@@ -403,6 +403,26 @@
       # transfer still needs an accept here.
       programs.localsend.enable = true;
 
+      # KDE Connect: the phone's other half, running rather than one-shot -
+      # notifications and clipboard both ways, file send, remote input.
+      # kdePackages.kdeconnect-kde and not the module's other spelling,
+      # gnomeExtensions.gsconnect: that one is a gnome-shell extension, and the
+      # default session here is niri.
+      #
+      # It opens TCP and UDP 1714-1764 on every interface - the same trade
+      # LocalSend makes above, for the same reason: discovery is UDP broadcast
+      # and has to reach whatever wifi this laptop has joined. An open port is
+      # an invitation rather than access, because pairing is trust-on-first-use
+      # over a TLS cert and needs an accept at *both* ends.
+      #
+      # No session wiring either. The package ships its daemon as
+      # /etc/xdg/autostart/org.kde.kdeconnect.daemon.desktop, this puts that in
+      # the system profile, and /run/current-system/sw/etc/xdg is already in
+      # XDG_CONFIG_DIRS - so systemd's xdg-autostart generator starts
+      # kdeconnectd at login under niri and GNOME alike. The tray icon niri
+      # wants on top of that is spawned in homes/niri/config.kdl.nix.
+      programs.kdeconnect.enable = true;
+
       services.printing.enable = true;
 
       # Firmware updates from LVFS: the NVMe drives, thunderbolt, and whatever
