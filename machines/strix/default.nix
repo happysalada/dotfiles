@@ -71,6 +71,10 @@
         # backend `crw search` / the `crw_search` MCP tool proxy to.
         ../../modules/searx-local.nix
 
+        # local search engine on localhost:7700, for tools and agents. The
+        # module is shared with bee, where caddy exposes it publicly.
+        ../../modules/meilisearch.nix
+
         # local LLM server on 127.0.0.1:11434, on the 4090 - see below.
         ../../modules/ollama.nix
 
@@ -81,6 +85,10 @@
         # prefect's server on 127.0.0.1:4200 - the UI and run history for
         # the flows in homes/programs/starred-digest.
         ../../modules/prefect-local.nix
+
+        # Offsite backups to Backblaze B2, daily at midnight; the timer wakes
+        # the machine for the run. See modules/rustic.nix.
+        ../../modules/rustic.nix
 
         # Logitech HID++ control for the MX Master 3S. The module is the point
         # of the flake input: it installs the package, the udev rules that
@@ -104,6 +112,15 @@
         # gives hardware.asus.battery.chargeUpto
         nixos-hardware.nixosModules.asus-battery
       ];
+
+      # agenix decrypts the system secrets (rustic/b2/meilisearch, declared in
+      # modules/*.nix) during activation, as root. Its default identity paths
+      # are the SSH host keys, which do not match the `yt_at_strix` recipient
+      # the secrets are encrypted to, so activation fails with "no identity
+      # matched any of the recipients". The home-manager secrets (deepseek,
+      # github) already work because that activation runs as yt and reads
+      # ~/.ssh/id_ed25519 on its own - point the system half at the same key.
+      age.identityPaths = [ "/home/yt/.ssh/id_ed25519" ];
 
       # boot
       boot = {
@@ -428,6 +445,23 @@
       # Firmware updates from LVFS: the NVMe drives, thunderbolt, and whatever
       # ASUS publishes there. `fwupdmgr get-updates`, then `fwupdmgr update`.
       services.fwupd.enable = true;
+
+      # smartd watches the NVMe SMART attributes and flags a drive that is
+      # genuinely degrading, so a warning lands in the journal and, here, on the
+      # desktop. mail/x11/wall cannot reach a niri session - no MTA, xmessage is
+      # X11-only, wall only writes TTYs - so notifications go over
+      # systembus-notify, whose user half bridges the system bus to whatever
+      # notification daemon owns the session (mako). autodetect stays on, which
+      # covers both NVMe drives at start.
+      services.smartd = {
+        enable = true;
+        notifications = {
+          mail.enable = false;
+          x11.enable = false;
+          wall.enable = false;
+          systembus-notify.enable = true;
+        };
+      };
 
       # Rootless containers, so an agent can `docker run postgres` for an
       # integration test instead of guessing. dockerCompat puts `docker` on
@@ -1122,6 +1156,7 @@
             ++ (import ../../packages/linux_cli_set.nix { inherit pkgs; })
             ++ (import ../../packages/gui.nix { inherit pkgs; })
             ++ (import ../../packages/office.nix { inherit pkgs; })
+            ++ (import ../../packages/data.nix { inherit pkgs; })
             ++ (import ../../packages/package_managers.nix { inherit pkgs; })
             ++ (import ../../packages/dev/rust.nix { inherit pkgs; })
             # rustc/cargo/clippy/rustfmt/rust-analyzer at stable latest, plus the

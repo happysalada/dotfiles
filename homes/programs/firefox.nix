@@ -317,9 +317,10 @@ in
   profiles.research = taskProfile {
     id = 3;
     startupPage = 3;
-    urls = [
-      "TODO-timeseries-momentum-url"
-    ];
+    # the placeholder that used to seed this profile was never filled in; an
+    # empty list falls back to an empty homepage instead of opening an
+    # invalid address on a first run
+    urls = [ ];
   };
 
   # Workspace 5. The Microsoft RustTraining books plus rust-exercises, the set

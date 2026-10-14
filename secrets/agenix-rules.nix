@@ -36,4 +36,14 @@ in
   # created with an empty plaintext and stays empty until a token is pasted in;
   # gh reads an empty GH_TOKEN as unset and keeps using the keyring login.
   "github.token.age".publicKeys = [ yt_at_strix ];
+
+  # rustic offsite backups: the repository password (the encryption key for the
+  # whole repo - losing it loses the backups) and the B2 application key, which
+  # also carries the bucket id. strix only for now.
+  "rustic.password.age".publicKeys = [ yt_at_strix ];
+  "b2.credentials.age".publicKeys = [ yt_at_strix ];
+
+  # Meilisearch master key (modules/meilisearch.nix). strix only for now, same
+  # as the two above - grow the list when bee's instance is revived.
+  "meilisearch.master-key.age".publicKeys = [ yt_at_strix ];
 }

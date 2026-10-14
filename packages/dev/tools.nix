@@ -3,6 +3,9 @@
 { pkgs }:
 with pkgs;
 [
+  # nixpkgs spells it gnumake - there is no `pkgs.make`. The binary it installs
+  # is `make`, which C builds (jemalloc in tikv, most tarball projects) invoke.
+  gnumake
   just # the task runner most repos with a justfile expect
   watchexec # rerun a command on file change
   tokei # line counts per language - a cheap first map of an unknown repo

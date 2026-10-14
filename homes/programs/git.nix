@@ -36,6 +36,8 @@
         "git@github.com:happysalada" = {
           insteadOf = "https://github.com/happysalada";
         };
+        # bee's gitea, for cloning out of /var/lib/gitea/repositories - dead
+        # while bee is parked, harmless to leave.
         "ssh://gitea@gitea.sassy.technology" = {
           insteadOf = "file:///var/lib/gitea/repositories";
         };

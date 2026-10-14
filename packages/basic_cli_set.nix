@@ -33,6 +33,7 @@ with pkgs;
   unzip # what scripts and agents call, whatever ouch can do
   zip
   b3sum # blake3 sums, when that is the hash a project publishes
+  openssl # the CLI (rand, x509, s_client); the lib is already a transitive dep of half the closure
   tree
   solo2-cli # updating solokeys
   sqlite
@@ -56,8 +57,6 @@ with pkgs;
   bat
   termscp
   numbat # over libqalculate
-  qsv # data wrangling
-  tabiew # tui viewer for csv/parquet/json, sql over files
   ripgrep-all # ripgrep for pdf and all docs
   systemctl-tui # browse/control systemd units and their logs
 

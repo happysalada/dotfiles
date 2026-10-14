@@ -1,14 +1,25 @@
-{ config, ... }:
+# Meilisearch: a RESTful search API. Shared by bee and strix - on bee it is
+# exposed through caddy at meilisearch.megzari.com, on strix it stays on
+# localhost for local tools and agents (no caddy there, so the vhost below is
+# simply never defined).
+#
+# The master key is required: without one every route is open to whoever can
+# reach the port. It lives in an agenix secret, decrypted to a root-only file
+# that systemd reads via LoadCredential - the key never lands in the nix store
+# or a world-readable path, and the DynamicUser service never touches the file
+# directly.
+{ config, lib, ... }:
 {
   services.meilisearch = {
     enable = true;
-    # The old top-level `dumplessUpgrade` still maps here, but nixpkgs marks it
-    # obsolete and warns on every evaluation, so the settings spelling is the
-    # one to keep.
-    settings.experimental_dumpless_upgrade = true;
+    masterKeyFile = config.age.secrets.meilisearch-master-key.path;
   };
 
-  services.caddy.virtualHosts = {
+  age.secrets.meilisearch-master-key = {
+    file = ../secrets/meilisearch.master-key.age;
+  };
+
+  services.caddy.virtualHosts = lib.mkIf config.services.caddy.enable {
     "meilisearch.megzari.com" = {
       extraConfig = ''
         import security_headers
