@@ -67,6 +67,17 @@ let
     };
   };
 
+  # Inside a jail, sccache compiles in the process that is already sandboxed and
+  # uses the daemon only as a gateway to the cache, so a daemon this session
+  # cannot vouch for - wedged, or born in someone else's mount namespace - can no
+  # longer take a cache-miss compile down with it. Upstream calls this the
+  # recommended mode; the server belongs to homes/programs/sccache.nix, and
+  # nothing here starts one.
+  jailEnv = {
+    # Quoted because every value in that map is a nu expression, not a literal.
+    SCCACHE_CLIENT_SIDE = ''"1"'';
+  };
+
   # `writeNuBin`, not `writeNu`: the latter writes the script at the store root and
   # yields a *file*, which `pkgs.buildEnv` cannot merge - `home.packages` goes
   # through it, so the generation fails with "The store path ... is a file and
@@ -92,7 +103,7 @@ let
     pkgs.writers.writeNuBin "nono-${name}" ''
       def --wrapped main [...rest: string] {
         with-env { ${
-          lib.concatStringsSep ", " (lib.mapAttrsToList (entry: value: "${entry}: ${value}") env)
+          lib.concatStringsSep ", " (lib.mapAttrsToList (entry: value: "${entry}: ${value}") (jailEnv // env))
         } } {
           exec ${nono} run --profile ${
             renderProfile name profiles.${name}

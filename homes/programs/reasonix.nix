@@ -336,6 +336,13 @@ let
       mcp_startup_timeout_seconds = 30;
       mcp_call_timeout_seconds = 300;
       background_jobs.stalled_warning_seconds = 900;
+
+      # Every bash command runs inside the jail, so have sccache compile in that
+      # same client process and use the daemon only as a gateway to the cache: a
+      # daemon in the wrong mount namespace can then no longer break every
+      # cache-miss compile with a temp dir that has gone away. Upstream's
+      # recommended mode; the server is homes/programs/sccache.nix.
+      shell.env.SCCACHE_CLIENT_SIDE = "1";
     };
 
     lsp = {

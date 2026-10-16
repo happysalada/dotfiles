@@ -1097,6 +1097,9 @@
           # ~/.cargo/config.toml, which is what makes rustc cache through sccache
           # and link with mold.
           ../../homes/programs/cargo.nix
+          # The server those builds talk to, so that it belongs to systemd rather
+          # than to whichever client happened to compile first.
+          ../../homes/programs/sccache.nix
           # ctrl-space command search. Seeds its own store, so it is a module
           # rather than a programs entry.
           ../../homes/programs/intelli-shell
