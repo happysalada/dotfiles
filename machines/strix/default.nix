@@ -5,6 +5,7 @@
   rust-overlay,
   nix-index-database,
   llm-agents,
+  iets,
   openlogi,
   bookokratOverlay,
 }:
@@ -90,11 +91,26 @@
         # the machine for the run. See modules/rustic.nix.
         ../../modules/rustic.nix
 
+        # Queues a walk per missing Japanese day through pueue, then fetches
+        # the taxonomy vintages and decodes the filings into a release. The
+        # queue is strix's, so the module is too: it runs as yt with that
+        # user's runtime directory. See modules/commonage-edinet.nix.
+        ../../modules/commonage-edinet.nix
+
         # Logitech HID++ control for the MX Master 3S. The module is the point
         # of the flake input: it installs the package, the udev rules that
         # grant the desktop user uaccess on the mouse's /dev/hidraw, uinput and
         # event node (so no `input` group is involved), and the agent unit.
         openlogi.nixosModules.default
+
+        # The Rust Nix client, under the classic names `nix`, `nix-build`,
+        # `nix-instantiate`, `nix-shell` and `nix-eval-jobs`. It answers what it
+        # implements and execs the real nix for the rest, one line on stderr, so
+        # the fallback is what makes it safe ahead of nix in the path - and what
+        # makes it useless for a `nixosConfigurations` attribute path, which
+        # needs import-from-derivation (homes/programs/reasonix.nix:97). The
+        # Tooling section of ai-context.nix is where the agents are told that.
+        iets.nixosModules.default
 
         # modules/kanata.nix is deliberately NOT imported: its chord processing
         # reorders ordinary typing. The header of that file has the detail.
@@ -633,6 +649,11 @@
           persistent = false;
         };
       };
+
+      # The classic names in the system path, ahead of nix's own - the module
+      # writes the nix this host runs into share/iets/real-nix-bin, so the
+      # fallback finds it even where the farm shadowed it out of PATH.
+      iets.classic.enable = true;
 
       # Belt to the above's braces, for the runs that do land while I am typing.
       # Only the CPU half bites on this machine: ionice needs a scheduler that

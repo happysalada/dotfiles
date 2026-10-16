@@ -33,6 +33,20 @@
     nixinate.url = "github:matthewcroughan/nixinate";
     nixinate.inputs.nixpkgs.follows = "nixpkgs";
 
+    # The Nix client the agents run instead of `nix`: a Rust re-implementation
+    # that answers the same `.drv` paths for what it implements (everything it
+    # does not goes back to the real nix) and caches by file tracing, so a
+    # repeat command evaluates nothing. machines/strix/default.nix imports its
+    # NixOS module and turns the classic names on.
+    #
+    # The follow is free, measured not assumed: with it, `default` resolves to
+    # the same /nix/store/vp7xk6bgrnclspfvlbynz452wb94srjh-iets-0.1.0 the pin
+    # builds, and cache.numtide.com serves that path to the key machines/strix
+    # already trusts. A nixpkgs bump can still miss, and a miss builds the crate
+    # here - minutes, not an error.
+    iets.url = "github:numtide/iets";
+    iets.inputs.nixpkgs.follows = "nixpkgs";
+
     # The site on bee. devshell and nuenv come in only through it, and each
     # carries its own 2023-era input - a flake-utils and a 45 MB rust-overlay -
     # that feeds nothing but their own dev shells, so both follow the root ones.
@@ -92,6 +106,7 @@
       rust-overlay,
       nix-index-database,
       llm-agents,
+      iets,
       openlogi,
       bookokrat,
       ...
@@ -143,6 +158,7 @@
             rust-overlay
             nix-index-database
             llm-agents
+            iets
             openlogi
             bookokratOverlay
             ;

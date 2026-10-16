@@ -448,8 +448,11 @@ in
       // notification. The claude Stop hook (~/.claude/hooks) attaches a Focus
       // action, so this jumps straight to the window + zellij pane that
       // finished - no mouse, no hunting for which pane it was.
-      Mod+N       { spawn "${makoctl}" "invoke"; }
-      Mod+Shift+N { spawn "${makoctl}" "dismiss"; }
+      Mod+N            { spawn "${makoctl}" "invoke"; }
+      Mod+Shift+N      { spawn "${makoctl}" "dismiss"; }
+      // Nothing expires, so a backlog a thousand deep is normal and one toast
+      // per press cannot clear it. Clearing all is destructive, hence Ctrl.
+      Mod+Ctrl+Shift+N { spawn "${makoctl}" "dismiss" "--all"; }
 
       // ---- screenshots ----
       Print            { screenshot; }

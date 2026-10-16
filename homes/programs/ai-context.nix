@@ -425,6 +425,12 @@
       nix build "path:/home/yt/dotfiles#nixosConfigurations.strix.config.system.build.toplevel"
       ```
 
+      A `path:` reference is also the one case where nix's own eval cache never
+      helps: the store path of the tree changes whenever any file in it does,
+      including the agent state under `.reasonix/` and `.ck/`, so the same
+      attribute costs its full 13-20s on every call. That is what iets's
+      tracing cache is for - see Tooling below.
+
       ## Code style
 
       ### Step-down order
@@ -482,6 +488,7 @@
       | `curl` | `xh` |
       | `grep` inside a PDF or .docx | `rga` |
       | per-language line counts, disk usage, a flag you have forgotten | `tokei`, `dua`, `tldr <cmd>` |
+      | `nix eval`, `nix build`, `nix search`, `nix fmt` on a local flake | `iets` - same stdout, cached across runs; the fallbacks are below |
 
       Never reach for `python -c`, `awk`, `sed -i` or a heredoc script to do
       text or structured-data plumbing: the rows above cover it in one step.
@@ -489,6 +496,54 @@
       are for the shapes where it is not enough. The rest of the installed
       toolbox - the tools whose job is not guessable from the name - is the
       `cli-toolbox` skill.
+
+      ### iets - the Nix client
+
+      The Nix client is iets: a Rust re-implementation that answers the same
+      `.drv` paths and the same stdout for what it implements, evaluates
+      1.5-2x faster, and caches by file tracing, so a repeated command replays
+      instead of evaluating. It has no daemon and no store of its own - the
+      daemon in `nix.conf` is still what builds and substitutes - so it is a
+      client to prefer, not a second Nix to keep in sync.
+
+      It is installed as the classic names, so `nix`, `nix-build`,
+      `nix-instantiate`, `nix-shell` and `nix-eval-jobs` in a shell are already
+      something else: a plain `nix eval` goes through it without being asked,
+      and `iets search`, `iets diff` and `iets prefetch` stand in for
+      `nix search`, nix-diff and nurl. Measured on this machine: `iets search`
+      over the pinned nixpkgs is 0.06s against `nix search`'s 13s once its
+      index exists, and a second `iets eval` of a machine config is 1.9s
+      against `nix`'s 13.7s.
+
+      Anything it does not implement prints one line,
+      `iets: falling back to nix: …`, and runs the real nix - so an unfamiliar
+      flag is never a reason to reach past it. What falls back:
+
+      - import-from-derivation. `homes/programs/reasonix.nix` reads a
+        `SKILL.md` out of `fetchFromGitHub` outputs, so **every
+        `nixosConfigurations.strix` evaluation falls back** and gains nothing
+        from it. Do not call `iets` for that yourself: under the classic name
+        you get the real nix, called directly you get
+        `import from derivation is not supported`. bee and hetz do not import
+        reasonix.nix, so those evaluate.
+      - `nixpkgs#hello` and `github:…#attr` - no registry, no remote roots.
+        `.`, `path:` and a directory in a git repo are its own.
+      - `nix flake …` except `prefetch-inputs`, `nix run`, `nix shell`,
+        `nix profile`, `nix store`, `nix copy`, `nix repl`.
+
+      Two divergences, so a store path is not the place to take it on trust.
+      Against nix 2.35.3 on 2026-10-16, from one frozen copy of this repo: the
+      `system-units` derivation differs (`bsfzjnc…` against `snbi16k…`), which
+      carries up through `etc` and `nixos-system-bee` to the drv path itself -
+      everything else sampled, systemd, iana-etc, nixos-init, hosts and
+      sudoers, is byte for byte nix's. And `iets eval --json` fails on
+      `config.systemd.units` with `cannot convert a thunk to JSON` where nix
+      prints 266 KB. Both are for an upstream issue; until they are settled,
+      check a `.drv` path against `nix` before acting on it.
+
+      It is 0.1.0, tested against Nix 2.34.8 while this host runs
+      `nixVersions.latest`. `iets help` lists the commands, `iets help
+      divergences` the known differences.
 
       ### xh - HTTP client
 
