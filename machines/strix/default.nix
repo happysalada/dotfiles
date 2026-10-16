@@ -97,6 +97,10 @@
         # user's runtime directory. See modules/commonage-edinet.nix.
         ../../modules/commonage-edinet.nix
 
+        # GLEIF's golden copy, fetched weekly and indexed in the same run. See
+        # modules/commonage-gleif.nix.
+        ../../modules/commonage-gleif.nix
+
         # Logitech HID++ control for the MX Master 3S. The module is the point
         # of the flake input: it installs the package, the udev rules that
         # grant the desktop user uaccess on the mouse's /dev/hidraw, uinput and
