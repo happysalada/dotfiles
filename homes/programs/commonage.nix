@@ -19,6 +19,11 @@
 # version of each table per day, so one pass per day captures it and a second is a
 # no-op the archiver answers from the store.
 #
+# `openfigi` is the fifth and is not published data either: it asks OpenFIGI to map
+# the securities of companies the archive knows to FIGIs, one query per symbol. It
+# can only ask about a company whose submissions document it holds, so it hydrates
+# them first and maps what it just fetched.
+#
 # systemd owns the schedule, but none of the EDGAR units encodes EDGAR's hours:
 # EDGAR's day is US Eastern and this machine's is not, so the archiver checks the
 # window itself and exits 0 outside it. A timer firing at the wrong hour therefore
@@ -27,7 +32,7 @@
 # The binary is the project's own `cargo build --release` rather than a nix
 # package. Deliberately temporary, and the reason is the clock: packaging it can
 # follow, but the days in between are vintages nobody can recover.
-{ config, ... }:
+{ config, pkgs, ... }:
 let
   binary = "${config.home.homeDirectory}/dev/commonage/target/release/commonage-archiver";
 
@@ -136,6 +141,46 @@ in
       # winter, so it lands inside EDGAR's window whatever this machine's clock
       # is doing.
       OnCalendar = "*-01,04,07,10-01 14:00 UTC";
+      Persistent = true;
+    };
+
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  # Metadata, then mappings. The mapping pass can only ask about companies whose
+  # submissions document is held - mapping without hydrating is a no-op - so the two
+  # run as one pipeline and stop at the first failure.
+  systemd.user.services.commonage-openfigi = {
+    Unit.Description = "refresh SEC submissions metadata, then the OpenFIGI mappings";
+    Unit.X-SwitchMethod = "keep-old";
+
+    # Pulls a sweep into this transaction and runs it first, the same pairing `recent`
+    # uses. It starts the service rather than waiting to be triggered by its timer, so
+    # it still works while that timer is not firing.
+    Unit.After = [ "commonage-sweep.service" ];
+    Unit.Wants = [ "commonage-sweep.service" ];
+
+    Service = {
+      Type = "oneshot";
+      # `fnox` reads fnox.toml from here, and the age identity from the user's home.
+      WorkingDirectory = "${config.home.homeDirectory}/dev/commonage";
+      Environment = environment;
+      ExecStart = [
+        "${pkgs.fnox}/bin/fnox exec -- ${binary} hydrate-submissions"
+        "${pkgs.fnox}/bin/fnox exec -- ${binary} enrich-openfigi"
+      ];
+      TimeoutStartSec = "90min";
+    };
+  };
+
+  systemd.user.timers.commonage-openfigi = {
+    Unit.Description = "weekly trigger for metadata and mappings";
+
+    Timer = {
+      # Weekly: new listings appear at human speed, and both steps are incremental -
+      # the mapping pass asks only for queries its journal does not hold.
+      OnCalendar = "Sun 04:00";
+      RandomizedDelaySec = "20min";
       Persistent = true;
     };
 
