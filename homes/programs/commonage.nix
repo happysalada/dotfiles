@@ -1,24 +1,28 @@
-# Keeps an immutable copy of what the SEC published, in the store the archiver
-# finds on its own: `crates/store/data` inside the project's own checkout, ignored
-# by git, and where the corpus, the decoder and a release look too. Nothing here
-# sets `COMMONAGE_ROOT`, so a scheduled run and a hand-run one grow the same store
-# instead of two.
+# Keeps an immutable copy of what the SEC published, and of the tables the Taiwan
+# exchanges publish, in the store the archiver finds on its own: `crates/store/data`
+# inside the project's own checkout, ignored by git, and where the corpus, the
+# decoder and a release look too. Nothing here sets `COMMONAGE_ROOT`, so a
+# scheduled run and a hand-run one grow the same store instead of two.
 #
 # The only thing on this machine with a clock on it: a version of the SEC's own
 # derived data that is not taken today cannot be bought back later, because the
 # SEC regenerates those files in place.
 #
-# Three units, because three things change at three different rates. `recent`
+# Three EDGAR units, because three things change at three different rates. `recent`
 # reads the daily index and picks up filings that just landed, so it is cheap
 # enough to run often. `sweep` reads the SEC's own company-facts directory and
 # refreshes the filers that changed, slowly and resumably. `indexes` keeps the
 # quarterly index files, which say who filed what in each quarter and are what the
 # EDGAR metadata graph is rebuilt from.
 #
-# systemd owns the schedule, but none of the three encodes EDGAR's hours: EDGAR's
-# day is US Eastern and this machine's is not, so the archiver checks the window
-# itself and exits 0 outside it. A timer firing at the wrong hour therefore costs
-# one process start and nothing else.
+# `mops` is the fourth and is not EDGAR at all: the Taiwan exchanges publish one
+# version of each table per day, so one pass per day captures it and a second is a
+# no-op the archiver answers from the store.
+#
+# systemd owns the schedule, but none of the EDGAR units encodes EDGAR's hours:
+# EDGAR's day is US Eastern and this machine's is not, so the archiver checks the
+# window itself and exits 0 outside it. A timer firing at the wrong hour therefore
+# costs one process start and nothing else.
 #
 # The binary is the project's own `cargo build --release` rather than a nix
 # package. Deliberately temporary, and the reason is the clock: packaging it can
@@ -132,6 +136,41 @@ in
       # winter, so it lands inside EDGAR's window whatever this machine's clock
       # is doing.
       OnCalendar = "*-01,04,07,10-01 14:00 UTC";
+      Persistent = true;
+    };
+
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  # MOPS and TPEx publish open data: no key, so no fnox exec, and no
+  # `COMMONAGE_RPS` either, which paces EDGAR. The client paces itself three
+  # seconds apart against its own budget file under the store, which makes a cold
+  # full pass minutes rather than hours.
+  systemd.user.services.commonage-mops = {
+    Unit.Description = "archive the Taiwan exchanges' published tables";
+    Unit.X-SwitchMethod = "keep-old";
+
+    Service = {
+      Type = "oneshot";
+      # No arguments: the bare pass covers all 56 tables of the six datasets, and
+      # no `--root`, so it grows the store the other units write.
+      ExecStart = "${binary} mops snapshot";
+      Environment = environment;
+      TimeoutStartSec = "30min";
+    };
+  };
+
+  systemd.user.timers.commonage-mops = {
+    Unit.Description = "daily trigger for the Taiwan snapshot";
+
+    Timer = {
+      # 22:00 UTC is 06:00 Taipei, sixteen hours after the 13:30 close, so the
+      # day's final tables have settled. The archiver's freshness window for them
+      # is exactly 24 h, so one pass a day stores each new version once and a
+      # second the same day is served from the archive. UTC because Taipei has no
+      # DST to follow.
+      OnCalendar = "*-*-* 22:00:00 UTC";
+      RandomizedDelaySec = "10min";
       Persistent = true;
     };
 

@@ -1109,11 +1109,11 @@
           # points read as GH_TOKEN at launch. A module rather than a
           # `programs.gh = ...` fragment because it also declares a secret.
           ../../homes/programs/gh.nix
-          # Three user timers keeping an immutable copy of what the SEC
-          # published, under $HOME/commonage. Invokes the project's own cargo
-          # release build rather than a package, deliberately and temporarily:
-          # a version of the SEC's derived data not taken today cannot be bought
-          # back later, and packaging it can follow.
+          # Three EDGAR timers and a daily Taiwan snapshot, keeping an immutable
+          # copy of what those exchanges published under $HOME/commonage. Invokes
+          # the project's own cargo release build rather than a package,
+          # deliberately and temporarily: a version of that derived data not taken
+          # today cannot be bought back later, and packaging it can follow.
           ../../homes/programs/commonage.nix
           # The pueued user service and ~/.config/pueue/pueue.yml, so a queue
           # outlives the terminal that started it.
