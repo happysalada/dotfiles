@@ -192,14 +192,23 @@ in
   # seconds apart against its own budget file under the store, which makes a cold
   # full pass minutes rather than hours.
   systemd.user.services.commonage-mops = {
-    Unit.Description = "archive the Taiwan exchanges' published tables";
+    Unit.Description = "archive the Taiwan exchanges' published tables, then build the day's release";
     Unit.X-SwitchMethod = "keep-old";
 
     Service = {
       Type = "oneshot";
-      # No arguments: the bare pass covers all 56 tables of the six datasets, and
-      # no `--root`, so it grows the store the other units write.
-      ExecStart = "${binary} mops snapshot";
+      # No `--root`, so it grows the store the other units write. Two commands only
+      # because this is a oneshot: systemd runs them in order and stops at the first
+      # failure, so the release is built from a snapshot that succeeded or not at all.
+      ExecStart = [
+        # No arguments: the bare pass covers all the tables of the six datasets.
+        "${binary} mops snapshot"
+        # Reads the ledger and the store, asks nobody anything, so it needs no key and
+        # no network. `--out` is absolute because the default is relative and a user
+        # unit starts in `$HOME`, which would make it `~/data/releases/mops`.
+        "${binary} mops release --out ${config.home.homeDirectory}/dev/commonage/data/releases/mops"
+      ];
+      WorkingDirectory = "${config.home.homeDirectory}/dev/commonage";
       Environment = environment;
       TimeoutStartSec = "30min";
     };
