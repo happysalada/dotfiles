@@ -493,17 +493,20 @@
         defaultNetwork.settings.dns_enabled = true;
       };
 
-      # Hourly read-only snapshots of /home, for undoing what an agent (or I)
-      # just broke: `ls /.snapshots`, copy back what you need. Each one is also
-      # sent incrementally to the second drive, which survives this one dying.
+      # Weekly read-only snapshots of /home, for undoing what an agent (or I)
+      # just broke: `ls /.snapshots`, copy back what you need. Saturday's is
+      # also sent incrementally to the second drive, which survives this one
+      # dying. Only the newest of each is kept: the local one is just the diff
+      # base for the next send, and two copies of this home do not fit on the
+      # backup drive.
       services.btrbk.instances.home = {
-        onCalendar = "hourly";
+        onCalendar = "Sat *-*-* 00:00:00";
         settings = {
-          snapshot_preserve_min = "2d";
-          snapshot_preserve = "48h 14d 8w";
-          # the other drive has the room for a longer history
-          target_preserve_min = "no";
-          target_preserve = "48h 14d 8w 12m";
+          # `no` + `latest` is btrbk's own spelling for "keep the latest only".
+          snapshot_preserve_min = "latest";
+          snapshot_preserve = "no";
+          target_preserve_min = "latest";
+          target_preserve = "no";
           volume."/" = {
             snapshot_dir = ".snapshots";
             subvolume = "home";
@@ -512,6 +515,18 @@
             target = "/mnt/backup/home";
           };
         };
+      };
+      # Cargo's target/ is build output that changes on every compile. A nested
+      # btrfs subvolume is skipped by snapshots, so neither the weekly snapshot
+      # nor the send to the second drive carries it; the data stays on this
+      # disk, only the backup is spared the churn.
+      fileSystems."/home/yt/dev/commonage/target" = {
+        device = config.fileSystems."/".device;
+        fsType = "btrfs";
+        options = [
+          "subvol=commonage-target"
+          "noatime"
+        ];
       };
       # btrbk refuses to create its own snapshot_dir
       systemd.tmpfiles.rules = [ "d /.snapshots 0755 root root -" ];
@@ -1118,6 +1133,10 @@
           # The pueued user service and ~/.config/pueue/pueue.yml, so a queue
           # outlives the terminal that started it.
           ../../homes/programs/pueue.nix
+          # An hourly reading of / with a toast once it crosses 90%. The last
+          # boot that filled the disk failed journald, nix-daemon and most user
+          # units at once; this says so while there is still room to act.
+          ../../homes/programs/disk-space-guard.nix
           # The ccusage prompt segment. Separate from homes/common.nix's starship
           # block because it needs a package only strix has.
           ../../homes/programs/ccusage.nix
