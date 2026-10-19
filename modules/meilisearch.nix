@@ -13,6 +13,11 @@
   services.meilisearch = {
     enable = true;
     masterKeyFile = config.age.secrets.meilisearch-master-key.path;
+    # Since the SSRF fix, embedder URLs resolving to non-global IPs are refused.
+    settings.experimental_allowed_ip_networks = [
+      "127.0.0.1/32"
+      "::1/128"
+    ];
   };
 
   age.secrets.meilisearch-master-key = {

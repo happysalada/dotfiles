@@ -315,7 +315,10 @@
         package = pkgs.ollama-cuda;
         # ~7GB of the 16GB of VRAM; add more with `ollama pull`, or here to
         # have them fetched on rebuild.
-        loadModels = [ "mistral-nemo" ];
+        loadModels = [
+          "mistral-nemo"
+          "qwen3-embedding:4b"
+        ];
       };
 
       services.ollaya = {
@@ -1105,6 +1108,10 @@
           ../../homes/programs/nono.nix
           # Serves that same opencode over the mesh, for the phone.
           ../../homes/programs/opencode-server.nix
+          # Happier: the same agents mirrored to the phone/browser, over a
+          # self-hosted relay on this machine. Both are user services; the
+          # relay's unit holds sleep off while it runs.
+          ../../homes/programs/happier.nix
           # Registers its own MCP server next to the units it talks to.
           ../../homes/programs/crw.nix
           # ~/.symposium/config.toml, so `cargo agents init` never has to run.

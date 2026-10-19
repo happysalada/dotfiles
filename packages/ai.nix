@@ -94,6 +94,17 @@ with pkgs;
   # Do NOT run `hyperresearch install --global`, `/plugin install`, `codex plugin
   # add` or `npx skills add` - each writes into config generated here.
 
+  (callPackage ./ai/happier.nix { }) # Happier: mirrors claude, codex and
+  # opencode sessions to the phone and browser, and starts sessions remotely.
+  # The daemon and the self-hosted relay it talks to are
+  # homes/programs/happier.nix; this is the `happier` CLI on PATH.
+  #
+  # Not in nixpkgs and no usable upstream flake, so it is unpacked from the
+  # signed release payload. Do NOT run `happier self update` or `happier
+  # service install`: the first replaces the read-only store copy, the second
+  # writes a unit that home-manager already declares. Relay selection and
+  # sign-in (`happier setup --relay ...`) are the only interactive steps.
+
   # ---- from the numtide/llm-agents flake ----
   # Bound by the overlay in machines/strix/default.nix, whose cache substitutes
   # most of them; the rest are in nixpkgs nowhere.

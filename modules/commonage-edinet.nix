@@ -28,8 +28,13 @@ let
   # keyed by the bytes they were made from, so re-running the parse adds the filings
   # that are new and leaves every other partition alone; one already complete at the
   # current format is skipped without being read. A new name here is how one is frozen.
+  #
+  # 2026-10-16 is stale and stays that way: the partition paths were re-keyed to
+  # `source_blake3=<digest>/filing_id=<id>` and the taxonomy input set gained six
+  # 2013-08-31 schemas, so every manifest under it now mismatches and a run there
+  # would rewrite what it touched. Rebuild into the new root instead.
   repo = "/home/yt/dev/commonage";
-  release = "data/releases/edinet/2026-10-16";
+  release = "data/releases/edinet/2026-10-19";
 
   # The taxonomy vintages the filings were made under. `catalog fetch-edinet` is
   # idempotent — a package already in the store is not fetched again — and a filing
@@ -80,9 +85,22 @@ in
       cargo run --release --locked -p commonage-archiver -- \
         --root ${repo}/crates/store/data \
         catalog fetch-edinet --years ${years}
+      # The limit has to clear the whole archive, not just what is new: a pass that hits
+      # it stops early and never reaches the later filings, which is how this release
+      # never grew past 2023-11-13 while every run reported success. 500000 is above the
+      # 426,921 main ZIPs held and leaves room for the archive to grow. Partitions
+      # already made at the current format are skipped, so the cap only bounds the work
+      # a first pass on a new root has to do.
+      #
+      # `--allow-undecodable` keeps the unit green on the handful of filings nothing can
+      # decode yet - two malformed source ZIPs, two where one ZIP is served under two
+      # document ids, and one whose IFRS ja label linkbase returns 404 upstream. They
+      # are named in the log rather than failing the run; the flag is for a schedule,
+      # and the fix belongs in the decoder or upstream, not in a red unit.
       cargo run --release --locked -p commonage-archiver -- \
         --root ${repo}/crates/store/data \
-        decode-edinet --out ${repo}/${release} --limit 200000 --years ${years}
+        decode-edinet --out ${repo}/${release} --limit 500000 --years ${years} \
+        --allow-undecodable
     '';
   };
 

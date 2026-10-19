@@ -5,12 +5,16 @@
 # on the mesh interface only (`nb0`, named below so the firewall scopes to it):
 #   - 22           sshd, which strix otherwise does not run at all
 #   - 4096         the opencode server (homes/programs/opencode-server.nix)
+#   - 3005         the Happier relay (homes/programs/happier.nix)
 #   - 60000-61000  mosh, one UDP port per live session
 { config, ... }:
 let
   # homes/programs/opencode-server.nix serves on this; kept in sync by hand
   # because the two live on opposite sides of the system/home-manager split.
   opencodePort = 4096;
+
+  # homes/programs/happier.nix serves the relay here, same split.
+  happierPort = 3005;
 in
 {
   services.netbird.clients.netbird = {
@@ -73,6 +77,7 @@ in
     allowedTCPPorts = [
       22
       opencodePort
+      happierPort
     ];
     # mosh's default range; it claims one port per concurrent session
     allowedUDPPortRanges = [

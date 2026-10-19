@@ -29,12 +29,22 @@
 # window itself and exits 0 outside it. A timer firing at the wrong hour therefore
 # costs one process start and nothing else.
 #
-# The binary is the project's own `cargo build --release` rather than a nix
-# package. Deliberately temporary, and the reason is the clock: packaging it can
-# follow, but the days in between are vintages nobody can recover.
+# Every unit runs the archiver through `cargo run --release --locked` rather than
+# exec'ing `target/release/commonage-archiver`. Nothing rebuilt that binary, so
+# units fired week-old code and reported success while archiving nothing (13 Oct),
+# and a fixed schedule plus an unbuilt binary is exactly how that stays quiet.
+# The cost is that a compile counts against the unit's own timeout on the first
+# fire after a source change, and that a run executes whatever the tree holds -
+# including a tree mid-edit. Still: the project's own `cargo build --release`
+# rather than a nix package, deliberately temporary and for the clock's sake -
+# packaging it can follow, but the days in between are vintages nobody recovers.
 { config, pkgs, ... }:
 let
-  binary = "${config.home.homeDirectory}/dev/commonage/target/release/commonage-archiver";
+  # The checkout, which is where `cargo run` has to start: cargo finds the
+  # workspace from the working directory, not from the argument list.
+  checkout = "${config.home.homeDirectory}/dev/commonage";
+
+  archiver = "cargo run --release --locked -p commonage-archiver --";
 
   # The SEC's fair-access policy refuses a User-Agent with no way to reach the
   # operator, so the address stays. Quoted because systemd splits an unquoted value
@@ -68,12 +78,15 @@ in
 
     Service = {
       Type = "oneshot";
-      ExecStart = "${binary} recent --days 2 --limit 300";
+      WorkingDirectory = checkout;
+      # Fourteen days so a pass that ran on stale code for a week still reaches
+      # over the gap: settled days come from the ledger, not the network.
+      ExecStart = "${archiver} recent --days 14 --limit 1000";
       Environment = environment ++ [ "COMMONAGE_RPS=2" ];
-      # Three hundred filings is up to six hundred requests, and a 10-K
+      # A thousand filings is up to two thousand requests, and a 10-K
       # submission is tens of MB, so this is bounded by bytes rather than by
       # request count.
-      TimeoutStartSec = "30min";
+      TimeoutStartSec = "45min";
     };
   };
 
@@ -97,7 +110,8 @@ in
 
     Service = {
       Type = "oneshot";
-      ExecStart = "${binary} sweep --limit 800";
+      WorkingDirectory = checkout;
+      ExecStart = "${archiver} sweep --limit 800";
       Environment = environment ++ [ "COMMONAGE_RPS=1" ];
       TimeoutStartSec = "40min";
     };
@@ -125,22 +139,30 @@ in
 
     Service = {
       Type = "oneshot";
+      WorkingDirectory = checkout;
       # Nine index files at ~50 MB each, so this is the one unit that is
       # bandwidth-bound rather than request-bound.
-      ExecStart = "${binary} indexes --months 24";
+      ExecStart = "${archiver} indexes --months 24";
       Environment = environment ++ [ "COMMONAGE_RPS=1" ];
       TimeoutStartSec = "40min";
     };
   };
 
   systemd.user.timers.commonage-indexes = {
-    Unit.Description = "quarterly trigger for the index files";
+    Unit.Description = "monthly trigger for the index files";
 
     Timer = {
-      # UTC on purpose: 14:00 UTC is mid-morning US Eastern in both summer and
-      # winter, so it lands inside EDGAR's window whatever this machine's clock
-      # is doing.
-      OnCalendar = "*-01,04,07,10-01 14:00 UTC";
+      # Monthly on the 5th, not quarterly on the first day of the quarter. The SEC
+      # publishes a quarter's full-index files some days *after* the quarter ends,
+      # so a run on the 1st systematically missed the quarter it fired for - which
+      # is why 2026/QTR2 was the newest index held. `indexes --months 24` is
+      # idempotent and serves a repeat from the store, so the runs in between cost a
+      # process start and a handful of requests.
+      #
+      # UTC on purpose, and 14:00 of it: mid-morning US Eastern in both summer and
+      # winter, so it lands inside EDGAR's window whatever this machine's clock is
+      # doing.
+      OnCalendar = "*-*-05 14:00 UTC";
       Persistent = true;
     };
 
@@ -163,11 +185,11 @@ in
     Service = {
       Type = "oneshot";
       # `fnox` reads fnox.toml from here, and the age identity from the user's home.
-      WorkingDirectory = "${config.home.homeDirectory}/dev/commonage";
+      WorkingDirectory = checkout;
       Environment = environment;
       ExecStart = [
-        "${pkgs.fnox}/bin/fnox exec -- ${binary} hydrate-submissions"
-        "${pkgs.fnox}/bin/fnox exec -- ${binary} enrich-openfigi"
+        "${pkgs.fnox}/bin/fnox exec -- ${archiver} hydrate-submissions"
+        "${pkgs.fnox}/bin/fnox exec -- ${archiver} enrich-openfigi"
       ];
       TimeoutStartSec = "90min";
     };
@@ -202,13 +224,13 @@ in
       # failure, so the release is built from a snapshot that succeeded or not at all.
       ExecStart = [
         # No arguments: the bare pass covers all the tables of the six datasets.
-        "${binary} mops snapshot"
+        "${archiver} mops snapshot"
         # Reads the ledger and the store, asks nobody anything, so it needs no key and
         # no network. `--out` is absolute because the default is relative and a user
         # unit starts in `$HOME`, which would make it `~/data/releases/mops`.
-        "${binary} mops release --out ${config.home.homeDirectory}/dev/commonage/data/releases/mops"
+        "${archiver} mops release --out ${checkout}/data/releases/mops"
       ];
-      WorkingDirectory = "${config.home.homeDirectory}/dev/commonage";
+      WorkingDirectory = checkout;
       Environment = environment;
       TimeoutStartSec = "30min";
     };
@@ -224,6 +246,78 @@ in
       # second the same day is served from the archive. UTC because Taipei has no
       # DST to follow.
       OnCalendar = "*-*-* 22:00:00 UTC";
+      RandomizedDelaySec = "10min";
+      Persistent = true;
+    };
+
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  # Open PermID is a daily budget, not a published snapshot. The first runs fill
+  # the filers the archive knows; after that the 30-day cache expires in the
+  # order it was filled, so the same pass refreshes old candidate links and
+  # picks up filers the ledger gained. `--refresh` is deliberately not used:
+  # with a cap it would restart at the same hash prefix every day and starve
+  # the rest.
+  systemd.user.services.commonage-openpermid = {
+    Unit.Description = "consume the daily Open PermID budget and refresh candidate links";
+    Unit.X-SwitchMethod = "keep-old";
+
+    Service = {
+      Type = "oneshot";
+      WorkingDirectory = checkout;
+      Environment = environment;
+      ExecStart = "${pkgs.fnox}/bin/fnox exec -- ${archiver} enrich-openpermid --limit 4500 --cache-days 30";
+      # 4,500 records plus at most one verification search each is ~75 minutes
+      # at one request/second; the rest of the daily budget goes to a cached
+      # verification backlog, and the run resumes what the quota cuts off.
+      TimeoutStartSec = "150min";
+    };
+  };
+
+  systemd.user.timers.commonage-openpermid = {
+    Unit.Description = "daily trigger for the Open PermID candidate pass";
+
+    Timer = {
+      # The live quota resets at 00:00 UTC; 15 minutes later is unambiguous.
+      OnCalendar = "*-*-* 00:15:00 UTC";
+      RandomizedDelaySec = "10min";
+      Persistent = true;
+    };
+
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  # The search catalog is derived data - it can be rebuilt from the store - so it
+  # is rebuilt on a clock rather than kept current incrementally. The export reads
+  # the ledger and the blobs and asks nobody anything: no key, no network, which
+  # is why the user agent below is only there to match its siblings.
+  systemd.user.services.commonage-search = {
+    Unit.Description = "rebuild the search catalog from the archive";
+    Unit.X-SwitchMethod = "keep-old";
+
+    Service = {
+      Type = "oneshot";
+      # `--out` defaults to `data/search/catalog.jsonl`, relative, and a user unit
+      # starts in `$HOME` - which would put it at `~/data/search/catalog.jsonl`.
+      WorkingDirectory = checkout;
+      ExecStart = "${archiver} export-search";
+      Environment = environment;
+      TimeoutStartSec = "30min";
+    };
+  };
+
+  systemd.user.timers.commonage-search = {
+    Unit.Description = "daily trigger for the search catalog";
+
+    Timer = {
+      # An hour after the MOPS pass, which starts at 22:00 UTC and takes about
+      # four minutes with its release. The gap is the ordering: export-search
+      # reads the ledger and the blobs, and the snapshot is writing them. A
+      # `Wants`/`After` pairing would order them too, but it would also start a
+      # second MOPS pass in this unit's transaction - served from the archive,
+      # yet not free.
+      OnCalendar = "*-*-* 23:00:00 UTC";
       RandomizedDelaySec = "10min";
       Persistent = true;
     };
