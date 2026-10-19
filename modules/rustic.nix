@@ -25,11 +25,57 @@
 #
 # Starting over is deliberate and awkward, in that order. `--init` only creates a
 # repository when its `config` object is absent, so a half-deleted prefix - what
-# an interrupted run or a partial wipe leaves - fails with a credentials error
-# until the prefix is emptied *completely*: stop both units, then
-# `nix run nixpkgs#backblaze-b2 -- rm -r --versions b2://<bucket>/<root>/`, and
-# the next run builds a fresh repository. `--versions` matters: without it B2
-# keeps the old file versions and the storage stays billed.
+# an interrupted run or a partial wipe leaves - fails until the prefix is emptied
+# *completely*: stop the units, empty it, and the next run builds a fresh
+# repository. What that state looks like from inside, since the error names none
+# of it: `config` survives while `keys/<id>` does not, so reading
+# `keys/<id>` fails with B2's `not_found` - "Bucket with such name does not
+# exist." - which is B2's blank 404 on the name-based read, not a claim about the
+# bucket, the key, or the credentials.
+#
+# That same 404 has a second and cheaper cause, so rule it out before emptying
+# anything: opendal reads by *name* (`f005.backblazeb2.com/file/<bucket>/<path>`)
+# and writes by *id* (`b2_get_upload_url?bucketId=...`), so a `bucket` here that
+# is not the bucket `bucket_id` belongs to means every write lands and every read
+# 404s. 19 Oct was that, not a wipe: this file said `megzari-strix-backups` while
+# the bucket - and the app key - were `megzari-strix-backup`. The night's 485 GiB
+# uploaded into the right bucket all along, then the `forget` after it could not
+# read the key, and the failure read as a deleted repository. Correcting the name
+# let the next run find the previous night's snapshot (`using parents ...`), so
+# nothing was lost; emptying the prefix would have thrown away the only copy.
+#
+# The `b2` CLI does not read the `RUSTIC_REPO_OPT_*` names the generated config
+# uses - it wants `B2_APPLICATION_KEY_ID` and `B2_APPLICATION_KEY` - so on this
+# machine it has no credentials until the agenix secret is translated by hand.
+# Without that, `b2 rm` fails with an auth error that reads like a bucket problem.
+#
+# Try the cheap way out first: B2 keeps old file versions unless they were deleted
+# with `--versions`, and a surviving version of `keys/<id>` can be copied back,
+# which saves re-uploading the whole repository.
+#
+#   sudo systemctl stop rustic-backup.timer rustic-check.timer rustic-backup.service
+#   sudo bash -c '. /run/agenix/b2-credentials; export B2_APPLICATION_KEY_ID="$RUSTIC_REPO_OPT_APPLICATION_KEY_ID" B2_APPLICATION_KEY="$RUSTIC_REPO_OPT_APPLICATION_KEY"; nix run nixpkgs#backblaze-b2 -- ls -r --versions b2://megzari-strix-backups/strix/keys/'
+#
+# Each of those is one line on purpose, and pasted as one line. Written as a
+# `\`-continued block, as this was until 19 Oct, the paste brings the prompt's
+# gutter (`|   ` in front of every continuation line) along with the text, and the
+# shell tries to run `|   nix run ...` as its own command. Two more ways the
+# command silently does nothing: a leading `:` - bash's no-op builtin, which takes
+# the whole thing as arguments - and `b2 ls` not being what the local b2 4.x calls
+# `b2 file list`; it is the same command under the new names. If the application
+# key is restricted to this bucket without `listFileVersions`, the listing is
+# refused as unauthorized instead - the B2 web UI's show-hidden-files view of
+# `keys/` answers the same question.
+#
+# If a version of the missing key is listed, copy it back to `strix/keys/<id>` and
+# restart the timers - the data already uploaded stays valid. If nothing is
+# listed, start over (`megzari-strix-backups` and `strix` are `bucket` and `root`;
+# `--versions` matters, without it B2 keeps the old file versions and the storage
+# stays billed):
+#
+#   sudo bash -c '. /run/agenix/b2-credentials; export B2_APPLICATION_KEY_ID="$RUSTIC_REPO_OPT_APPLICATION_KEY_ID" B2_APPLICATION_KEY="$RUSTIC_REPO_OPT_APPLICATION_KEY"; nix run nixpkgs#backblaze-b2 -- rm -r --versions b2://megzari-strix-backups/strix/'
+#   sudo systemctl start rustic-backup.timer rustic-check.timer
+#   sudo systemctl start rustic-backup.service
 {
   config,
   lib,
@@ -37,7 +83,7 @@
   ...
 }:
 let
-  bucket = "megzari-strix-backups";
+  bucket = "megzari-strix-backup";
   root = "strix"; # subdir in the bucket, so other machines can share it later
 
   backupPaths = [ "/home" ];
@@ -167,18 +213,30 @@ let
       Group = "users";
       # Nothing here may fail the notice itself: it is the last thing between a
       # broken backup and silence.
-      ExecStart =
-        let
-          detail = "journalctl -u ${unit} -n 3 --no-pager -o cat 2>/dev/null | tr '\\n' ' ' | cut -c1-240";
-        in
-        pkgs.writeShellScript "rustic-failure-notice" ''
-          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
-          export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
-          detail=$(${detail} || true)
-          ${pkgs.libnotify}/bin/notify-send -a rustic -u critical \
-            ${lib.escapeShellArg "${unit} failed"} \
-            "''${detail:-see: journalctl -u ${unit}}"
-        '';
+      ExecStart = pkgs.writeShellScript "rustic-failure-notice" ''
+        export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+        export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+
+        # The last lines of a failed run are systemd's own - "Main process
+        # exited", "Failed with result 'exit-code'", "Failed to start ..." - and
+        # asking for the last three, as this did until 19 Oct, is how a real
+        # failure arrives as a toast that says nothing about it. rustic labels
+        # its error one line below `Message:` and the specific backend failure
+        # one line below `Caused by:`, so take the deepest of those that exists
+        # and fall back to the module's own hint, then to the bare unit name.
+        log=$(journalctl -u ${unit} -n 300 --no-pager -o cat 2>/dev/null || true)
+        after() {
+          printf '%s\n' "$log" | grep -A 1 -E "^$1:" | tail -n 1 | tr -s ' ' | cut -c1-240
+        }
+        detail=$(after 'Caused by')
+        [ -n "$detail" ] || detail=$(after 'Message')
+        [ -n "$detail" ] ||
+          detail=$(printf '%s\n' "$log" | grep -E '^rustic-backup: ' | tail -n 1 | cut -c1-240)
+
+        ${pkgs.libnotify}/bin/notify-send -a rustic -u critical \
+          ${lib.escapeShellArg "${unit} failed"} \
+          "''${detail:-see: journalctl -u ${unit}}"
+      '';
     };
   };
 in
@@ -218,15 +276,26 @@ in
 
       # `--init` creates a repository only when its `config` object is absent. One
       # whose `config` survived but whose `keys/` object did not - what a partial
-      # or interrupted deletion leaves - therefore fails every run with a
-      # credentials error that names neither the cause nor the fix, so say it here.
-      if ${pkgs.rustic}/bin/rustic backup --init ${lib.escapeShellArgs backupPaths}; then
-        ${pkgs.rustic}/bin/rustic forget
-      else
-        echo "rustic-backup: the backup failed. If the error mentions credentials or a" >&2
+      # or interrupted deletion leaves - therefore fails every run with an error
+      # that names neither the cause nor the fix, so say it here.
+      hint() {
+        echo "rustic-backup: $1 failed. If the error mentions credentials or a" >&2
         echo "missing keys/ object, the repository is partially deleted: empty the whole" >&2
         echo "b2://${bucket}/${root}/ prefix (stop this unit first) and run again - --init" >&2
         echo "only recreates a repository whose config object is absent." >&2
+      }
+
+      # Both steps open the repository, so both can hit that state - and `forget`
+      # opens it a second time, which is how 19 Oct reported the failure: five
+      # hours into the upload, after the snapshot had already been written, so the
+      # hint above never printed. Guard the two separately for that reason.
+      if ! ${pkgs.rustic}/bin/rustic backup --init ${lib.escapeShellArgs backupPaths}; then
+        hint backup
+        exit 1
+      fi
+
+      if ! ${pkgs.rustic}/bin/rustic forget; then
+        hint forget
         exit 1
       fi
     '';

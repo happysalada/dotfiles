@@ -91,11 +91,14 @@
         # the machine for the run. See modules/rustic.nix.
         ../../modules/rustic.nix
 
-        # Queues a walk per missing Japanese day through pueue, then fetches
-        # the taxonomy vintages and decodes the filings into a release. The
-        # queue is strix's, so the module is too: it runs as yt with that
-        # user's runtime directory. See modules/commonage-edinet.nix.
+        # Queues a walk per missing Japanese day through pueue. The queue is
+        # strix's, so the module is too: it runs as yt with that user's
+        # runtime directory. See modules/commonage-edinet.nix.
         ../../modules/commonage-edinet.nix
+
+        # Parses what those walks fetched into a release, in the evening once
+        # the Japanese day has settled. See modules/commonage-release.nix.
+        ../../modules/commonage-release.nix
 
         # GLEIF's golden copy, fetched weekly and indexed in the same run. See
         # modules/commonage-gleif.nix.
