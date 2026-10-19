@@ -54,7 +54,7 @@
 # which saves re-uploading the whole repository.
 #
 #   sudo systemctl stop rustic-backup.timer rustic-check.timer rustic-backup.service
-#   sudo bash -c '. /run/agenix/b2-credentials; export B2_APPLICATION_KEY_ID="$RUSTIC_REPO_OPT_APPLICATION_KEY_ID" B2_APPLICATION_KEY="$RUSTIC_REPO_OPT_APPLICATION_KEY"; nix run nixpkgs#backblaze-b2 -- ls -r --versions b2://megzari-strix-backups/strix/keys/'
+#   sudo bash -c '. /run/agenix/b2-credentials; export B2_APPLICATION_KEY_ID="$RUSTIC_REPO_OPT_APPLICATION_KEY_ID" B2_APPLICATION_KEY="$RUSTIC_REPO_OPT_APPLICATION_KEY"; nix run nixpkgs#backblaze-b2 -- ls -r --versions b2://megzari-strix-backup/strix/keys/'
 #
 # Each of those is one line on purpose, and pasted as one line. Written as a
 # `\`-continued block, as this was until 19 Oct, the paste brings the prompt's
@@ -69,11 +69,11 @@
 #
 # If a version of the missing key is listed, copy it back to `strix/keys/<id>` and
 # restart the timers - the data already uploaded stays valid. If nothing is
-# listed, start over (`megzari-strix-backups` and `strix` are `bucket` and `root`;
+# listed, start over (`megzari-strix-backup` and `strix` are `bucket` and `root`;
 # `--versions` matters, without it B2 keeps the old file versions and the storage
 # stays billed):
 #
-#   sudo bash -c '. /run/agenix/b2-credentials; export B2_APPLICATION_KEY_ID="$RUSTIC_REPO_OPT_APPLICATION_KEY_ID" B2_APPLICATION_KEY="$RUSTIC_REPO_OPT_APPLICATION_KEY"; nix run nixpkgs#backblaze-b2 -- rm -r --versions b2://megzari-strix-backups/strix/'
+#   sudo bash -c '. /run/agenix/b2-credentials; export B2_APPLICATION_KEY_ID="$RUSTIC_REPO_OPT_APPLICATION_KEY_ID" B2_APPLICATION_KEY="$RUSTIC_REPO_OPT_APPLICATION_KEY"; nix run nixpkgs#backblaze-b2 -- rm -r --versions b2://megzari-strix-backup/strix/'
 #   sudo systemctl start rustic-backup.timer rustic-check.timer
 #   sudo systemctl start rustic-backup.service
 {
@@ -106,6 +106,25 @@ let
   # sending if it lands on a session bus, and that bus belongs to whoever is
   # logged in. The rest of these units run as root.
   user = "yt";
+
+  # `rustic check` loads trees on MAX_TREE_LOADER threads and the cache writes every
+  # pack to a fixed `<id>-tmp-`, so two threads that want the same uncached pack
+  # truncate and rename each other's temp file while a reader is inside it. The
+  # torn read decrypts to "MAC check failed" and rustic then panics (status 134),
+  # which reads as repository corruption; the pack in the repo is fine. Upstream
+  # fixed it in aawsome's rustic_core commit 52a18395 (#544, 21 Aug 26), which is
+  # newer than 0.13.0 - the newest crate rustic 0.11.4 can use - so patch the
+  # vendored source: one temp file per thread. Drop once rustic_core > 0.13.0 lands.
+  rustic = pkgs.rustic.overrideAttrs (old: {
+    cargoDeps = pkgs.runCommand "rustic-cargo-deps-patched" { } ''
+      cp -r ${old.cargoDeps} $out
+      chmod -R u+w $out
+      core=$(echo $out/source-registry-*/rustic_core-*)
+      substituteInPlace "$core/src/backend/cache.rs" --replace-fail \
+        'dir.join(id.to_hex().to_string() + "-tmp-")' \
+        'dir.join(format!("{}-tmp-{:?}", id.to_hex().as_str(), std::thread::current().id()))'
+    '';
+  });
 
   # The repository config cannot be built here: the three credential lines have to
   # sit inside [repository.options] and they only exist at run time, so the whole
@@ -289,12 +308,12 @@ in
       # opens it a second time, which is how 19 Oct reported the failure: five
       # hours into the upload, after the snapshot had already been written, so the
       # hint above never printed. Guard the two separately for that reason.
-      if ! ${pkgs.rustic}/bin/rustic backup --init ${lib.escapeShellArgs backupPaths}; then
+      if ! ${rustic}/bin/rustic backup --init ${lib.escapeShellArgs backupPaths}; then
         hint backup
         exit 1
       fi
 
-      if ! ${pkgs.rustic}/bin/rustic forget; then
+      if ! ${rustic}/bin/rustic forget; then
         hint forget
         exit 1
       fi
@@ -329,7 +348,7 @@ in
     script = ''
       ${configScript "/var/cache/rustic-check"}
 
-      ${pkgs.rustic}/bin/rustic check --read-data --read-data-subset 1%
+      ${rustic}/bin/rustic check --read-data --read-data-subset 1%
     '';
   };
 
