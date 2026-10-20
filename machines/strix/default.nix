@@ -1195,6 +1195,19 @@
               $env.CHROME_PATH = "${lib.getExe pkgs.chromium}"
             '';
           })
+
+          # pkg-config searches only its own store path, so it never sees the
+          # openssl.pc that packages/dev/tools.nix installs into the profile -
+          # and openssl-sys, which is what native-tls builds through, then
+          # fails before it can link anything. The profile is the whole path
+          # rather than openssl's own, so every dev output installed there is
+          # found the same way. Nushell's env rather than
+          # home.sessionVariables: the nushell module never loads the latter.
+          ({ config, ... }: {
+            programs.nushell.extraEnv = ''
+              $env.PKG_CONFIG_PATH = "${config.home.profileDirectory}/lib/pkgconfig"
+            '';
+          })
         ];
 
         home = {

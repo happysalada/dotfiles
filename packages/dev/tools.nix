@@ -10,6 +10,12 @@ with pkgs;
   # library flags through this by name; without it they stop at "pkg-config
   # not found" rather than at a missing library. fundies' build needs it.
   pkg-config
+  # native-tls goes through openssl-sys, whose build script asks pkg-config for
+  # openssl - and the .pc file is in the dev output, which the `openssl` CLI in
+  # basic_cli_set.nix does not install (only bin and man). `out` comes along
+  # because the .pc's libdir points at it.
+  openssl.dev
+  openssl.out
   just # the task runner most repos with a justfile expect
   watchexec # rerun a command on file change
   tokei # line counts per language - a cheap first map of an unknown repo
