@@ -46,4 +46,9 @@ in
   # Meilisearch master key (modules/meilisearch.nix). strix only for now, same
   # as the two above - grow the list when bee's instance is revived.
   "meilisearch.master-key.age".publicKeys = [ yt_at_strix ];
+
+  # The credentials JSON from `cloudflared tunnel create fundies`, read by
+  # services.cloudflared in modules/fundies-tunnel.nix. It carries the tunnel
+  # secret, not an API token, so it belongs to this machine's agenix identity.
+  "cloudflare-tunnel-fundies.age".publicKeys = [ yt_at_strix ];
 }

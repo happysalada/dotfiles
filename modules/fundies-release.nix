@@ -1,9 +1,9 @@
-# modules/commonage-release.nix
+# modules/fundies-release.nix
 #
-# Parsing the EDINET filings commonage has already walked into a release.
+# Parsing the EDINET filings fundies has already walked into a release.
 #
 # The walks and the parse share the archive but not a clock: the day's walks are queued
-# at noon by modules/commonage-edinet.nix, one short pueue job each, so by the evening
+# at noon by modules/fundies-edinet.nix, one short pueue job each, so by the evening
 # the Japanese day they cover has settled and everything the archive holds can be read.
 # Split out of that module so a long or failing parse delays neither the next day's
 # walks nor itself.
@@ -24,7 +24,7 @@ let
   # `source_blake3=<digest>/filing_id=<id>` and the taxonomy input set gained six
   # 2013-08-31 schemas, so every manifest under it now mismatches and a run there
   # would rewrite what it touched. Rebuild into the new root instead.
-  repo = "/home/yt/dev/commonage";
+  repo = "/home/yt/dev/fundies";
   release = "data/releases/edinet/2026-10-19";
 
   # The taxonomy vintages the filings were made under. `catalog fetch-edinet` is
@@ -34,8 +34,8 @@ let
   years = "2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026";
 in
 {
-  systemd.services.commonage-release = {
-    description = "Parse EDINET filings into the commonage release";
+  systemd.services.fundies-release = {
+    description = "Parse EDINET filings into the fundies release";
 
     serviceConfig = {
       Type = "oneshot";
@@ -61,7 +61,7 @@ in
       set -euo pipefail
 
       # The taxonomy the filings are read under. A failed fetch stops the run here.
-      cargo run --release --locked -p commonage-archiver -- \
+      cargo run --release --locked -p fundies-archiver -- \
         --root ${repo}/crates/store/data \
         catalog fetch-edinet --years ${years}
 
@@ -77,14 +77,14 @@ in
       # document ids, and one whose IFRS ja label linkbase returns 404 upstream. They
       # are named in the log rather than failing the run; the flag is for a schedule,
       # and the fix belongs in the decoder or upstream, not in a red unit.
-      cargo run --release --locked -p commonage-archiver -- \
+      cargo run --release --locked -p fundies-archiver -- \
         --root ${repo}/crates/store/data \
         decode-edinet --out ${repo}/${release} --limit 500000 --years ${years} \
         --allow-undecodable
     '';
   };
 
-  systemd.timers.commonage-release = {
+  systemd.timers.fundies-release = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnCalendar = "*-*-* 21:00:00";

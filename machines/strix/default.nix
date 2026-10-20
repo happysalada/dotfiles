@@ -93,16 +93,20 @@
 
         # Queues a walk per missing Japanese day through pueue. The queue is
         # strix's, so the module is too: it runs as yt with that user's
-        # runtime directory. See modules/commonage-edinet.nix.
-        ../../modules/commonage-edinet.nix
+        # runtime directory. See modules/fundies-edinet.nix.
+        ../../modules/fundies-edinet.nix
 
         # Parses what those walks fetched into a release, in the evening once
-        # the Japanese day has settled. See modules/commonage-release.nix.
-        ../../modules/commonage-release.nix
+        # the Japanese day has settled. See modules/fundies-release.nix.
+        ../../modules/fundies-release.nix
 
         # GLEIF's golden copy, fetched weekly and indexed in the same run. See
-        # modules/commonage-gleif.nix.
-        ../../modules/commonage-gleif.nix
+        # modules/fundies-gleif.nix.
+        ../../modules/fundies-gleif.nix
+
+        # fundies.io: the fundies frontend through a Cloudflare tunnel. The
+        # services it fronts are the user units in homes/programs/fundies.nix.
+        ../../modules/fundies-tunnel.nix
 
         # Logitech HID++ control for the MX Master 3S. The module is the point
         # of the flake input: it installs the package, the udev rules that
@@ -531,11 +535,11 @@
       # btrfs subvolume is skipped by snapshots, so neither the weekly snapshot
       # nor the send to the second drive carries it; the data stays on this
       # disk, only the backup is spared the churn.
-      fileSystems."/home/yt/dev/commonage/target" = {
+      fileSystems."/home/yt/dev/fundies/target" = {
         device = config.fileSystems."/".device;
         fsType = "btrfs";
         options = [
-          "subvol=commonage-target"
+          "subvol=fundies-target"
           "noatime"
         ];
       };
@@ -1140,11 +1144,11 @@
           # `programs.gh = ...` fragment because it also declares a secret.
           ../../homes/programs/gh.nix
           # Three EDGAR timers and a daily Taiwan snapshot, keeping an immutable
-          # copy of what those exchanges published under $HOME/commonage. Invokes
+          # copy of what those exchanges published under $HOME/fundies. Invokes
           # the project's own cargo release build rather than a package,
           # deliberately and temporarily: a version of that derived data not taken
           # today cannot be bought back later, and packaging it can follow.
-          ../../homes/programs/commonage.nix
+          ../../homes/programs/fundies.nix
           # The pueued user service and ~/.config/pueue/pueue.yml, so a queue
           # outlives the terminal that started it.
           ../../homes/programs/pueue.nix

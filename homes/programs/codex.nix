@@ -71,7 +71,7 @@ let
   # writes there - the hash covers the command and the timeout, not the file, so
   # changing what cargo-agents emits means re-deriving them here.
   projectHooks = {
-    "/home/yt/dev/commonage" = [
+    "/home/yt/dev/fundies" = [
       {
         event = "pre_tool_use";
         command = "cargo-agents hook codex pre-tool-use";
@@ -222,7 +222,7 @@ in
       # agents view, fails the write outright and reports it as an error.
       projects = {
         "/home/yt/dev/agent-run".trust_level = "trusted";
-        "/home/yt/dev/commonage".trust_level = "trusted";
+        "/home/yt/dev/fundies".trust_level = "trusted";
         "/home/yt/dev/stound".trust_level = "trusted";
         "/home/yt/dotfiles".trust_level = "trusted";
       };

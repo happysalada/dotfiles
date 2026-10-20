@@ -1,4 +1,4 @@
-# modules/commonage-gleif.nix
+# modules/fundies-gleif.nix
 #
 # Refreshing GLEIF's golden copy, which is what lets a Japanese filer join GLEIF at all: an EDINET
 # filing states no LEI, so the crosswalk joins on the corporate number instead, and that join reads
@@ -11,10 +11,10 @@
 { ... }:
 let
   user = "yt";
-  repo = "/home/yt/dev/commonage";
+  repo = "/home/yt/dev/fundies";
 in
 {
-  systemd.services.commonage-gleif = {
+  systemd.services.fundies-gleif = {
     description = "Fetch GLEIF's golden copy and rebuild the registry-number index";
 
     serviceConfig = {
@@ -41,7 +41,7 @@ in
     '';
   };
 
-  systemd.timers.commonage-gleif = {
+  systemd.timers.fundies-gleif = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
       # Sunday, an hour after the daily EDINET job, so the two are not on the same disk at once.

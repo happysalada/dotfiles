@@ -1,6 +1,6 @@
-# modules/commonage-edinet.nix
+# modules/fundies-edinet.nix
 #
-# Queueing the walks that keep the EDINET side of the commonage archive current.
+# Queueing the walks that keep the EDINET side of the fundies archive current.
 #
 # The archive is filled one calendar day at a time, and the walk for a day has to be
 # *started* by something. `just edinet-schedule` queues only the days that are not
@@ -22,14 +22,14 @@
 # own profile — the run then uses exactly what a run from their shell uses.
 #
 # Parsing what the walks fetch is a separate unit on a separate clock, in
-# modules/commonage-release.nix.
+# modules/fundies-release.nix.
 { ... }:
 let
   user = "yt";
-  repo = "/home/yt/dev/commonage";
+  repo = "/home/yt/dev/fundies";
 in
 {
-  systemd.services.commonage-edinet = {
+  systemd.services.fundies-edinet = {
     description = "Queue the walks for missing EDINET days";
 
     serviceConfig = {
@@ -61,7 +61,7 @@ in
     '';
   };
 
-  systemd.timers.commonage-edinet = {
+  systemd.timers.fundies-edinet = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnCalendar = "*-*-* 12:00:00";
