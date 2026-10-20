@@ -311,11 +311,16 @@
       # `acceleration` was removed upstream. It does NOT need the `nvidia-offload`
       # wrapper - that only redirects GLX/Vulkan; creating a cuda context alone
       # pulls the dgpu back out of its finegrained runtime suspend, so the gpu
-      # stays awake while a model is resident (OLLAMA_KEEP_ALIVE, 5 minutes by
-      # default). Under the battery-saver specialisation the dgpu is gone and
-      # ollama falls back to CPU.
+      # stays awake while a model is resident. Under the battery-saver
+      # specialisation the dgpu is gone and ollama falls back to CPU.
       services.ollama = {
         package = pkgs.ollama-cuda;
+        # Keeps a loaded model resident for a day instead of ollama's 5 minute
+        # default - the point is the embedding model staying warm, so the first
+        # search after a pause does not pay the model load. The cost is the
+        # same trade as above: a resident model is what holds the dgpu out of
+        # its runtime suspend, so on battery this keeps it powered.
+        environmentVariables.OLLAMA_KEEP_ALIVE = "24h";
         # ~7GB of the 16GB of VRAM; add more with `ollama pull`, or here to
         # have them fetched on rebuild.
         loadModels = [

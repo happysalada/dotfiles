@@ -18,6 +18,10 @@
       "127.0.0.1/32"
       "::1/128"
     ];
+    # Caches the query embeddings sent to the embedder, per embedder, so a
+    # repeated search does not re-run the model. Meilisearch ships this off;
+    # 1024 entries is a few MB of vectors and covers the usual query set.
+    settings.experimental_embedding_cache_entries = 1024;
   };
 
   age.secrets.meilisearch-master-key = {
