@@ -293,8 +293,12 @@ in
       )
     '';
 
-    # Cherry-picked upstream skills, shared with claude-code and opencode.
-    skills = import ./ai-skills.nix { inherit pkgs; };
+    # Cherry-picked upstream skills, shared with claude-code, opencode and
+    # reasonix.
+    skills = import ./ai-skills.nix {
+      inherit pkgs;
+      tool = "codex";
+    };
 
     # -> ~/.codex/AGENTS.md, same prose as CLAUDE.md and opencode's AGENTS.md.
     context = aiContext.mkContext { tool = "codex"; };

@@ -94,6 +94,16 @@ with pkgs;
   # Do NOT run `hyperresearch install --global`, `/plugin install`, `codex plugin
   # add` or `npx skills add` - each writes into config generated here.
 
+  (callPackage ./ai/impeccable.nix { }) # design skill + 61-rule detector
+  # engine. The skill is registered for all four agents in
+  # homes/programs/ai-skills.nix; this puts `impeccable` on PATH for `detect`
+  # outside a harness. Both halves are pinned release artifacts, the engine a
+  # static-pie binary, so there is no build step and no patchelf.
+  #
+  # Do NOT run `impeccable install`, `impeccable update` or `npx impeccable
+  # install` - each writes ~/.claude/skills, ~/.codex/skills,
+  # ~/.config/opencode/skills and ~/.claude/agents, all generated here.
+
   (callPackage ./ai/happier.nix { }) # Happier: mirrors claude, codex and
   # opencode sessions to the phone and browser, and starts sessions remotely.
   # The daemon and the self-hosted relay it talks to are

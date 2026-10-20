@@ -13,6 +13,10 @@
 let
   aiContext = import ./ai-context.nix { inherit lib; };
   aiAgents = import ./ai-agents.nix { inherit lib pkgs; };
+
+  # Upstream's command shim: the skill alone is description-triggered, so
+  # `/impeccable <command>` needs this file next to it.
+  impeccable = pkgs.callPackage ../../packages/ai/impeccable.nix { };
 in
 {
   programs.opencode = {
@@ -83,7 +87,10 @@ in
     };
 
     # -> ~/.config/opencode/skills/, same set claude-code gets.
-    skills = import ./ai-skills.nix { inherit pkgs; };
+    skills = import ./ai-skills.nix {
+      inherit pkgs;
+      tool = "opencode";
+    };
 
     # -> ~/.config/opencode/agents/, same roles codex and claude-code get.
     agents = aiAgents.mkAgents { tool = "opencode"; };
@@ -116,4 +123,8 @@ in
     "${pkgs.herdr}/share/herdr/integrations/opencode/herdr-tui-session.js";
   xdg.configFile."opencode/plugins/herdr-agent-state.js".source =
     "${pkgs.herdr}/share/herdr/integrations/opencode/herdr-agent-state.js";
+
+  # `/impeccable <command>`: upstream's command shim for this harness only.
+  xdg.configFile."opencode/commands/impeccable.md".source =
+    "${impeccable}/share/impeccable/commands/opencode.md";
 }

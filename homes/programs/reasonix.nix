@@ -23,7 +23,10 @@ let
   aiContext = import ./ai-context.nix { inherit lib; };
 
   # The same skill set the other three get, from the same single source.
-  aiSkills = import ./ai-skills.nix { inherit pkgs; };
+  aiSkills = import ./ai-skills.nix {
+    inherit pkgs;
+    tool = "reasonix";
+  };
 
   # Clickable "Reasonix is done" notification, the same one claude-code and codex
   # fire; see homes/programs/ai-notify.nix.

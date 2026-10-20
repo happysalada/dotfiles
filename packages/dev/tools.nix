@@ -6,6 +6,10 @@ with pkgs;
   # nixpkgs spells it gnumake - there is no `pkgs.make`. The binary it installs
   # is `make`, which C builds (jemalloc in tikv, most tarball projects) invoke.
   gnumake
+  # `./configure` and crate build scripts (openssl-sys and friends) ask for C
+  # library flags through this by name; without it they stop at "pkg-config
+  # not found" rather than at a missing library. fundies' build needs it.
+  pkg-config
   just # the task runner most repos with a justfile expect
   watchexec # rerun a command on file change
   tokei # line counts per language - a cheap first map of an unknown repo

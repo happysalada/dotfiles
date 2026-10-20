@@ -1,11 +1,18 @@
-# Agent skills, shared by claude-code and opencode. Both take the same
-# `name -> store path` shape, so one attrset feeds both.
+# Agent skills, shared by claude-code, codex, opencode and reasonix. All four
+# take the same `name -> store path` shape, so one attrset feeds them.
 #
 # Cherry-picked, never whole repos: Claude Code budgets the description listing
 # at 1% of the context window and drops the least-invoked on overflow, so all
 # 165 scientific skills would make the eleven below harder to match, not easier
 # - and cost 248MB of closure instead of 3.5MB.
-{ pkgs }:
+#
+# `tool` picks a provider-specific build where upstream ships more than one;
+# everything else here is harness-neutral. Defaults to claude-code so a new
+# importer does not have to name itself.
+{
+  pkgs,
+  tool ? "claude-code",
+}:
 let
   # The domain-neutral quantitative core of an otherwise-bioinformatics repo;
   # deliberately no genomics or cheminformatics.
@@ -84,6 +91,27 @@ let
     hash = "sha256-EnawE8tQRGP5Oodn+8TP/rB1+bemdKIGaQO0WCIC9u0=";
   };
 
+  # The design counterpart to taste, and broader: taste is public-facing pages
+  # only, this covers app UI, dashboards, forms and native screens too. One skill
+  # with 24 subcommands and a detector engine; packages/ai/impeccable.nix pins
+  # both halves and puts the engine where the launcher probes for it.
+  #
+  # `tool` picks the compiled tree upstream ships per harness. reasonix takes
+  # claude's: it has no allowed-tools block, so renderSkill in reasonix.nix
+  # symlinks it through untouched (a copied tree would lose the launcher's
+  # executable bit), and .opencode's YAML allowed-tools list is the one form
+  # that translator cannot parse.
+  impeccable = pkgs.callPackage ../../packages/ai/impeccable.nix { };
+
+  impeccableVariant =
+    {
+      claude-code = "claude";
+      codex = "codex";
+      opencode = "opencode";
+      reasonix = "claude";
+    }
+    .${tool};
+
   # Ours, plus one vendored. writing-plans is upstream's, edited to strip every
   # instruction to commit and end each task at a review checkpoint - the change
   # that makes it usable under the Git rules. diff-metrics measures a change with
@@ -151,4 +179,6 @@ fromRepo scientific-agent-skills quantitative
   # skills/ stayed taste-skill, and an agent resolves a skill by that name, so
   # the installed directory has to carry it.
   design-taste-frontend = "${taste}/skills/taste-skill";
+
+  impeccable = "${impeccable}/share/impeccable/${impeccableVariant}";
 }

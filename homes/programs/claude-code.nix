@@ -55,6 +55,17 @@ let
   # Subagent roles, shared with codex and opencode.
   aiAgents = import ./ai-agents.nix { inherit lib pkgs; };
 
+  # Impeccable ships four subagents of its own. Without them the skill
+  # substitutes a fresh in-thread pass (its reference/degraded/ files), so they
+  # are a fidelity upgrade rather than a dependency.
+  impeccable = pkgs.callPackage ../../packages/ai/impeccable.nix { };
+  impeccableAgents = lib.genAttrs [
+    "impeccable-asset-producer"
+    "impeccable-documenter"
+    "impeccable-finish-reviewer"
+    "impeccable-manual-edit-applier"
+  ] (name: "${impeccable}/share/impeccable/agents/${name}.md");
+
   # One hook entry, matcher-less (fires on every event of its kind).
   cmd = command: {
     hooks = [
@@ -346,8 +357,11 @@ in
       };
     };
 
-    # Cherry-picked upstream skills, shared with opencode.
-    skills = import ./ai-skills.nix { inherit pkgs; };
+    # Cherry-picked upstream skills, shared with codex, opencode and reasonix.
+    skills = import ./ai-skills.nix {
+      inherit pkgs;
+      tool = "claude-code";
+    };
 
     # -> ~/.claude/agents/, same roles codex and opencode get.
     agents = aiAgents.mkAgents { tool = "claude-code"; };
@@ -360,6 +374,11 @@ in
   # same version marker as the installer would write at that path, and only
   # there - a store symlink, so `herdr integration install claude` cannot
   # rewrite it. See the note in packages/ai.nix.
-  home.file.".claude/hooks/herdr-agent-state.sh".source =
-    "${pkgs.herdr}/share/herdr/integrations/claude/herdr-agent-state.sh";
+  home.file = {
+    ".claude/hooks/herdr-agent-state.sh".source =
+      "${pkgs.herdr}/share/herdr/integrations/claude/herdr-agent-state.sh";
+  }
+  // lib.mapAttrs' (
+    name: source: lib.nameValuePair ".claude/agents/${name}.md" { inherit source; }
+  ) impeccableAgents;
 }
