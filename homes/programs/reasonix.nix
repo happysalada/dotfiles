@@ -306,12 +306,17 @@ let
       # those paths and may run beside another writer, while one that declares
       # none claims the whole workspace and serialises against every other
       # writer - including another reasonix session's, which is what the
-      # workspace write lease in ~/.cache/reasonix/workspace-leases is for and
-      # what no setting can switch off. Both keys live under [agent] and nowhere
-      # else; values outside 1-32 are clamped on load, and
-      # max_parallel_writers must not exceed max_subagent_concurrency.
+      # workspace write lease in ~/.cache/reasonix/workspace-leases is for.
+      # Both keys live under [agent] and nowhere else; values outside 1-32 are
+      # clamped on load, and max_parallel_writers must not exceed
+      # max_subagent_concurrency.
       max_subagent_concurrency = 12;
       max_parallel_writers = 6;
+      # A writer that declares no path at all - bash, an MCP write - stops
+      # claiming the whole workspace and holds only what it writes, which is
+      # what lets it run beside another writer. The lease itself stays; strict,
+      # the default, serialises those writers against everything.
+      write_lease = "optimistic";
       # subagent_model / subagent_effort stay unset, so a subagent naming neither -
       # the four built-ins - inherits default_model. The roles in
       # ~/.reasonix/skills carry their own model and effort, which outranks both.
