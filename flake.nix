@@ -5,6 +5,12 @@
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
+    # fundies: the server, frontend and data pipelines as NixOS modules, from
+    # the project's own flake. The tunnel that fronts them stays local.
+    fundies.url = "git+file:///home/yt/dev/fundies";
+    fundies.inputs.nixpkgs.follows = "nixpkgs";
+    fundies.inputs.rust-overlay.follows = "rust-overlay";
+
     # The agent CLIs, packaged together: claude-code, codex, opencode's v2 branch
     # (as `opencode2`), reasonix, openresearch, rtk, icm, nono and
     # terminal-browser. It follows nixpkgs so it is one revision everywhere, and
@@ -109,6 +115,7 @@
       iets,
       openlogi,
       bookokrat,
+      fundies,
       ...
     }:
     let
@@ -161,6 +168,7 @@
             iets
             openlogi
             bookokratOverlay
+            fundies
             ;
         };
       };

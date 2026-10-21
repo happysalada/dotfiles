@@ -1,6 +1,7 @@
-# Warn before the root filesystem fills. A full / is how one boot turns into
-# journald, nix-daemon, cups, agenix and half the user units failing on ENOSPC
-# at once, while btrbk's own deletions are the only thing that frees it again.
+# Warn before either disk fills, each against its own threshold. A full / is how
+# one boot turns into journald, nix-daemon, cups, agenix and half the user units
+# failing on ENOSPC at once, and the backup disk filling stops the backups that
+# make deleting from / safe.
 #
 # A user unit because mako is a user service and the warning is only useful to
 # the session that is looking at it; disk-space-guard.nu does the deciding.
@@ -12,7 +13,7 @@
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.nushell}/bin/nu ${./disk-space-guard.nu}";
-      Environment = [ "PATH=${pkgs.coreutils}/bin:${pkgs.libnotify}/bin" ];
+      Environment = [ "PATH=${pkgs.coreutils}/bin:${pkgs.util-linux}/bin:${pkgs.libnotify}/bin" ];
     };
   };
 

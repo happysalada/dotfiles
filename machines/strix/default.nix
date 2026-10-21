@@ -3,6 +3,7 @@
   agenix,
   nixos-hardware,
   rust-overlay,
+  fundies,
   nix-index-database,
   llm-agents,
   iets,
@@ -68,6 +69,10 @@
       imports = [
         ./hardware-configuration.nix
 
+        # clamd, freshclam, fangfrisch and the SecuriteInfo feeds, shared with
+        # bee and hetz. Only what to scan stays below.
+        ../../modules/clamav.nix
+
         # loopback-only SearXNG: firefox's default engine, and the search
         # backend `crw search` / the `crw_search` MCP tool proxy to.
         ../../modules/searx-local.nix
@@ -91,21 +96,17 @@
         # the machine for the run. See modules/rustic.nix.
         ../../modules/rustic.nix
 
-        # Queues a walk per missing Japanese day through pueue. The queue is
-        # strix's, so the module is too: it runs as yt with that user's
-        # runtime directory. See modules/fundies-edinet.nix.
-        ../../modules/fundies-edinet.nix
+        # Nearby backups of /home and /var/lib/fundies onto the second drive,
+        # from snapshots that exist only during a run. Replaces the btrbk
+        # job below once its cutover is done: docs/rustic-local-backup.md.
+        ../../modules/rustic-local.nix
 
-        # Parses what those walks fetched into a release, in the evening once
-        # the Japanese day has settled. See modules/fundies-release.nix.
-        ../../modules/fundies-release.nix
+        # fundies: the backend, frontend and data pipelines from the project's
+        # own flake. Meilisearch and nginx are wired by that module.
+        fundies.nixosModules.default
 
-        # GLEIF's golden copy, fetched weekly and indexed in the same run. See
-        # modules/fundies-gleif.nix.
-        ../../modules/fundies-gleif.nix
-
-        # fundies.io: the fundies frontend through a Cloudflare tunnel. The
-        # services it fronts are the user units in homes/programs/fundies.nix.
+        # fundies.io: the fundies frontend through a Cloudflare tunnel. It
+        # fronts the flake's nginx proxy, not the bun process directly.
         ../../modules/fundies-tunnel.nix
 
         # Logitech HID++ control for the MX Master 3S. The module is the point
@@ -148,6 +149,45 @@
       # github) already work because that activation runs as yt and reads
       # ~/.ssh/id_ed25519 on its own - point the system half at the same key.
       age.identityPaths = [ "/home/yt/.ssh/id_ed25519" ];
+
+      # The fundies services run as their own system user, out of /var/lib.
+      # Every key arrives as a systemd credential, so the agenix files stay
+      # root-only.
+      age.secrets = {
+        edinet-api-key.file = ../../secrets/edinet.api.key.age;
+        dart-api-key.file = ../../secrets/dart.api.key.age;
+        openpermid-api-key.file = ../../secrets/openpermid.api.key.age;
+        openfigi-api-key.file = ../../secrets/openfigi.api.key.age;
+      };
+
+      services.fundies = {
+        enable = true;
+        dataDir = "/var/lib/fundies";
+        storeDir = "/var/lib/fundies/store";
+
+        # Nothing runs while /var/lib/fundies is being migrated, so nothing can
+        # write to it mid-copy. Drop these three once the copy is in place,
+        # keeping `enable = true` above.
+        backend.enable = false;
+        frontend.enable = false;
+
+        meilisearch = {
+          index = "fundies_full_v2";
+          keyFile = config.age.secrets.meilisearch-master-key.path;
+        };
+        secrets = {
+          EDINET_API_KEY = config.age.secrets.edinet-api-key.path;
+          DART_API_KEY = config.age.secrets.dart-api-key.path;
+          OPENPERMID_API_KEY = config.age.secrets.openpermid-api-key.path;
+          OPENFIGI_API_KEY = config.age.secrets.openfigi-api-key.path;
+        };
+        pipelines = {
+          enable = false;
+          edinet.enable = true;
+          release.enable = true;
+          searchIndex.enable = true;
+        };
+      };
 
       # boot
       boot = {
@@ -496,6 +536,19 @@
           wall.enable = false;
           systembus-notify.enable = true;
         };
+      };
+
+      # Nightly clamdscan over the two places untrusted files land. The
+      # module's default list would sweep /home and /var/lib as well - ollama's
+      # models and podman's layers - and re-walk all of it every run. A hit is
+      # printed, not removed: `journalctl -u clamdscan`.
+      services.clamav.scanner = {
+        enable = true;
+        scanDirectories = [
+          "/home/yt/Downloads"
+          "/tmp"
+          "/var/tmp"
+        ];
       };
 
       # Rootless containers, so an agent can `docker run postgres` for an
@@ -1143,12 +1196,6 @@
           # points read as GH_TOKEN at launch. A module rather than a
           # `programs.gh = ...` fragment because it also declares a secret.
           ../../homes/programs/gh.nix
-          # Three EDGAR timers and a daily Taiwan snapshot, keeping an immutable
-          # copy of what those exchanges published under $HOME/fundies. Invokes
-          # the project's own cargo release build rather than a package,
-          # deliberately and temporarily: a version of that derived data not taken
-          # today cannot be bought back later, and packaging it can follow.
-          ../../homes/programs/fundies.nix
           # The pueued user service and ~/.config/pueue/pueue.yml, so a queue
           # outlives the terminal that started it.
           ../../homes/programs/pueue.nix
@@ -1168,6 +1215,10 @@
           # writes, so the render settings it would otherwise take by default
           # are declared there instead.
           ../../homes/programs/terminal-browser.nix
+          # `programs.zed-editor`: Zed's settings and its share of the MCP
+          # list. A module rather than a line in packages/gui.nix because the
+          # settings have to be merged into the file the editor owns.
+          ../../homes/programs/zed.nix
 
           # The `taste` skill's browser inspector (registered in
           # homes/programs/ai-skills.nix) drives a real Chrome over the DevTools

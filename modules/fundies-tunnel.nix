@@ -20,8 +20,8 @@ lib.mkIf (builtins.pathExists credentials) {
     tunnels."d354dbea-f3af-4b02-b16f-4a19fa141f27" = {
       credentialsFile = config.age.secrets.cloudflare-tunnel-fundies.path;
       ingress = {
-        "fundies.io" = "http://127.0.0.1:3001";
-        "www.fundies.io" = "http://127.0.0.1:3001";
+        "fundies.io" = "http://127.0.0.1:8080";
+        "www.fundies.io" = "http://127.0.0.1:8080";
       };
       default = "http_status:404";
     };

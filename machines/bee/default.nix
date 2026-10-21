@@ -19,6 +19,7 @@ in
         # Include the results of the hardware scan.
         ./hardware-configuration.nix
         ../../modules/fail2ban.nix
+        ../../modules/clamav.nix
         ../../modules/vector.nix
         ../../modules/postgresql.nix
         # Parked: NixOS 26.05 dropped the default for
@@ -237,12 +238,6 @@ in
           MaxFileSec = "1day";
           MaxRetentionSec = "1week";
           SystemMaxUse = "1G";
-        };
-
-        # antivirus
-        clamav = {
-          daemon.enable = true;
-          updater.enable = true;
         };
 
         smartd.enable = true;

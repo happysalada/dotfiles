@@ -115,17 +115,7 @@ let
   # fixed it in aawsome's rustic_core commit 52a18395 (#544, 21 Aug 26), which is
   # newer than 0.13.0 - the newest crate rustic 0.11.4 can use - so patch the
   # vendored source: one temp file per thread. Drop once rustic_core > 0.13.0 lands.
-  rustic = pkgs.rustic.overrideAttrs (old: {
-    cargoDeps = pkgs.runCommand "rustic-cargo-deps-patched" { } ''
-      cp -r ${old.cargoDeps} $out
-      chmod -R u+w $out
-      core=$(echo $out/source-registry-*/rustic_core-*)
-      substituteInPlace "$core/src/backend/cache.rs" --replace-fail \
-        'dir.join(id.to_hex().to_string() + "-tmp-")' \
-        'dir.join(format!("{}-tmp-{:?}", id.to_hex().as_str(), std::thread::current().id()))'
-    '';
-  });
-
+  rustic = import ./rustic-package.nix pkgs;
   # The repository config cannot be built here: the three credential lines have to
   # sit inside [repository.options] and they only exist at run time, so the whole
   # file is rendered by the units' scripts, under a root-only $XDG_CONFIG_HOME that

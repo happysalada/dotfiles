@@ -15,6 +15,7 @@ in
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/fail2ban.nix
+      ../../modules/clamav.nix
       ../../modules/vector.nix
       ../../modules/postgresql.nix
       # Parked: NixOS 26.05 dropped the default for
@@ -172,29 +173,6 @@ in
         MaxFileSec = "1day";
         MaxRetentionSec = "1week";
         SystemMaxUse = "1G";
-      };
-
-      # antivirus
-      clamav = {
-        daemon.enable = true;
-        fangfrisch.enable = true;
-        # scanner.enable = true;
-        updater = {
-          enable = true;
-          settings = {
-            DatabaseCustomURL = [
-              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfo.hdb"
-              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfo.ign2"
-              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/javascript.ndb"
-              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/spam_marketing.ndb"
-              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfohtml.hdb"
-              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfoascii.hdb"
-              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfoandroid.hdb"
-              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfoold.hdb"
-              "https://www.securiteinfo.com/get/signatures/80b7426e3b82a248c1db6abfea3daa32b9290fe6f52e17957061c70e520a120c799b280d5ae3730e82cfe652344eed5a3c10e9a9fe3497d60c0b201339012e6b/securiteinfopdf.hdb"
-            ];
-          };
-        };
       };
 
       # aide.enable = true;
