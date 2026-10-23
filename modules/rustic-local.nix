@@ -38,7 +38,7 @@ let
       RUSTIC_PASSWORD_FILE = config.age.secrets.rustic-local-password.path;
       SNAP_DIR = snapDir;
       TOPLEVEL = "/";
-      PROTECTED = builtins.toJSON (map (d: d // { globs = "${d.globs}"; }) protected);
+      PROTECTED = builtins.toJSON (map (d: d // { globs = "${globFile "rustic-local-${d.name}" d.excludes}"; }) protected);
       KEEP_DAILY = toString keep.daily;
       KEEP_WEEKLY = toString keep.weekly;
       KEEP_MONTHLY = toString keep.monthly;
@@ -62,15 +62,16 @@ let
   snapDir = "/.rustic-snapshots";
 
   # `tree` is the path from the filesystem root, as `btrfs subvolume list` prints
-  # it. /var/lib/fundies is a plain directory, so its volume is /. Globs are
-  # rustic's, anchored at `path`.
+  # it. /var/lib/fundies is a plain directory, so its volume is /. `excludes` are
+  # rustic's exclusion globs, anchored at `path`; the subvolume audit tests
+  # against the same list, so an excluded tree never fails a run.
   protected = [
     {
       name = "home";
       volume = "/home";
       path = "/home";
       tree = "home";
-      globs = globFile "rustic-local-home" [
+      excludes = [
         # Rebuildable
         "**/.cache/**"
         "**/.local/share/Trash/**"
@@ -79,6 +80,19 @@ let
         "**/.venv/**"
         "**/__pycache__/**"
         "**/.direnv/**"
+        # Agent scratch: one session's tmp/ alone was 14G of experiment output,
+        # and these caches are rebuilt on the next start. The rest of
+        # ~/.claude/jobs is kept - state.json and timeline.jsonl are tiny.
+        "/yt/.claude/jobs/*/tmp"
+        "/yt/.claude/jobs/*/tmp/**"
+        "/yt/.reasonix/browser"
+        "/yt/.reasonix/browser/**"
+        "/yt/.reasonix/logs"
+        "/yt/.reasonix/logs/**"
+        "/yt/.reasonix/mcp-state"
+        "/yt/.reasonix/mcp-state/**"
+        "/yt/.codex/cache"
+        "/yt/.codex/cache/**"
         # Reflink copies of /var/lib/fundies until post-cutover cleanup deletes
         # them; 735 GiB would be read twice. btrbk holds them until retired.
         "/yt/dev/fundies/data"
@@ -94,10 +108,13 @@ let
       volume = "/";
       path = "/var/lib/fundies";
       tree = "var/lib/fundies";
-      globs = globFile "rustic-local-fundies" [
+      excludes = [
         # Copied into serving objects on publication
         "/publication-work/*/candidate"
         "/publication-work/*/candidate/**"
+        # Vector index, rebuilt from the full text
+        "/filings/qdrant"
+        "/filings/qdrant/**"
       ];
     }
   ];

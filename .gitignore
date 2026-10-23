@@ -218,3 +218,6 @@ CLAUDE.md
 AGENTS.md
 .reasonix
 .ck
+
+# stable symlinks the paused pueue tasks run
+result-fundies-*

@@ -36,7 +36,9 @@ Files: `modules/rustic-local.nix` (units, config), `modules/rustic-local.nu`
 3. **Nested-subvolume audit.** Snapshots do not recurse. Any subvolume listed
    under `home/` or `var/lib/fundies/` aborts the run, because it would be
    backed up as an empty directory. None is expected: `fundies-target` is a
-   mount of a top-level subvolume, not nested.
+   mount of a top-level subvolume, not nested. A subvolume inside an excluded
+   tree is not a stray - nothing under it is read - so the audit tests each
+   path against the dataset's own exclusion list.
 4. **Snapshots.** `/home` is its own subvolume. `/var/lib/fundies` is a plain
    directory inside the top-level subvolume, so the top-level subvolume (`/`) is
    snapshotted and only `var/lib/fundies` is read from it. `/` is snapshotted
@@ -77,14 +79,25 @@ Excluded, and why:
 | --- | --- |
 | `/home/yt/dev/fundies/{data,crates/store/data,crates/archiver/data}` | Obsolete runtime roots, reflink copies of `/var/lib/fundies` (735 GiB referenced). Backing them up reads that twice. They stay in the btrbk backup until it is retired. If cleanup is delayed and you want them protected, delete those six lines in `rustic-local.nix`. |
 | `/var/lib/fundies/publication-work/*/candidate` | Private candidate copied into serving objects on publication. The small proof files beside it are kept. |
+| `/var/lib/fundies/filings/qdrant` (2.4 GB) | Vector index, rebuilt from the full text. `filing_text.sqlite` beside it is kept. |
 | `**/.cache`, `Trash`, `node_modules`, `target`, `.venv`, `__pycache__`, `.direnv` under `/home` | Rebuildable. Same list as the offsite job. `target/` is also a separate subvolume. |
+| `~/.claude/jobs/*/tmp` (14 GiB on 2026-10-23), `~/.reasonix/{browser,logs,mcp-state}`, `~/.codex/cache` | Agent session scratch and caches, rebuilt on the next start. A job's `state.json` and `timeline.jsonl` sit beside its `tmp/` and are kept: kilobytes each. |
 
 No backup repositories exist under `/home` or `/var/lib/fundies` (searched); the
 new repository lives on the other disk.
 
-Not decided here: `mapped/` (94 GiB), the unpinned `esef-2023-2024*` trees and
-old `releases/*` are possibly intermediate, but the migration notes say pruning
-those needs a reference audit, so they are kept.
+Decision (2026-10-23): `/var/lib/fundies` is backed up whole, minus the rows
+above. `store/` is the core (458 of 732 GiB), but `mapped/` (94 GiB) and the
+decoded `releases/*` (134 GiB) are kept too: they are derivable from `store/`
+only by re-decoding 12 million files with the pinned decoder revision, and the
+receipts pin them. The extra cost is about 107 GiB in the repository (estimate,
+at the measured 47%). Also kept on purpose, although they may look re-runnable:
+the registry, `releases/receipts` and `verification/` (the migration notes say
+retain proofs), `prices/`, `archiver/` (taxonomies that cannot always be
+refetched), `migration-backup/`, `search/`, `company-*`, `series/`,
+`statements/`, `text*/`. None is large. To protect less, add globs to the
+`fundies` entry in `modules/rustic-local.nix`; a new top-level directory is
+backed up by default.
 
 ## Retention and sizing
 
@@ -276,8 +289,7 @@ The repository is plain files under `/mnt/backup/rustic/`; deleting it is
 - `/var/lib/fundies` could be its own subvolume, which would shrink the
   snapshot to just that tree. It means moving 700+ GiB (reflink, same disk) and
   is not needed for this to work.
-- `qdrant` (`filings/qdrant`, 2.3 GB) and Meilisearch are rebuildable indexes;
-  Qdrant's directory is captured crash-consistently, Meilisearch's lives outside
-  the protected paths.
+- Qdrant (`filings/qdrant`) is excluded and Meilisearch lives outside the
+  protected paths: both are rebuildable indexes, so a restore needs a reindex.
 - `/etc` and `/root/luks-backup.key` are not backed up; the key unlocks the
   backup disk and is itself on the encrypted root.

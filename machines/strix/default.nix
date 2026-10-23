@@ -102,11 +102,15 @@
         ../../modules/rustic-local.nix
 
         # fundies: the backend, frontend and data pipelines from the project's
-        # own flake. Meilisearch and nginx are wired by that module.
+        # own flake. Meilisearch and the loopback Caddy are wired by that module.
         fundies.nixosModules.default
 
+        # The 14 paused EDGAR/ESEF jobs keep running as yt instead, so yt is in the
+        # fundies group and the data tree is group-writable and setgid for both.
+        ../../modules/fundies-shared.nix
+
         # fundies.io: the fundies frontend through a Cloudflare tunnel. It
-        # fronts the flake's nginx proxy, not the bun process directly.
+        # fronts the flake's Caddy proxy, not the bun process directly.
         ../../modules/fundies-tunnel.nix
 
         # Logitech HID++ control for the MX Master 3S. The module is the point
@@ -165,11 +169,16 @@
         dataDir = "/var/lib/fundies";
         storeDir = "/var/lib/fundies/store";
 
-        # Nothing runs while /var/lib/fundies is being migrated, so nothing can
-        # write to it mid-copy. Drop these three once the copy is in place,
-        # keeping `enable = true` above.
-        backend.enable = false;
-        frontend.enable = false;
+        # Both readers are enabled together and pointed at one immutable
+        # manifest, so the API and the frontend cannot disagree about which
+        # release they serve. The pool is append-only, so that path never
+        # changes under them; a new publication means a new path here. The
+        # handoff - what was published, the proofs and the recorded coverage -
+        # is docs/plans/2026-10-23-serving-publication.md in the fundies tree,
+        # with the proof files under /var/lib/fundies/publication-work/2026-10-23.
+        releaseManifest = "/var/lib/fundies/releases/20f7b2d6437c412fe309dfe7065f14c31baabba07eb2004fe48438ff5842fc1a.json";
+        backend.enable = true;
+        frontend.enable = true;
 
         meilisearch = {
           index = "fundies_full_v2";
@@ -181,6 +190,10 @@
           OPENPERMID_API_KEY = config.age.secrets.openpermid-api-key.path;
           OPENFIGI_API_KEY = config.age.secrets.openfigi-api-key.path;
         };
+        # The writers stay off. This switch only selects a release that is
+        # already published, so nothing here re-runs a pipeline or regenerates
+        # the catalog; the children keep their settings so flipping the group
+        # is the whole change when the writers are wanted again.
         pipelines = {
           enable = false;
           edinet.enable = true;

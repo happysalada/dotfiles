@@ -1,7 +1,7 @@
 # Meilisearch: a RESTful search API. Shared by bee and strix - on bee it is
 # exposed through caddy at meilisearch.megzari.com, on strix it stays on
-# localhost for local tools and agents (no caddy there, so the vhost below is
-# simply never defined).
+# localhost for local tools and agents (its caddy only proxies fundies, so
+# the public vhost below is not defined there).
 #
 # The master key is required: without one every route is open to whoever can
 # reach the port. It lives in an agenix secret, decrypted to a root-only file
@@ -28,7 +28,7 @@
     file = ../secrets/meilisearch.master-key.age;
   };
 
-  services.caddy.virtualHosts = lib.mkIf config.services.caddy.enable {
+  services.caddy.virtualHosts = lib.mkIf (lib.hasInfix "(security_headers)" config.services.caddy.extraConfig) {
     "meilisearch.megzari.com" = {
       extraConfig = ''
         import security_headers

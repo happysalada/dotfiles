@@ -108,23 +108,52 @@ def is-subvolume [path: string] {
   (^stat --format '%i' $path | str trim) == "256"
 }
 
-# Snapshots do not recurse: a subvolume nested in a protected path would be
-# backed up as an empty directory.
+# Snapshots do not recurse, so a subvolume nested in a protected path is backed
+# up as an empty directory - unless the path is skipped, where nothing under it
+# is read at all.
 def audit-nested-subvolumes [] {
   let paths = (^btrfs subvolume list $env.TOPLEVEL | lines | parse --regex 'path (?<path>.+)$' | get path)
-  let strays = (protected | each {|d|
-    $paths | where {|p| $p | str starts-with $"($d.tree)/" }
-  } | flatten)
+  let strays = (protected | each {|d| strays-in $paths $d } | flatten)
   if not ($strays | is-empty) {
     error make { msg: $"subvolumes nested in a protected path would be skipped: ($strays | str join ', ')" }
   }
 }
 
-# [{name, volume, path, tree, globs}]: `volume` is snapshotted and its copy of
-# `path` is stored as `path`. `tree` is `path` from the filesystem root, as
-# `btrfs subvolume list` prints it. `globs` is a rustic glob file anchored at `path`.
+# [{name, volume, path, tree, globs, excludes}]: `volume` is snapshotted and its
+# copy of `path` is stored as `path`. `tree` is `path` from the filesystem root,
+# as `btrfs subvolume list` prints it. `globs` is the exclusion glob file for
+# `--glob-file`; `excludes` is the list it is written from.
 def protected [] {
   $env.PROTECTED | from json
+}
+
+# A stray under an excluded tree is not a stray: rustic reads nothing there.
+def strays-in [paths: list<string>, d: record] {
+  let skipped = ($d.excludes | each {|g| glob-regex $g })
+  $paths
+  | where {|p| $p | str starts-with $"($d.tree)/" }
+  | where {|p|
+      let rel = ($p | str substring (($d.tree | str length)..))
+      not ($skipped | any {|r| $rel =~ $r })
+    }
+}
+
+# rustic's globs: `**` is any depth, `*` is one path segment, the rest is literal.
+def glob-regex [pattern: string] {
+  let segments = ($pattern | split row '**' | each {|part|
+    $part
+    | split row '*'
+    | each {|literal| regex-escape $literal }
+    | str join '[^/]*'
+  })
+  let joined = ($segments | str join '.*')
+  $"^($joined)$"
+}
+
+# `\` first: replacing it later would escape the backslashes the others insert.
+def regex-escape [text: string] {
+  ['\' '.' '^' '$' '+' '?' '(' ')' '[' ']' '{' '}' '|']
+  | reduce -f $text {|c, escaped| $escaped | str replace --all --no-expand $c ('\' + $c) }
 }
 
 # `/` first, so its snapshot does not carry the other snapshots as nested subvolumes.

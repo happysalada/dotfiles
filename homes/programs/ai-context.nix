@@ -486,6 +486,7 @@
       | `jq` field selection | `jg` |
       | `grep` for a code *shape* rather than a string | `ast-grep -p 'foo($$$ARGS)'` |
       | `curl` | `xh` |
+      | suggesting `watch` to me | `viddy` - see below; never run it yourself |
       | `grep` inside a PDF or .docx | `rga` |
       | per-language line counts, disk usage, a flag you have forgotten | `tokei`, `dua`, `tldr <cmd>` |
       | `nix eval`, `nix build`, `nix search`, `nix fmt` on a local flake | `iets` - same stdout, cached across runs; the fallbacks are below |
@@ -551,6 +552,18 @@
       `curl` only when reproducing an exact documented command or when the
       command must run somewhere `xh` is unavailable, and say why. Translate
       ordinary `curl` examples to `xh` rather than copying them unchanged.
+
+      ### viddy - repeating a command
+
+      When you suggest I watch something, give a `viddy` command, not `watch`:
+      `viddy -n 5 -d '<cmd>'` runs every 5 s (`-n`, default 2 s) and highlights
+      changes (`-d`). It keeps history I can rewind. Remember that nu's builtin
+      `watch` waits for *file* changes and is not procps `watch`, so a bare
+      `watch -n5 ...` in my shell does the wrong thing.
+
+      It is a TUI, so do not run it yourself: it never exits and your shell has
+      no terminal. To poll from a session, use a bounded `until` loop with
+      `Monitor`, or `pueue` for anything long.
 
       ### jsongrep - structured data search
 

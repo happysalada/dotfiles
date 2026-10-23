@@ -15,6 +15,7 @@ with pkgs;
   choose # better cut & awk
   hyperfine # benchmarking tool
   xh # http client
+  viddy # `watch` with history, diffs and rewind
   file # get informations about files
   # moreutils # sponge
   # zstd # fast compression

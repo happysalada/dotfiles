@@ -35,6 +35,12 @@ in
         "securiteinfoold.hdb"
         "securiteinfopdf.hdb"
       ];
+
+      # freshclam never gives up by default (ReceiveTimeout 0), and the switch
+      # waits for it. A cap per file, not an idle timeout: 30 minutes is far
+      # past the slowest healthy download seen (90 MB at ~360 KB/s).
+      settings.ConnectTimeout = 30;
+      settings.ReceiveTimeout = 1800;
     };
 
     fangfrisch = {
@@ -49,4 +55,8 @@ in
       settings.urlhaus.enabled = "no";
     };
   };
+
+  # A oneshot has no start timeout, and clamd waits behind it, so a stalled
+  # download would hold `nixos-rebuild switch` indefinitely.
+  systemd.services.clamav-freshclam.serviceConfig.TimeoutStartSec = "45min";
 }

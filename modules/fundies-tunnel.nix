@@ -1,6 +1,7 @@
 # fundies.io through a locally managed Cloudflare tunnel. The credentials JSON
 # is the one `cloudflared tunnel create fundies` wrote, encrypted by agenix; the
-# ingress is local because the tunnel is local. No Caddy and no open ports.
+# ingress is local because the tunnel is local. The hop in front of it is the
+# fundies module's Caddy on 127.0.0.1:8080, so no port is opened.
 #
 # The tunnel is keyed by its UUID, not by the name `fundies`: cloudflared needs
 # cert.pem to resolve a name, and the generated service has no $HOME to find it.
