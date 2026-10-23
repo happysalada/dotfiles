@@ -180,6 +180,14 @@
         backend.enable = true;
         frontend.enable = true;
 
+        # The live rolling worker: it follows completed ingestions and keeps the
+        # catalog and the search index current, which is what the batch release
+        # and full index rebuild used to do in one pass. `releaseManifest` above is
+        # its baseline - the module passes it as `--base-manifest` - so it starts
+        # from the release that is being served instead of an empty catalog. Gated
+        # by this flag alone, so it runs even with `pipelines.enable` false.
+        rolling.enable = true;
+
         meilisearch = {
           index = "fundies_full_v2";
           keyFile = config.age.secrets.meilisearch-master-key.path;
@@ -190,15 +198,16 @@
           OPENPERMID_API_KEY = config.age.secrets.openpermid-api-key.path;
           OPENFIGI_API_KEY = config.age.secrets.openfigi-api-key.path;
         };
-        # The writers stay off. This switch only selects a release that is
-        # already published, so nothing here re-runs a pipeline or regenerates
-        # the catalog; the children keep their settings so flipping the group
-        # is the whole change when the writers are wanted again.
+        # Acquisition stays off for this switch; the rolling worker above still
+        # runs, because it is gated by `rolling.enable` and not by this group. The
+        # batch release and the full search-index rebuild are the two steps rolling
+        # replaces, so they go off now - the module asserts exactly that pair once
+        # both `pipelines.enable` and `searchIndex` are on.
         pipelines = {
           enable = false;
           edinet.enable = true;
-          release.enable = true;
-          searchIndex.enable = true;
+          release.enable = false;
+          searchIndex.enable = false;
         };
       };
 
@@ -574,33 +583,11 @@
         defaultNetwork.settings.dns_enabled = true;
       };
 
-      # Weekly read-only snapshots of /home, for undoing what an agent (or I)
-      # just broke: `ls /.snapshots`, copy back what you need. Saturday's is
-      # also sent incrementally to the second drive, which survives this one
-      # dying. Only the newest of each is kept: the local one is just the diff
-      # base for the next send, and two copies of this home do not fit on the
-      # backup drive.
-      services.btrbk.instances.home = {
-        onCalendar = "Sat *-*-* 00:00:00";
-        settings = {
-          # `no` + `latest` is btrbk's own spelling for "keep the latest only".
-          snapshot_preserve_min = "latest";
-          snapshot_preserve = "no";
-          target_preserve_min = "latest";
-          target_preserve = "no";
-          volume."/" = {
-            snapshot_dir = ".snapshots";
-            subvolume = "home";
-            # not created by tmpfiles on purpose: with the drive unmounted it
-            # would land on the root fs, and btrbk would back up onto itself
-            target = "/mnt/backup/home";
-          };
-        };
-      };
       # Cargo's target/ is build output that changes on every compile. A nested
-      # btrfs subvolume is skipped by snapshots, so neither the weekly snapshot
-      # nor the send to the second drive carries it; the data stays on this
-      # disk, only the backup is spared the churn.
+      # btrfs subvolume is skipped by snapshots, so the rustic-local run leaves it
+      # out and the data stays on this disk. It used to spare btrbk's weekly send
+      # the churn as well; the mount is kept because target/ outgrowing the root
+      # subvolume is still worth avoiding.
       fileSystems."/home/yt/dev/fundies/target" = {
         device = config.fileSystems."/".device;
         fsType = "btrfs";
@@ -609,8 +596,6 @@
           "noatime"
         ];
       };
-      # btrbk refuses to create its own snapshot_dir
-      systemd.tmpfiles.rules = [ "d /.snapshots 0755 root root -" ];
 
       # `nh os switch` = nixos-rebuild + nom + a closure diff, in one command.
       # Its clean timer is left off: nix.gc below already owns that.
@@ -1293,6 +1278,10 @@
               smartmontools
               pciutils
               usbutils
+              # The patched rustic the backup units run, so an operator can inspect
+              # and restore with the same binary: `sudo rustic snapshots` finds it
+              # because sudo keeps the caller's PATH. Store path, not nixpkgs'.
+              (import ../../modules/rustic-package.nix pkgs)
             ]
             ++ (import ../../packages/basic_cli_set.nix { inherit pkgs; })
             ++ (import ../../packages/ai.nix { inherit pkgs; })

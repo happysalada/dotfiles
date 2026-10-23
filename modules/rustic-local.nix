@@ -94,7 +94,7 @@ let
         "/yt/.codex/cache"
         "/yt/.codex/cache/**"
         # Reflink copies of /var/lib/fundies until post-cutover cleanup deletes
-        # them; 735 GiB would be read twice. btrbk holds them until retired.
+        # them; 735 GiB would be read twice. They stay on disk until that runs.
         "/yt/dev/fundies/data"
         "/yt/dev/fundies/data/**"
         "/yt/dev/fundies/crates/store/data"

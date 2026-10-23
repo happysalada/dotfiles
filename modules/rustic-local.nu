@@ -77,8 +77,8 @@ def require-backup-disk [--repo] {
   }
 }
 
-# Anything named like our runs is stale: the module's flock serialises runs.
-# btrbk's snapshots live elsewhere and never match.
+# Anything named like our runs is stale: the module's flock serialises runs, so
+# nothing else writes here.
 def sweep-stale [] {
   if not ($env.SNAP_DIR | path exists) { return }
   let stale = (ls --full-paths $env.SNAP_DIR | where type == dir | get name

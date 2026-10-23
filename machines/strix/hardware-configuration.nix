@@ -58,9 +58,9 @@
     ];
   };
 
-  # btrbk's backup target on the second drive. Unlocked after boot with a key
-  # kept on the encrypted root, not in the initrd, and nofail throughout: a
-  # dead backup drive costs the backups, never the boot.
+  # The backup target on the second drive: rustic-local's repository lives here.
+  # Unlocked after boot with a key kept on the encrypted root, not in the initrd,
+  # and nofail throughout: a dead backup drive costs the backups, never the boot.
   environment.etc.crypttab.text = ''
     cryptbackup /dev/disk/by-partlabel/strix-backup /root/luks-backup.key nofail,discard
   '';

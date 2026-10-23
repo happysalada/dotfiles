@@ -242,7 +242,11 @@ will compete for I/O, so prefer starting after `pueue status` shows it done.
    succeeded. The old backup stays recoverable until then:
    `/.snapshots/home.20261019T0528` and `/mnt/backup/home/home.20261019T0528`.
 
-## Retire btrbk (after step 8; not executed)
+## Retire btrbk (executed 2026-10-24)
+
+The `services.btrbk.instances.home` block and its `/.snapshots` tmpfiles rule are
+gone from `machines/strix/default.nix`; the `fileSystems."/home/yt/dev/fundies/target"`
+mount is kept. Nothing recreates a snapshot now, so the two below are all there is.
 
 Measure before and after, so the saving is a number rather than an estimate:
 ```sh
@@ -254,14 +258,18 @@ sudo btrfs filesystem usage -b /
    `machines/strix/default.nix`; **keep** the `fileSystems."/home/yt/dev/fundies/target"`
    mount. Rebuild and switch. This stops the Saturday run, which would
    otherwise replace the snapshot and backup.
-2. Delete the old snapshot and received backup:
+2. Delete the old snapshot and received backup (`sync` takes one path at a time —
+   a second path is read as a subvolume id, not another filesystem):
    ```sh
    sudo btrfs subvolume delete /.snapshots/home.20261019T0528
    sudo btrfs subvolume delete /mnt/backup/home/home.20261019T0528
-   sudo btrfs subvolume sync / /mnt/backup
+   sudo btrfs subvolume sync /
+   sudo btrfs subvolume sync /mnt/backup
+   sudo rmdir /.snapshots /mnt/backup/home
    df -B1 --output=avail / /mnt/backup
    ```
-   Space is reclaimed asynchronously; `subvolume sync` waits for it.
+   Space is reclaimed asynchronously; each `subvolume sync` waits for its own
+   filesystem.
 
 Reclaimable space:
 
