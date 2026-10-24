@@ -78,7 +78,13 @@
     # follows are load-bearing: it builds with rust-overlay's stable.latest
     # because nixpkgs' rustc lags the workspace's rust-version, and its own
     # nixpkgs would otherwise be a second evaluation of the same tree.
-    openlogi.url = "github:AprilNEA/OpenLogi";
+    #
+    # ?dir=packaging, not the bare repo: upstream moved the flake into
+    # packaging/ and left the root one as a deprecated alias (it only declares
+    # nixpkgs and warns at eval time), so rust-overlay is an input of the
+    # subflake. Following the alias' nested input would still work but pulls a
+    # second, unpinned rust-overlay.
+    openlogi.url = "github:AprilNEA/OpenLogi?dir=packaging";
     openlogi.inputs.nixpkgs.follows = "nixpkgs";
     openlogi.inputs.rust-overlay.follows = "rust-overlay";
 

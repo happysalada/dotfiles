@@ -23,8 +23,9 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];
-  # systemd initrd is what reads tpm2-device= from crypttab, for TPM unlock later
-  boot.initrd.systemd.enable = true;
+  # No boot.initrd.systemd.enable: this nixpkgs removed the scripted initrd, so
+  # systemd initrd is unconditional and the option is an assertion failure. It
+  # is still the stage that reads tpm2-device= from crypttab, for TPM unlock.
   boot.initrd.luks.devices.cryptroot = {
     device = "/dev/disk/by-uuid/bfb5be95-98cf-4b62-b644-a88e8f7fa480";
     allowDiscards = true;

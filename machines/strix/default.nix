@@ -187,6 +187,31 @@
         # from the release that is being served instead of an empty catalog. Gated
         # by this flag alone, so it runs even with `pipelines.enable` false.
         rolling.enable = true;
+        # The schemas the DART decoder resolves imports against; FSS publishes them
+        # only as a portal download, so they come from the archive.
+        rolling.dartTaxonomy = [
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2023-09-25/dart_2022-12-01.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2023-09-25/dart-gcd_2022-12-01.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2023-09-25/dart_all_2022-12-01.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2023-09-25/gcd/rol_dart-gcd_2022-12-01.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2023-09-25/labels/rol_dart-label_2022-12-01.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2024-09-26/generated/dart_2024-06-30.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2024-09-26/generated/dart-gcd_2024-06-30.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2024-09-26/generated/full_ifrs-cor_2021-03-24.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2026-06-30/generated/dart_2026-01-31.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2026-06-30/generated/dart-gcd_2026-01-31.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/official/2026-06-30/generated/full_ifrs-cor_2024-03-27.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/negated-2009-12-16.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/net-2009-12-16.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/nonNumeric-2009-12-16.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/numeric-2009-12-16.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/ref-2006-02-27.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/xbrldt-2005.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/xbrl-instance-2003-12-31.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/xbrl-linkbase-2003-12-31.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/xl-2003-12-31.xsd"
+          "/var/lib/fundies/archiver/dart-taxonomy/xbrl/xlink-2003-12-31.xsd"
+        ];
 
         meilisearch = {
           index = "fundies_full_v2";
@@ -205,6 +230,8 @@
         pipelines = {
           enable = true;
           edinet.enable = true;
+          dart.enable = true;
+          esef.enable = true;
           release.enable = false;
           searchIndex.enable = false;
         };
@@ -229,6 +256,8 @@
         loader.systemd-boot.configurationLimit = 10;
 
         kernelPackages = pkgs.linuxPackages_latest;
+
+        tmp.cleanOnBoot = true;
 
         # The dgpu's display engine times out being torn down under s2idle
         # ("Failed to tear down display engine channel"), which is what breaks
@@ -343,6 +372,20 @@
       networking = {
         hostName = "strix";
         networkmanager.enable = true;
+
+        # Public wifi would otherwise log every probe; the default is on.
+        firewall.logRefusedConnections = false;
+      };
+
+      # Pinned so the first connection is not trust-on-first-use. Keys from
+      # srvos's shared/common/well-known-hosts.nix.
+      programs.ssh.knownHosts = {
+        "github.com".publicKey =
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+        "gitlab.com".publicKey =
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf";
+        "git.sr.ht".publicKey =
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMZvRd4EtM7R+IHVMWmDkVU3VLQTSwQDSAvW0t2Tkj60";
       };
 
       # Held boot for ~5s waiting on a link. Nothing here needs the network up
@@ -609,6 +652,13 @@
       services.avahi.nssmdns4 = true;
       services.resolved.settings.Resolve.MulticastDNS = false;
 
+      # LLMNR is on by default and spoofable on any shared network.
+      services.resolved.settings.Resolve.LLMNR = "false";
+
+      # Restart rather than stop+start on switch, so DNS does not drop
+      # mid-activation (the Saturday autoUpgrade, agents fetching).
+      systemd.services.systemd-resolved.stopIfChanged = false;
+
       services.pulseaudio.enable = false;
       security.rtkit.enable = true;
       services.pipewire = {
@@ -674,13 +724,15 @@
 
       # nix
       nix = {
-        package = pkgs.nixVersions.latest;
+        # No `package` here: since iets 0.2.0 its module sets `nix.package` to
+        # the classic-mode wrapper, and a second definition of the option is a
+        # conflict rather than a precedence. The version underneath is picked
+        # by `iets.classic.nix`, next to `iets.classic.enable` below.
         settings = {
           # cores = 0 gave each cuda build all 32 threads - one cicc per .cu at
           # 1-2GB - and two such jobs at once (llama-cpp + onnxruntime) took 33GB.
           cores = 8;
           max-jobs = 2;
-          auto-optimise-store = true;
           download-buffer-size = 104857600; # 100 Mb
           experimental-features = [
             "nix-command"
@@ -732,12 +784,26 @@
           # held the screen black for 37s past the password prompt.
           persistent = false;
         };
+
+        # A timer rather than auto-optimise-store, which hardlinks inline and
+        # slows every build. Not persistent, for the reason given for gc above.
+        optimise = {
+          automatic = true;
+          persistent = false;
+        };
+
+        channel.enable = false;
       };
 
       # The classic names in the system path, ahead of nix's own - the module
       # writes the nix this host runs into share/iets/real-nix-bin, so the
-      # fallback finds it even where the farm shadowed it out of PATH.
+      # fallback finds it even where the farm shadowed it out of PATH. With
+      # `enable`, `nix.package` *is* that wrapper, so `classic.nix` is where
+      # the real binary is named now - the nixVersions.latest the bare
+      # `nix.package` used to carry. (iets 0.1.0 only hiPrio'd a wrapper into
+      # systemPackages and read `nix.package`; 0.2.0 took the option over.)
       iets.classic.enable = true;
+      iets.classic.nix = pkgs.nixVersions.latest;
 
       # Belt to the above's braces, for the runs that do land while I am typing.
       # Only the CPU half bites on this machine: ionice needs a scheduler that
@@ -909,7 +975,14 @@
       systemd.services.nix-daemon.serviceConfig = {
         MemoryHigh = "40G";
         MemoryMax = "48G";
+        # Builds inherit it, so under system-wide pressure they die before the
+        # session does. 100 is user@.service's.
+        OOMScoreAdjust = 250;
       };
+
+      # Rebuilds yield the CPU to whatever I am doing. No IO class: both NVMEs
+      # run `none`, which ignores it.
+      nix.daemonCPUSchedPolicy = "idle";
 
       # Every reboot sat 90s on a terminal scope: claude processes spawned after
       # the reboot request ignore SIGTERM until the stop timeout SIGKILLs them.
@@ -1108,14 +1181,24 @@
         SystemMaxUse = "2G";
       };
 
-      # shows what changed on every rebuild
-      # MIT Jörg Thalheim - https://github.com/Mic92/dotfiles
-      system.activationScripts.diff = ''
-        if [[ -e /run/current-system ]]; then
-          ${pkgs.nix}/bin/nix --extra-experimental-features nix-command \
-            store diff-closures /run/current-system "$systemConfig" || true
+      # Shows what changed before every switch, from srvos's update-diff. A
+      # pre-switch check rather than an activation script, so it prints ahead of
+      # the switch; `|| true` because a failing check would abort it.
+      system.preSwitchChecks.update-diff = ''
+        incoming="''${1-}"
+        if [[ -e /run/current-system && -e "$incoming" ]]; then
+          ${lib.getExe pkgs.dix} --force-correctness /run/current-system "$incoming" || true
         fi
       '';
+
+      # New-style user creation, as srvos defaults to. Try with `nixos-rebuild
+      # test` first: mutableUsers stays true here, so the install-time password
+      # has to survive it.
+      services.userborn.enable = true;
+
+      # Drops the /lib/ld-linux.so.2 stub. alsa.support32Bit is on above, so
+      # undo this if a 32-bit binary stops finding its loader.
+      environment.ldso32 = null;
 
       system.stateVersion = "26.05";
     }
