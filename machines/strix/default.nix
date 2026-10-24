@@ -198,13 +198,12 @@
           OPENPERMID_API_KEY = config.age.secrets.openpermid-api-key.path;
           OPENFIGI_API_KEY = config.age.secrets.openfigi-api-key.path;
         };
-        # Acquisition stays off for this switch; the rolling worker above still
-        # runs, because it is gated by `rolling.enable` and not by this group. The
-        # batch release and the full search-index rebuild are the two steps rolling
-        # replaces, so they go off now - the module asserts exactly that pair once
-        # both `pipelines.enable` and `searchIndex` are on.
+        # Acquisition is on: the walkers and fetchers below start on their timers.
+        # The rolling worker above still supplies the catalog and the index, so the
+        # batch release and the full index rebuild stay off - the module asserts
+        # that pair together with `enable`.
         pipelines = {
-          enable = false;
+          enable = true;
           edinet.enable = true;
           release.enable = false;
           searchIndex.enable = false;
