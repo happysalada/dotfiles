@@ -60,7 +60,7 @@ with pkgs;
   cargo-insta # reviews and accepts `insta` snapshots; without it a changed
   # snapshot is a file to hand-edit rather than a diff to confirm.
 
-  cargo-llvm-cov # line and branch coverage. Needs llvm-tools-preview from the
+  # cargo-llvm-cov # line and branch coverage. Needs llvm-tools-preview from the
   # toolchain above - package alone is not enough, see the note there.
 
   cargo-watch # rebuilds on save. For interactive use, not for an agent, which
