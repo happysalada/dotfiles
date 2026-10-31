@@ -101,6 +101,10 @@
         # job below once its cutover is done: docs/rustic-local-backup.md.
         ../../modules/rustic-local.nix
 
+        # Monthly scrub and weekly balance of both disks; the balance hands
+        # empty metadata chunks back, which btrfs never does on its own.
+        ../../modules/btrfs-maintenance.nix
+
         # fundies: the backend, frontend and data pipelines from the project's
         # own flake. Meilisearch and the loopback Caddy are wired by that module.
         fundies.nixosModules.default
