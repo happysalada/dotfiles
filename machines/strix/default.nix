@@ -182,6 +182,7 @@
         # with the proof files under /var/lib/fundies/publication-work/2026-10-23.
         releaseManifest = "/var/lib/fundies/releases/20f7b2d6437c412fe309dfe7065f14c31baabba07eb2004fe48438ff5842fc1a.json";
         backend.enable = true;
+        backend.filingTextStore = "/var/lib/fundies/filings/filing_text.sqlite";
         frontend.enable = true;
 
         # The live rolling worker: it follows completed ingestions and keeps the
