@@ -181,10 +181,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1793441199,
-        "narHash": "sha256-X9+a38nbbqGVtVnB/vvU1g4eLXXhbvBxJHbcX53Xe2U=",
-        "rev": "791de4a42dce66a8d6fbd88c3b1c3265b1887c41",
-        "revCount": 18,
+        "lastModified": 1793444087,
+        "narHash": "sha256-R6MARTVbYcUuI+YyRVnsj1SUv1hQvC0JLW3DIKh9orE=",
+        "rev": "16404ec71a1fdf3128ea2053b60b12ae1c1bbce0",
+        "revCount": 21,
         "type": "git",
         "url": "file:///home/yt/dev/fundies"
       },
