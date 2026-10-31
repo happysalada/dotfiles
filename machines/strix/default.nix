@@ -1187,7 +1187,7 @@
       system.preSwitchChecks.update-diff = ''
         incoming="''${1-}"
         if [[ -e /run/current-system && -e "$incoming" ]]; then
-          ${lib.getExe pkgs.dix} --force-correctness /run/current-system "$incoming" || true
+          ${lib.getExe pkgs.dix} diff /run/current-system "$incoming" || true
         fi
       '';
 
