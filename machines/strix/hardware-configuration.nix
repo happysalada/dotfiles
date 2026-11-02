@@ -29,6 +29,8 @@
   boot.initrd.luks.devices.cryptroot = {
     device = "/dev/disk/by-uuid/bfb5be95-98cf-4b62-b644-a88e8f7fa480";
     allowDiscards = true;
+    # Encrypt/decrypt in the submitting thread, not a shared kcryptd queue.
+    bypassWorkqueues = true;
   };
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];

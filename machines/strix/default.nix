@@ -216,6 +216,9 @@
           "/var/lib/fundies/archiver/dart-taxonomy/xbrl/xbrl-linkbase-2003-12-31.xsd"
           "/var/lib/fundies/archiver/dart-taxonomy/xbrl/xl-2003-12-31.xsd"
           "/var/lib/fundies/archiver/dart-taxonomy/xbrl/xlink-2003-12-31.xsd"
+          # The 2013-2019 and 2024-2026 trees the older filings import, fetched with
+          # scripts/archiver/fetch-dart-taxonomy-tree.nu; a directory stands for its schemas.
+          "/var/lib/fundies/archiver/dart-taxonomy/fss"
         ];
 
         meilisearch = {
@@ -1344,6 +1347,16 @@
               $env.PKG_CONFIG_PATH = "${config.home.profileDirectory}/lib/pkgconfig"
             '';
           })
+
+          # moviebox-tui (packages/gui.nix): play in mpv, and draw posters over
+          # ghostty's kitty graphics protocol rather than relying on detection.
+          # Nushell's env, as above - the module never loads home.sessionVariables.
+          {
+            programs.nushell.extraEnv = ''
+              $env.MOVIEBOX_PLAYER = "mpv"
+              $env.MOVIEBOX_IMAGE_PROTOCOL = "kitty"
+            '';
+          }
         ];
 
         home = {

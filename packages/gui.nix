@@ -51,4 +51,11 @@ with pkgs;
   # wl-clipboard, the clipboard half of both paths, is already in
   # linux_cli_set.nix.
   wtype
+
+  # Streaming TUI, not in nixpkgs (packages/ai/moviebox-tui.nix). mpv is the
+  # default player, vlc the fallback; MOVIEBOX_PLAYER in
+  # machines/strix/default.nix selects it.
+  mpv
+  vlc
+  (callPackage ./ai/moviebox-tui.nix { })
 ]

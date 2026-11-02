@@ -47,7 +47,7 @@ def "main forget" [] {
 # Structure always, plus a random slice of pack data read back.
 def "main check" [] {
   require-backup-disk --repo
-  ^rustic check --read-data-subset $env.CHECK_SUBSET
+  ^rustic check --read-data --read-data-subset $env.CHECK_SUBSET
 }
 
 # Remove snapshots a killed run left behind.
