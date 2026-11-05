@@ -70,4 +70,8 @@ in
   # services.cloudflared in modules/fundies-tunnel.nix. It carries the tunnel
   # secret, not an API token, so it belongs to this machine's agenix identity.
   "cloudflare-tunnel-fundies.age".publicKeys = [ yt_at_strix ];
+
+  # S3 credentials for the Cloudflare R2 bucket fundies-store (modules/fundies-r2.nix), as
+  # an env file with the standard AWS names so every S3 client can read it. strix only.
+  "r2.credentials.age".publicKeys = [ yt_at_strix ];
 }

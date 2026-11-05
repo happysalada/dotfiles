@@ -112,6 +112,7 @@
         # The 14 paused EDGAR/ESEF jobs keep running as yt instead, so yt is in the
         # fundies group and the data tree is group-writable and setgid for both.
         ../../modules/fundies-shared.nix
+        ../../modules/fundies-r2.nix
 
         # fundies.io: the fundies frontend through a Cloudflare tunnel. It
         # fronts the flake's Caddy proxy, not the bun process directly.
@@ -1010,6 +1011,8 @@
 
       nixpkgs = {
         config.allowUnfree = true;
+        # the 4090 only (sm_89); the default list builds ten arches per .cu
+        config.cudaCapabilities = [ "8.9" ];
         overlays = [
           # puts `rust-bin` in scope for packages/dev/rust-toolchain.nix.
           # Everything it provides is fetched from static.rust-lang.org rather

@@ -27,6 +27,12 @@ with pkgs;
   # the SlopCodeBench pair - verbosity (redundancy) and structural erosion.
   # Rust-usable; its ast-grep rule half only ever fires on Python.
   (callPackage ./scb-check.nix { })
+  # Not in nixpkgs and the npm tarball ships no lockfile, so this runs the
+  # pinned release through npx (cached in ~/.npm after the first use). Bash
+  # because it is a one-line exec. `likec4 start` serves the live preview.
+  (writeShellScriptBin "likec4" ''
+    exec ${lib.getExe' nodejs "npx"} --yes likec4@1.60.0 "$@"
+  '')
   difftastic # `difft`, syntax-aware diff
   shellcheck # for the bash that still has to be bash
   podman-compose # `podman compose`, for repos that ship a compose file
