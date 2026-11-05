@@ -271,7 +271,12 @@
         # ("Failed to tear down display engine channel"), which is what breaks
         # resume. Firmware offers real S3, and nvidia's suspend path is far
         # better tested against it.
-        kernelParams = [ "mem_sleep_default=deep" ];
+        # pcie_aspm=off: ~35/h correctable Data Link Layer timeouts on the nvme
+        # root port (00:1b.0) before an unclean crash; see if the rate drops.
+        kernelParams = [
+          "mem_sleep_default=deep"
+          "pcie_aspm=off"
+        ];
 
         # Every agent session starts its own fff-mcp, and each one recursively
         # watches its whole checkout - roughly 38k directories for nixpkgs. A
@@ -988,6 +993,13 @@
         OOMScoreAdjust = 250;
       };
 
+      # An OOM took the whole box with fundies-server at 38-45 GB anon RSS.
+      # Kill and restart it inside its own cgroup instead.
+      systemd.services.fundies-server.serviceConfig = {
+        MemoryHigh = "24G";
+        MemoryMax = "32G";
+      };
+
       # Rebuilds yield the CPU to whatever I am doing. No IO class: both NVMEs
       # run `none`, which ignores it.
       nix.daemonCPUSchedPolicy = "idle";
@@ -1261,10 +1273,6 @@
           ../../homes/programs/nono.nix
           # Serves that same opencode over the mesh, for the phone.
           ../../homes/programs/opencode-server.nix
-          # Happier: the same agents mirrored to the phone/browser, over a
-          # self-hosted relay on this machine. Both are user services; the
-          # relay's unit holds sleep off while it runs.
-          ../../homes/programs/happier.nix
           # Registers its own MCP server next to the units it talks to.
           ../../homes/programs/crw.nix
           # ~/.symposium/config.toml, so `cargo agents init` never has to run.
