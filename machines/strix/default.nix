@@ -88,6 +88,9 @@
         # that only make sense across it.
         ../../modules/netbird.nix
 
+        # Comics/manga server on 127.0.0.1, published by the tunnel below.
+        ../../modules/stump.nix
+
         # prefect's server on 127.0.0.1:4200 - the UI and run history for
         # the flows in homes/programs/starred-digest.
         ../../modules/prefect-local.nix
@@ -624,6 +627,10 @@
           systembus-notify.enable = true;
         };
       };
+
+      # Runtime syscall detection with the stock rules (modern eBPF); alerts
+      # go to the journal: `journalctl -u falco`.
+      services.falco.enable = true;
 
       # Nightly clamdscan over the two places untrusted files land. The
       # module's default list would sweep /home and /var/lib as well - ollama's

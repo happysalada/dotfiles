@@ -1,4 +1,5 @@
-# fundies.io through a locally managed Cloudflare tunnel. The credentials JSON
+# fundies.io, and Stump at comic.megzari.com (modules/stump.nix), through a
+# locally managed Cloudflare tunnel. The credentials JSON
 # is the one `cloudflared tunnel create fundies` wrote, encrypted by agenix; the
 # ingress is local because the tunnel is local. The hop in front of it is the
 # fundies module's Caddy on 127.0.0.1:8080, so no port is opened.
@@ -29,6 +30,7 @@ lib.mkIf (builtins.pathExists credentials) {
       ingress = {
         "fundies.io" = "http://127.0.0.1:8080";
         "www.fundies.io" = "http://127.0.0.1:8080";
+        "comic.megzari.com" = "http://127.0.0.1:${toString config.services.stump.port}";
       };
       default = "http_status:404";
     };

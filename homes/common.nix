@@ -179,10 +179,16 @@
       add_newline = false;
       package.disabled = true;
 
+      # jj first: colocated repos would otherwise show git's detached HEAD.
+      vcs.order = [ "jj" "git" ];
+
+      # $all with its git/hg modules swapped for $vcs, which picks git or jj per repo.
+      format = "$username$hostname$localip$shlvl$singularity$kubernetes$nats$directory$vcsh$vcs$docker_context$package$bun$c$cmake$cobol$cpp$daml$dart$deno$dotnet$elixir$elm$erlang$fennel$fortran$gleam$golang$gradle$haskell$haxe$helm$java$julia$kotlin$lua$maven$mojo$nim$nodejs$ocaml$odin$opa$perl$php$pulumi$purescript$python$quarto$raku$rlang$red$ruby$rust$scala$solidity$swift$terraform$typst$vlang$vagrant$xmake$zig$buf$guix_shell$nix_shell$conda$pixi$meson$spack$memory_usage$aws$gcloud$openstack$azure$direnv$env_var$mise$crystal$custom$sudo$cmd_duration$line_break$jobs$battery$time$status$container$netns$os$shell$character";
+
       # Claude Code's statusline, invoked as `starship statusline claude-code`
       # from programs/claude-code.nix. Directory leads because agents run in
       # .claude/worktrees; the three claude_* modules only exist in this profile.
-      profiles.claude-code = "$directory$git_branch$claude_model$claude_context$claude_cost";
+      profiles.claude-code = "$directory$vcs$claude_model$claude_context$claude_cost";
     };
   };
 
