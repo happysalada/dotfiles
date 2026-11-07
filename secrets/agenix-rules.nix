@@ -42,6 +42,7 @@ in
   # also carries the bucket id. strix only for now.
   "rustic.password.age".publicKeys = [ yt_at_strix ];
   "b2.credentials.age".publicKeys = [ yt_at_strix ];
+  "b2-comics.credentials.age".publicKeys = [ yt_at_strix ];
 
   # Repository password of the local restic backup on the second drive
   # (modules/restic-local.nix). Same warning as rustic's: losing it loses the

@@ -88,8 +88,8 @@
         # that only make sense across it.
         ../../modules/netbird.nix
 
-        # Comics/manga server on 127.0.0.1, published by the tunnel below.
-        ../../modules/stump.nix
+        # Comics/manga server (Komga) on 127.0.0.1, published by the tunnel below.
+        ../../modules/komga.nix
 
         # prefect's server on 127.0.0.1:4200 - the UI and run history for
         # the flows in homes/programs/starred-digest.
