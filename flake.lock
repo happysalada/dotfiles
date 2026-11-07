@@ -181,10 +181,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1794057383,
-        "narHash": "sha256-T652+q5IrLdFHU+PGyR+3L1wUX3MYVdWsbm/W10F018=",
-        "rev": "dcd66b0a048fb4920ce8aed18f6c9a9d8bb27887",
-        "revCount": 63,
+        "lastModified": 1794061267,
+        "narHash": "sha256-gSQoXZ0JC3SydJtHnaznco3HrAsLFrDrlvuQIn1Kwq4=",
+        "rev": "1c76f1568f4cc153217ae87e2542d80866809d6f",
+        "revCount": 64,
         "type": "git",
         "url": "file:///home/yt/dev/fundies"
       },
@@ -245,11 +245,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1794029035,
-        "narHash": "sha256-i1OMvN+VWCPM2sP6iMeXjDXpMh/h+OoJK+bO018rjU4=",
+        "lastModified": 1794058687,
+        "narHash": "sha256-WvlPLJ6DqvldVEvD2Pl+rRSOeUmb+jGSWUxGC01NNd4=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "70f935080caa586fd7d0ae6703b155d487b93af4",
+        "rev": "0d2034d5c9453db4247d90cabec3c7b8edd52668",
         "type": "github"
       },
       "original": {
