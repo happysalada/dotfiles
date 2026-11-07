@@ -115,6 +115,12 @@ let
         # Vector index, rebuilt from the full text
         "/filings/qdrant"
         "/filings/qdrant/**"
+      ]
+      # Held in the bucket once the blobs move there; a backup would read all of it back.
+      ++ lib.optionals config.services.fundies.blobs.enable [
+        "/store/blobs"
+        "/store/blobs/**"
+        "/store/blobs.local/**"
       ];
     }
   ];

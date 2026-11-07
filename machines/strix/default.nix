@@ -174,6 +174,15 @@
         dataDir = "/var/lib/fundies";
         storeDir = "/var/lib/fundies/store";
 
+        # Flip `enable` at the cutover (see docs/plans/2026-11-07-blobs-in-r2.md in the fundies
+        # tree): the mount hides store/blobs, so the local copy must be moved aside first.
+        blobs = {
+          enable = true;
+          bucket = "fundies-store";
+          endpoint = "https://46d381004464b9e0c88b3bb5a0f0f100.r2.cloudflarestorage.com";
+          environmentFile = config.age.secrets.r2-credentials.path;
+        };
+
         # Both readers are enabled together and pointed at one immutable
         # manifest, so the API and the frontend cannot disagree about which
         # release they serve. The pool is append-only, so that path never

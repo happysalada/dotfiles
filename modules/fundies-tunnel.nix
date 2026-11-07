@@ -16,6 +16,12 @@ in
 lib.mkIf (builtins.pathExists credentials) {
   age.secrets.cloudflare-tunnel-fundies.file = credentials;
 
+  # DNS can be unavailable during a switch; keep retrying without a restart burst.
+  systemd.services."cloudflared-tunnel-d354dbea-f3af-4b02-b16f-4a19fa141f27" = {
+    unitConfig.StartLimitIntervalSec = 0;
+    serviceConfig.RestartSec = "10s";
+  };
+
   services.cloudflared = {
     enable = true;
     tunnels."d354dbea-f3af-4b02-b16f-4a19fa141f27" = {
