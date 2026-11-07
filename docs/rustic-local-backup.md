@@ -108,14 +108,34 @@ receipts) became 5.1 GiB added (raw 10.3), 47%. The data is mostly
 content-addressed and append-only, so a later snapshot adds only new blobs plus
 whatever the ledgers rewrite.
 
-Estimated (not measured): 732 GiB of Fundies at that ratio is about 350 GiB, and
-`/home` outside the excluded trees about 60 GiB, so the first repository is
-roughly **350 to 450 GiB**. Worst case each retained snapshot adds one full
-ledger rewrite (about 2.3 GiB compressed), so 17 snapshots add under 40 GiB, and
-5% slack is about 20 GiB. Against 1.26 TB free that leaves more than 700 GB
-before the old btrbk backup is retired, and about 1.3 TB after. That is why the
-policy is moderate rather than lean: the disk is not the constraint, a ledger
-that gets corrupted unnoticed is, and half a year of months covers that.
+That sample ratio held (a night of 142.9 GiB raw added 75.4 GiB), but the sizing
+built on it did not. The estimate assumed 732 GiB of Fundies and about 2.3 GiB
+of ledger rewrite per night, giving a 350 to 450 GiB repository. Fundies grew to
+1.5 TiB in two weeks, mostly new blobs rather than rewrites, a night added up to
+75 GiB, and 28 snapshots filled the 1.9 TB drive. On 2026-11-07 the run hit
+`No space left on device` mid-write.
+
+The blobs now live in R2 and `/store/blobs` is excluded, so the repository is
+`/home` (about 22 GiB a snapshot, mostly shared) plus the Fundies data outside
+the blobs. Re-measure after a full run and replace this paragraph with the
+figure; the old estimate must not be reused.
+
+Two guards keep a repeat loud rather than silent:
+
+- `backup` refuses to start under `MIN_FREE_GIB` free on the drive (150 GiB, in
+  `rustic-local.nix`), so a full drive fails in seconds, not hours in.
+- `forget` prunes with `--keep-delete 0s`. Under rustic's default a prune only
+  marks packs and deletes them 23 hours later, so the space returns a week late.
+  The exclusive repository lock means no reader needs that grace.
+
+Forgetting snapshots frees nothing while newer ones still reference the same
+data, which is why dropping old backups did not help while the blobs were in
+every snapshot. To drop something out of the repository you must exclude it and
+forget every snapshot that holds it, then prune.
+
+The cache lives on the backup drive on purpose; the primary disk is the tighter
+one. It is only a cache: if it is deleted, rustic rebuilds it, and the
+`Error in cache backend removing Pack` warnings that follow are harmless.
 
 ## Disk monitoring
 

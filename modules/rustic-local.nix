@@ -42,6 +42,7 @@ let
       KEEP_DAILY = toString keep.daily;
       KEEP_WEEKLY = toString keep.weekly;
       KEEP_MONTHLY = toString keep.monthly;
+      MIN_FREE_GIB = toString minFreeGiB;
       CHECK_SUBSET = "5%";
     };
     unitConfig.RequiresMountsFor = mount;
@@ -134,6 +135,9 @@ let
     weekly = 4;
     monthly = 6;
   };
+
+  # A night added up to 75 GiB while the blobs were still backed up; twice that.
+  minFreeGiB = 150;
 
   # One backup at a time (snap); backups share the repository, forget and check
   # take it alone (repo).

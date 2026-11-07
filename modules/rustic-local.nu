@@ -23,6 +23,7 @@ def "main init" [] {
 # One run: temporary read-only snapshots, rustic over them, snapshots removed.
 def "main backup" [--preflight] {
   require-backup-disk --repo
+  require-free-space
   sweep-stale
   audit-nested-subvolumes
 
@@ -40,7 +41,9 @@ def "main backup" [--preflight] {
 # Retention, then reclaim what no kept snapshot references.
 def "main forget" [] {
   require-backup-disk --repo
-  (^rustic forget --prune --max-unused 5%
+  # The exclusive lock means no reader needs the default 23h grace, which
+  # would only defer the space to next week's run.
+  (^rustic forget --prune --max-unused 5% --keep-delete 0s
     --keep-daily $env.KEEP_DAILY --keep-weekly $env.KEEP_WEEKLY --keep-monthly $env.KEEP_MONTHLY)
 }
 
@@ -74,6 +77,15 @@ def require-backup-disk [--repo] {
   }
   if $repo and not ($env.RUSTIC_REPOSITORY | path join config | path exists) {
     error make { msg: $"no repository at ($env.RUSTIC_REPOSITORY); start rustic-local-init first" }
+  }
+}
+
+# A full drive fails a run hours in; refuse before reading anything.
+def require-free-space [] {
+  let free = (^df --output=avail --block-size=1 $env.BACKUP_MOUNT | lines | last | str trim | into int)
+  let need = (($env.MIN_FREE_GIB | into int) * 1GiB | into int)
+  if $free < $need {
+    error make { msg: $"($env.BACKUP_MOUNT) has ($free | into filesize) free, under the ($need | into filesize) minimum; forget and prune, or enlarge the drive" }
   }
 }
 
