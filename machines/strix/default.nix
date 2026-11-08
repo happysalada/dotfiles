@@ -91,6 +91,10 @@
         # Comics/manga server (Komga) on 127.0.0.1, published by the tunnel below.
         ../../modules/komga.nix
 
+        # OpenPanel web analytics (with Postgres, Redis, ClickHouse and
+        # Redpanda alongside) on 127.0.0.1, published by the tunnel below.
+        ../../modules/openpanel-local.nix
+
         # Runtime syscall detection (modern eBPF), with desktop toasts for alerts.
         ../../modules/falco.nix
 
@@ -208,6 +212,9 @@
         # from the release that is being served instead of an empty catalog. Gated
         # by this flag alone, so it runs even with `pipelines.enable` false.
         rolling.enable = true;
+        # Blobs are read through the R2 mount, so a worker mostly waits on the network
+        # and the default of one per core leaves the cores idle.
+        rolling.concurrency = 128;
         # The schemas the DART decoder resolves imports against; FSS publishes them
         # only as a portal download, so they come from the archive.
         rolling.dartTaxonomy = [

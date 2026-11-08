@@ -181,16 +181,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794110723,
-        "narHash": "sha256-CeIXwDR0D765Lyj/X59CYZwUL/rJ8IE3R4pFOuWpsEI=",
-        "rev": "bed0d11afdc382059083908b5a29477d47699ec9",
-        "revCount": 69,
+        "lastModified": 1794306422,
+        "narHash": "sha256-bjAio6WU7ljzvswdPEXfBFfU4Lbqkj+nWkOaUp39in0=",
+        "ref": "refs/heads/main",
+        "rev": "21bc69fba3551d1554fc0ce6687b1d27e595149a",
+        "revCount": 33,
         "type": "git",
-        "url": "file:///home/yt/dev/fundies"
+        "url": "ssh://git@github.com/happysalada/fundies"
       },
       "original": {
         "type": "git",
-        "url": "file:///home/yt/dev/fundies"
+        "url": "ssh://git@github.com/happysalada/fundies"
       }
     },
     "home-manager": {

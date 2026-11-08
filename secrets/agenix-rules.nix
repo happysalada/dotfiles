@@ -61,6 +61,11 @@ in
   "openpermid.api.key.age".publicKeys = [ yt_at_strix ];
   "openfigi.api.key.age".publicKeys = [ yt_at_strix ];
 
+  # OpenPanel's COOKIE_SECRET, AUTH_SECRET and ENCRYPTION_KEY as an env file
+  # (modules/openpanel-local.nix). Losing the ENCRYPTION_KEY loses the stored
+  # integration credentials. strix only.
+  "openpanel.env.age".publicKeys = [ yt_at_strix ];
+
   # URLHaus Auth-Key from auth.abuse.ch. Every URLHaus export now sits behind
   # one, on urlhaus-api.abuse.ch, so a fetcher for its ClamAV signature file
   # would read this. fangfrisch cannot: it sends no auth header and still

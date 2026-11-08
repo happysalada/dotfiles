@@ -1,5 +1,5 @@
-# fundies.io, and Komga at comic.megzari.com (modules/komga.nix), through a
-# locally managed Cloudflare tunnel. The credentials JSON
+# fundies.io, Komga at comic.megzari.com (modules/komga.nix) and OpenPanel
+# (modules/openpanel-local.nix), through a locally managed Cloudflare tunnel. The credentials JSON
 # is the one `cloudflared tunnel create fundies` wrote, encrypted by agenix; the
 # ingress is local because the tunnel is local. The hop in front of it is the
 # fundies module's Caddy on 127.0.0.1:8080, so no port is opened.
@@ -31,6 +31,12 @@ lib.mkIf (builtins.pathExists credentials) {
         "fundies.io" = "http://127.0.0.1:8080";
         "www.fundies.io" = "http://127.0.0.1:8080";
         "comic.megzari.com" = "http://127.0.0.1:${toString config.services.komga.settings.server.port}";
+      }
+      // lib.optionalAttrs config.services.openpanel.enable {
+        ${config.services.openpanel.domain} =
+          "http://127.0.0.1:${toString config.services.openpanel.dashboardPort}";
+        ${config.services.openpanel.apiDomain} =
+          "http://127.0.0.1:${toString config.services.openpanel.apiPort}";
       };
       default = "http_status:404";
     };

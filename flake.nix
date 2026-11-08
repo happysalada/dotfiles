@@ -6,8 +6,9 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     # fundies: the server, frontend and data pipelines as NixOS modules, from
-    # the project's own flake. The tunnel that fronts them stays local.
-    fundies.url = "git+file:///home/yt/dev/fundies";
+    # the project's own flake, private on GitHub (fetched over SSH). The tunnel
+    # that fronts them stays local.
+    fundies.url = "git+ssh://git@github.com/happysalada/fundies";
     fundies.inputs.nixpkgs.follows = "nixpkgs";
     fundies.inputs.rust-overlay.follows = "rust-overlay";
 
