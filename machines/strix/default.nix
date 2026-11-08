@@ -91,6 +91,9 @@
         # Comics/manga server (Komga) on 127.0.0.1, published by the tunnel below.
         ../../modules/komga.nix
 
+        # Runtime syscall detection (modern eBPF), with desktop toasts for alerts.
+        ../../modules/falco.nix
+
         # prefect's server on 127.0.0.1:4200 - the UI and run history for
         # the flows in homes/programs/starred-digest.
         ../../modules/prefect-local.nix
@@ -628,10 +631,6 @@
         };
       };
 
-      # Runtime syscall detection with the stock rules (modern eBPF); alerts
-      # go to the journal: `journalctl -u falco`.
-      services.falco.enable = true;
-
       # Nightly clamdscan over the two places untrusted files land. The
       # module's default list would sweep /home and /var/lib as well - ollama's
       # models and podman's layers - and re-walk all of it every run. A hit is
@@ -688,6 +687,17 @@
       # Restart rather than stop+start on switch, so DNS does not drop
       # mid-activation (the Saturday autoUpgrade, agents fetching).
       systemd.services.systemd-resolved.stopIfChanged = false;
+
+      # Hours-long timer jobs: a switch must not SIGTERM a running one and then
+      # wait for the fresh run. They pick up the new unit on their next timer fire.
+      systemd.services.fundies-filing-text.restartIfChanged = false;
+      systemd.services.fundies-index-coverage.restartIfChanged = false;
+      systemd.services.fundies-issuer-ir.restartIfChanged = false;
+      systemd.services.rustic-backup.restartIfChanged = false;
+      systemd.services.rustic-check.restartIfChanged = false;
+      systemd.services.rustic-local-backup.restartIfChanged = false;
+      systemd.services.rustic-local-check.restartIfChanged = false;
+      systemd.services.rustic-local-forget.restartIfChanged = false;
 
       services.pulseaudio.enable = false;
       security.rtkit.enable = true;
