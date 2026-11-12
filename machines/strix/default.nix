@@ -206,6 +206,12 @@
         releaseManifest = "/var/lib/fundies/releases/20f7b2d6437c412fe309dfe7065f14c31baabba07eb2004fe48438ff5842fc1a.json";
         backend.enable = true;
         backend.filingTextStore = "/var/lib/fundies/filings/filing_text.sqlite";
+        # Insider transactions, 5% holders and 13F holdings: read from the archive into this
+        # store by `fundies-ownership` (hourly), with the SEC ownership-tier walk daily. The
+        # securities join places 13F positions with companies; both are read, never written, by
+        # the server.
+        backend.ownershipStore = "/var/lib/fundies/ownership/ownership.sqlite";
+        backend.cusipIssuerDir = "/var/lib/fundies/securities/cusip-issuer-2026-11-12";
         frontend.enable = true;
 
         # The live rolling worker: it follows completed ingestions and keeps the
@@ -266,6 +272,11 @@
           edinet.enable = true;
           dart.enable = true;
           esef.enable = true;
+          funds = {
+            enable = true;
+            entities = "/var/lib/fundies/company/entities.parquet";
+            # cusipsFile = "/path/to/13f-cusips.txt"; # when the 13F agent provides it
+          };
           release.enable = false;
           searchIndex.enable = false;
         };
