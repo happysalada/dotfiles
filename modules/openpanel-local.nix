@@ -13,8 +13,9 @@
 # ENCRYPTION_KEY: it encrypts the stored integration credentials.
 #
 # Inert until that file exists, so the tree still evaluates before it is made.
-# Registration is closed by default; it is open below until the first account
-# exists.
+# Registration is closed (upstream's default). To add the next account, either
+# invite them from the dashboard or set settings.ALLOW_REGISTRATION = "true"
+# for one deploy.
 { config, lib, ... }:
 let
   secrets = ../secrets/openpanel.env.age;
@@ -30,9 +31,6 @@ in
       domain = "openpanel.megzari.com";
       apiDomain = "openpanel-api.megzari.com";
       environmentFile = config.age.secrets.openpanel.path;
-
-      # open only until the first account exists, then delete this line
-      settings.ALLOW_REGISTRATION = "true";
     };
   };
 }

@@ -26,7 +26,7 @@ with pkgs;
   py-spy # sampling profiler that attaches to an already-running process by
   # pid. No instrumentation, no restart - the tool for "why is this hanging".
 
-  marimo # notebooks stored as plain .py, so they diff and import like modules.
+  #  marimo # notebooks stored as plain .py, so they diff and import like modules.
   # Cells re-run on their dependencies rather than in scroll order, which is
   # the failure mode that makes a .ipynb unreproducible.
 

@@ -133,6 +133,9 @@
         # grant the desktop user uaccess on the mouse's /dev/hidraw, uinput and
         # event node (so no `input` group is involved), and the agent unit.
         openlogi.nixosModules.default
+        # nixpkgs now ships a bare programs.openlogi (no launchAtLogin, no agent
+        # unit) that clashes with upstream's.
+        { disabledModules = [ "programs/openlogi.nix" ]; }
 
         # The Rust Nix client, under the classic names `nix`, `nix-build`,
         # `nix-instantiate`, `nix-shell` and `nix-eval-jobs`. It answers what it

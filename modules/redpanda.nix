@@ -101,7 +101,11 @@ in
         TimeoutStartSec = 300;
 
         DynamicUser = true;
-        StateDirectory = "redpanda";
+        # the broker will not create its own data directory
+        StateDirectory = [
+          "redpanda"
+          "redpanda/data"
+        ];
         LimitNOFILE = 262144;
         AmbientCapabilities = "CAP_SYS_NICE";
         NoNewPrivileges = true;

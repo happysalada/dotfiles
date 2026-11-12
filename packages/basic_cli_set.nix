@@ -15,6 +15,7 @@ with pkgs;
   choose # better cut & awk
   hyperfine # benchmarking tool
   xh # http client
+  dnsutils # dig, host, nslookup; no drop-in Rust dig exists in nixpkgs
   viddy # `watch` with history, diffs and rewind
   file # get informations about files
   # moreutils # sponge
