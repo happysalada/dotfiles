@@ -146,7 +146,7 @@ with pkgs;
   # command_policies feature is broken; filesystem/network confinement, which is
   # what this is used for, is unaffected.
 
-  tuicr # code review in the terminal: one GitHub-style continuous diff over
+  # tuicr # code review in the terminal: one GitHub-style continuous diff over
   # every changed file, line/range/file/review comments, vim keybindings, and
   # sessions that survive a restart. Reads git, jj and Mercurial, so `tuicr -w`
   # reviews uncommitted changes whichever a repo uses, and it pushes a real
@@ -164,7 +164,7 @@ with pkgs;
   # `nix profile upgrade '.*tuicr.*'`, which no profile here owns; bump the
   # llm-agents input instead.
 
-  herdr # agent multiplexer: a background server owns the real terminals, and a
+  # herdr # agent multiplexer: a background server owns the real terminals, and a
   # pane running an agent is marked idle, working or blocked from what it draws
   # on screen. Local and saved SSH machines sit in one TUI, and the CLI and
   # socket API are the same surface an agent drives - split a pane, prompt a
