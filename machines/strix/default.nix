@@ -187,6 +187,13 @@
         dataDir = "/var/lib/fundies";
         storeDir = "/var/lib/fundies/store";
 
+        correctionsReview = {
+          enable = true;
+          user = "yt";
+          checkout = "/home/yt/dev/fundies";
+          onCalendar = "Mon *-*-* 09:00:00";
+        };
+
         # Flip `enable` at the cutover (see docs/plans/2026-11-07-blobs-in-r2.md in the fundies
         # tree): the mount hides store/blobs, so the local copy must be moved aside first.
         blobs = {
@@ -276,6 +283,18 @@
             enable = true;
             entities = "/var/lib/fundies/company/entities.parquet";
             # cusipsFile = "/path/to/13f-cusips.txt"; # when the 13F agent provides it
+          };
+          # House periodic transaction reports, daily from the Clerk. Fetching and reading text
+          # PDFs is cheap; the scan reader is slow, so it takes a few filings a run and the
+          # backlog is read once by hand.
+          house = {
+            enable = true;
+            scanText = {
+              ocr = true;
+              endpoint = "http://127.0.0.1:11434";
+              model = "qwen3-vl:8b";
+              limit = 20;
+            };
           };
           release.enable = false;
           searchIndex.enable = false;
@@ -484,6 +503,8 @@
         loadModels = [
           "mistral-nemo"
           "qwen3-embedding:4b"
+          # Reads the text of scanned House filings (`fundies-house`); ~6GB, loaded on demand.
+          "qwen3-vl:8b"
         ];
       };
 
@@ -759,6 +780,8 @@
           gptfdisk # sgdisk
           cryptsetup
           agenix.packages.x86_64-linux.default
+          # Run as `sudo -u fundies`: only the data's owner can set the trash's timestamps.
+          fundies.packages.x86_64-linux.fundies-gc
         ];
 
         # /etc/set-environment, so the desktop session and sudo get helix too:
