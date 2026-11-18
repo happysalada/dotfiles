@@ -218,7 +218,7 @@
         # securities join places 13F positions with companies; both are read, never written, by
         # the server.
         backend.ownershipStore = "/var/lib/fundies/ownership/ownership.sqlite";
-        backend.cusipIssuerDir = "/var/lib/fundies/securities/cusip-issuer-2026-11-12";
+        backend.cusipIssuerDir = "/var/lib/fundies/securities/current";
         frontend.enable = true;
 
         # The live rolling worker: it follows completed ingestions and keeps the
@@ -456,6 +456,15 @@
         "git.sr.ht".publicKey =
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMZvRd4EtM7R+IHVMWmDkVU3VLQTSwQDSAvW0t2Tkj60";
       };
+
+      # nixos-upgrade's rebuild runs as root, which has no key: a bump that moves
+      # the private fundies input to an uncached rev died with "Permission
+      # denied (publickey)". Same key as age.identityPaths above.
+      programs.ssh.extraConfig = ''
+        Host github.com
+          IdentityFile /home/yt/.ssh/id_ed25519
+          IdentitiesOnly yes
+      '';
 
       # Held boot for ~5s waiting on a link. Nothing here needs the network up
       # before login, and a laptop is often offline anyway.
@@ -1065,8 +1074,9 @@
       };
 
       # An OOM took the whole box with fundies-server at 38-45 GB anon RSS.
-      # Kill and restart it inside its own cgroup instead.
-      systemd.services.fundies-server.serviceConfig = {
+      # Kill and restart it inside its own cgroup instead. The caps sit on the template, so each
+      # of the two instances a rollout runs side by side carries them.
+      systemd.services."fundies-server@".serviceConfig = {
         MemoryHigh = "24G";
         MemoryMax = "32G";
       };
