@@ -289,8 +289,10 @@
           # backlog is read once by hand.
           house = {
             enable = true;
+            # Members and companies, from the legislators dataset and the SEC's ticker lists.
+            link.enable = true;
             scanText = {
-              ocr = true;
+              ppocr = true;
               endpoint = "http://127.0.0.1:11434";
               model = "qwen3-vl:8b";
               limit = 20;

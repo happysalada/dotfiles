@@ -97,7 +97,18 @@ let
         matcher = "";
       }
     ];
+    # hyperresearch's run gate; its install wrote no timeout, so codex runs it at 600s.
+    "/home/yt/dotfiles" = [
+      {
+        event = "stop";
+        command = "${hyperresearch}/bin/hyperresearch run stop-gate";
+        timeout = 600;
+      }
+    ];
   };
+
+  # Same derivation ai.nix installs, so the hashed store path follows its upgrades.
+  hyperresearch = pkgs.callPackage ../../packages/ai/hyperresearch.nix { };
 
   # For these events codex takes no matcher and drops whatever the file carries,
   # so hashing the file's matcher here would produce a hash codex never computes.
@@ -188,9 +199,9 @@ in
     # every change comes through here plus a rebuild, and `codex update` fails
     # outright. Bump the llm-agents input instead.
     settings = {
-      # GPT-6.1 Sol is the current workhorse of the GPT-6.1 family; Astra is
+      # GPT-6.2 Sol is the current workhorse of the GPT-6.2 family; Astra is
       # the quality-first tier above it, and Terra/Luna the cheaper ones.
-      model = "gpt-6.1-sol";
+      model = "gpt-6.2-sol";
       model_reasoning_effort = "high";
 
       # Matches claude-code's default posture: edits inside the workspace go

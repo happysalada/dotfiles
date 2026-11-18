@@ -35,9 +35,10 @@ in
     rules."50-local" = [
       {
         # swaylock reads its PAM stack on every lock, userborn /etc/shadow on every
-        # switch. The wrapper's process name is truncated to 15 characters.
+        # switch, gdm-session-worker both on every login. Process names are
+        # truncated to 15 characters.
         macro = "user_known_read_sensitive_files_activities";
-        condition = ''proc.name in (".swaylock-wrapp", userborn)'';
+        condition = ''proc.name in (".swaylock-wrapp", userborn, "gdm-session-wor")'';
         override.condition = "replace";
       }
     ];
@@ -47,7 +48,10 @@ in
     description = "Desktop notification for each Falco alert";
     wantedBy = [ "multi-user.target" ];
     after = [ "falco.service" ];
-    path = [ pkgs.systemd pkgs.libnotify ];
+    path = [
+      pkgs.systemd
+      pkgs.libnotify
+    ];
     serviceConfig = {
       ExecStart = notifier;
       User = "yt";
