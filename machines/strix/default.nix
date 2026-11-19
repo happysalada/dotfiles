@@ -684,18 +684,33 @@
         };
       };
 
-      # Nightly clamdscan over the two places untrusted files land. The
-      # module's default list would sweep /home and /var/lib as well - ollama's
-      # models and podman's layers - and re-walk all of it every run. A hit is
-      # printed, not removed: `journalctl -u clamdscan`.
-      services.clamav.scanner = {
-        enable = true;
-        scanDirectories = [
-          "/home/yt/Downloads"
-          "/tmp"
-          "/var/tmp"
-        ];
+      # Nightly clamscan over the places untrusted files land. The module's
+      # default list would sweep /home and /var/lib as well - ollama's models
+      # and podman's layers. A hit is printed, not removed: `journalctl -u
+      # clamscan`.
+      systemd.timers.clamscan = {
+        wantedBy = [ "timers.target" ];
+        timerConfig.OnCalendar = "*-*-* 04:00:00";
       };
+
+      systemd.services.clamscan = {
+        after = [ "clamav-freshclam.service" ];
+        wants = [ "clamav-freshclam.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+          Slice = "system-clamav.slice";
+          ExecStart = lib.concatStringsSep " " [
+            "${config.services.clamav.package}/bin/clamscan"
+            "--recursive --infected --allmatch --alert-exceeds-max=yes"
+            "--max-filesize=100M --max-scansize=400M"
+            "/home/yt/Downloads /tmp /var/tmp"
+          ];
+        };
+      };
+
+      # No resident daemon: its ~1.5 GB of signatures sat idle all day, and the
+      # module's scanner asserts on one, so the scan above is our own unit.
+      services.clamav.daemon.enable = lib.mkForce false;
 
       # Rootless containers, so an agent can `docker run postgres` for an
       # integration test instead of guessing. dockerCompat puts `docker` on
