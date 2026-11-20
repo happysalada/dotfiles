@@ -78,5 +78,6 @@ with pkgs;
   # unmerged), so the package comes from upstream's own flake through the
   # overlay in each machine's nixpkgs.overlays. It replaces the commented-out
   # `epy` this list used to carry.
-  bookokrat # terminal EPUB/PDF/DJVU reader
+  # Disabled for now; re-enable once it builds again.
+  # bookokrat # terminal EPUB/PDF/DJVU reader
 ]

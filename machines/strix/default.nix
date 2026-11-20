@@ -293,6 +293,9 @@
             link.enable = true;
             scanText = {
               ppocr = true;
+              # Tesseract as a second reader of the PP-OCR rows: a match makes a row `agreed`.
+              ocr = true;
+              verifyLimit = 100;
               endpoint = "http://127.0.0.1:11434";
               model = "qwen3-vl:8b";
               limit = 20;
@@ -616,14 +619,16 @@
       # the agent is started by niri.service instead - the same treatment the
       # bar and the idle daemon get in homes/niri/. partOf is what stops it
       # again on logout rather than leaving it to the user manager's linger.
+      # Disabled: the package fails to build (zstd-sys cannot find libzstd).
+      # Re-enable with the unit below once upstream's fix lands (PR #2494).
       programs.openlogi = {
-        enable = true;
+        enable = false;
         launchAtLogin = false;
       };
-      systemd.user.services.openlogi-agent = {
-        wantedBy = [ "niri.service" ];
-        partOf = [ "niri.service" ];
-      };
+      # systemd.user.services.openlogi-agent = {
+      #   wantedBy = [ "niri.service" ];
+      #   partOf = [ "niri.service" ];
+      # };
 
       # Handy (packages/gui.nix) types by injecting below the compositor, which
       # is the only path that reaches native Wayland windows here - XTest
