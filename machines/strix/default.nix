@@ -522,8 +522,10 @@
         ];
       };
 
+      # Disabled: ollaya 0.18.0 needs the old llama.cpp (.so.0), nixpkgs has
+      # 1.0.0 (.so.1), so the model loader fails. Re-enable once they match.
       services.ollaya = {
-        enable = true;
+        enable = false;
         package = pkgs.ollaya.override {
           onnxruntime = pkgs.onnxruntime.override { cudaSupport = true; };
           llama-cpp = pkgs.llama-cpp.override { cudaSupport = true; };
@@ -764,6 +766,7 @@
       # Hours-long timer jobs: a switch must not SIGTERM a running one and then
       # wait for the fresh run. They pick up the new unit on their next timer fire.
       systemd.services.fundies-filing-text.restartIfChanged = false;
+      systemd.services.fundies-house.restartIfChanged = false;
       systemd.services.fundies-index-coverage.restartIfChanged = false;
       systemd.services.fundies-issuer-ir.restartIfChanged = false;
       systemd.services.rustic-backup.restartIfChanged = false;
