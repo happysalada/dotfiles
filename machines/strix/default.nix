@@ -203,6 +203,20 @@
           environmentFile = config.age.secrets.r2-credentials.path;
         };
 
+        # Batch units (the rolling pipeline, derivations, extractors) read the disk at up to 700 MB/s
+        # for minutes, and the site, which shares it, stalls behind them. The scheduler is `none`,
+        # so only a bandwidth cap helps; this leaves most of the disk to serving.
+        batch = {
+          device = "/dev/mapper/cryptroot";
+          readBandwidthMax = "300M";
+          cpuWeight = 50;
+        };
+
+        # A pass stores ~1,600 new blobs (800 stale filers, each with submissions and
+        # company facts) and every one is an R2 Class A operation, so half-hourly is
+        # ~77k PUTs a day. Hourly is often enough for a stale filer.
+        pipelines.sweep.onCalendar = "*:0";
+
         # Both readers are enabled together and pointed at one immutable
         # manifest, so the API and the frontend cannot disagree about which
         # release they serve. The pool is append-only, so that path never
@@ -219,6 +233,8 @@
         # the server.
         backend.ownershipStore = "/var/lib/fundies/ownership/ownership.sqlite";
         backend.cusipIssuerDir = "/var/lib/fundies/securities/current";
+        # Fund holdings (N-PORT) serving tables, built by the funds derive and its daily refresh.
+        backend.fundServingDir = "/var/lib/fundies/funds/serving";
         frontend.enable = true;
 
         # The live rolling worker: it follows completed ingestions and keeps the
@@ -228,9 +244,7 @@
         # from the release that is being served instead of an empty catalog. Gated
         # by this flag alone, so it runs even with `pipelines.enable` false.
         rolling.enable = true;
-        # Blobs are read through the R2 mount, so a worker mostly waits on the network
-        # and the default of one per core leaves the cores idle.
-        rolling.concurrency = 128;
+        # One worker per logical core (the module default); a dispatcher hands them work.
         # The schemas the DART decoder resolves imports against; FSS publishes them
         # only as a portal download, so they come from the archive.
         rolling.dartTaxonomy = [
@@ -299,6 +313,8 @@
               endpoint = "http://127.0.0.1:11434";
               model = "qwen3-vl:8b";
               limit = 20;
+              # The model re-reads handwritten and disputed rows OCR garbled, about a minute a scan.
+              handLimit = 1000;
             };
           };
           release.enable = false;
@@ -701,6 +717,7 @@
       };
 
       systemd.services.clamscan = {
+        onFailure = [ "clamscan-failed.service" ];
         after = [ "clamav-freshclam.service" ];
         wants = [ "clamav-freshclam.service" ];
         serviceConfig = {
@@ -710,8 +727,26 @@
             "${config.services.clamav.package}/bin/clamscan"
             "--recursive --infected --allmatch --alert-exceeds-max=yes"
             "--max-filesize=100M --max-scansize=400M"
+            # Noise that failed the unit: temp extension installs match an
+            # unofficial phishing signature, scratch parquet exceeds the size cap.
+            "--exclude='[.]xpi' --exclude='^/tmp/fundies-screen-'"
             "/home/yt/Downloads /tmp /var/tmp"
           ];
+        };
+      };
+
+      # Runs as the desktop user to reach its session bus; shows the last hit.
+      systemd.services.clamscan-failed = {
+        description = "announce that clamscan failed";
+        serviceConfig = {
+          Type = "oneshot";
+          User = "yt";
+          ExecStart = pkgs.writeShellScript "clamscan-failed" ''
+            export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+            export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+            detail=$(journalctl -u clamscan -n 200 --no-pager -o cat | grep ' FOUND' | tail -n 1 | cut -c1-240)
+            ${pkgs.libnotify}/bin/notify-send -a clamscan -u critical "clamscan failed" "''${detail:-journalctl -u clamscan}"
+          '';
         };
       };
 
@@ -769,11 +804,17 @@
       systemd.services.fundies-house.restartIfChanged = false;
       systemd.services.fundies-index-coverage.restartIfChanged = false;
       systemd.services.fundies-issuer-ir.restartIfChanged = false;
+      systemd.services.fundies-ownership.restartIfChanged = false;
+      systemd.services.fundies-ownership-exports.restartIfChanged = false;
       systemd.services.rustic-backup.restartIfChanged = false;
       systemd.services.rustic-check.restartIfChanged = false;
       systemd.services.rustic-local-backup.restartIfChanged = false;
       systemd.services.rustic-local-check.restartIfChanged = false;
       systemd.services.rustic-local-forget.restartIfChanged = false;
+
+      # Disabled: iextrading.com/api/1.0/hist returns 403, so every run fails.
+      # Re-enable once IEX prices have a replacement source.
+      systemd.timers.fundies-iex.enable = false;
 
       services.pulseaudio.enable = false;
       security.rtkit.enable = true;
@@ -811,6 +852,7 @@
           git
           lsof
           perf
+          bpftrace
           gptfdisk # sgdisk
           cryptsetup
           agenix.packages.x86_64-linux.default

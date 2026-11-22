@@ -10,7 +10,12 @@
 #
 # Inert until the credentials file exists, so the tree still evaluates and the
 # weekly upgrade does not fail on a machine that has not created the tunnel yet.
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   credentials = ../secrets/cloudflare-tunnel-fundies.age;
 in
@@ -40,5 +45,28 @@ lib.mkIf (builtins.pathExists credentials) {
       };
       default = "http_status:404";
     };
+  };
+
+  # Crawlers across every locale drove fundies-server to 500% CPU and pages past 30s. People are
+  # never matched; the crawlers share one budget and get a 429 with Retry-After beyond it.
+  services.caddy.virtualHosts."http://fundies.io:8080, http://www.fundies.io:8080".extraConfig = ''
+    rate_limit {
+      zone crawlers {
+        match {
+          header_regexp User-Agent (?i)(bot|crawl|spider|slurp|scrape|python-requests|go-http|curl|wget|headless|bytespider|ccbot|semrush|ahrefs)
+          not path /_app/* /health /robots.txt /sitemap*
+        }
+        key static
+        events 5
+        window 1s
+      }
+    }
+  '';
+
+  # The directive comes from a plugin, so it needs an order and a Caddy built with it.
+  services.caddy.globalConfig = "order rate_limit before basicauth";
+  services.caddy.package = pkgs.caddy.withPlugins {
+    plugins = [ "github.com/mholt/caddy-ratelimit@v0.1.1-0.20260612195517-5625512f24f6" ];
+    hash = "sha256-mfY+ldXq435FoilK6fdnwk7IXWvfNi74VRAs0FtCoAE=";
   };
 }
