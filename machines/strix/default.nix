@@ -73,6 +73,10 @@
         # bee and hetz. Only what to scan stays below.
         ../../modules/clamav.nix
 
+        # Local GreptimeDB standalone, plus the collector that feeds it.
+        ../../modules/greptimedb.nix
+        ../../modules/otel-collector.nix
+
         # loopback-only SearXNG: firefox's default engine, and the search
         # backend `crw search` / the `crw_search` MCP tool proxy to.
         ../../modules/searx-local.nix
@@ -163,6 +167,10 @@
         nixos-hardware.nixosModules.asus-battery
       ];
 
+      # Local GreptimeDB; the OTel collector in modules/otel-collector.nix
+      # ships journald and host metrics into it.
+      services.greptimedb.enable = true;
+
       # agenix decrypts the system secrets (rustic/b2/meilisearch, declared in
       # modules/*.nix) during activation, as root. Its default identity paths
       # are the SSH host keys, which do not match the `yt_at_strix` recipient
@@ -194,8 +202,8 @@
           onCalendar = "Mon *-*-* 09:00:00";
         };
 
-        # Flip `enable` at the cutover (see docs/plans/2026-11-07-blobs-in-r2.md in the fundies
-        # tree): the mount hides store/blobs, so the local copy must be moved aside first.
+        # The archive's blobs live only in the bucket: the store asks it by key, and the
+        # long-running readers keep what they read on local disk. There is no mount.
         blobs = {
           enable = true;
           bucket = "fundies-store";
@@ -537,6 +545,10 @@
           "qwen3-vl:8b"
         ];
       };
+
+      # The pipeline's vision model shares the box with the serving stack; the batch share
+      # keeps a scan from starving the site.
+      systemd.services.ollama.serviceConfig.CPUWeight = 50;
 
       # Disabled: ollaya 0.18.0 needs the old llama.cpp (.so.0), nixpkgs has
       # 1.0.0 (.so.1), so the model loader fails. Re-enable once they match.

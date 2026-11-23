@@ -15,9 +15,10 @@
       evaluation_interval = "5s";
     };
 
+    # Mimir is retired; GreptimeDB is the remote-write store.
     remoteWrite = [
       {
-        url = "http://localhost:9009/api/v1/push";
+        url = "http://127.0.0.1:4000/v1/prometheus/write?db=public";
       }
     ];
 

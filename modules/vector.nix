@@ -1,6 +1,11 @@
+{ config, lib, ... }:
+
 {
-  systemd.services.vector.requires = [ "loki.service" ];
-  systemd.services.vector.after = [ "loki.service" ];
+  # GreptimeDB is the only log sink now; start after it when it is enabled.
+  systemd.services.vector = lib.mkIf (config.services ? greptimedb && config.services.greptimedb.enable) {
+    requires = [ "greptimedb.service" ];
+    after = [ "greptimedb.service" ];
+  };
 
   services.vector = {
     enable = true;
@@ -103,19 +108,19 @@
 
       sinks = {
 
-        loki = {
-          endpoint = "http://localhost:3100";
+        greptimedb = {
+          endpoint = "http://127.0.0.1:4000";
+          path = "/v1/loki/api/v1/push";
           inputs = [
             "journald_format"
             # "http_server_format"
           ];
           type = "loki";
           encoding.codec = "json";
-          out_of_order_action = "drop";
-          remove_timestamp = true;
-          healthcheck.enabled = true;
+          out_of_order_action = "accept";
+          healthcheck.enabled = false;
 
-          # Labels
+          # Labels become GreptimeDB tags.
           labels = {
             level = "{{ level }}";
             systemd_unit = "{{ _SYSTEMD_UNIT }}";

@@ -18,16 +18,14 @@
       enable = true;
       datasources.settings = {
         apiVersion = 1;
+        # Loki and Mimir were retired with the observability swap. GreptimeDB
+        # serves the Prometheus query API under /v1/prometheus; logs are read
+        # through its SQL API or MCP server, not a Grafana datasource.
         datasources = [
           {
-            name = "loki";
-            type = "loki";
-            url = "http://127.0.0.1:3100";
-          }
-          {
-            name = "mimir";
+            name = "greptimedb";
             type = "prometheus";
-            url = "http://127.0.0.1:9009/prometheus";
+            url = "http://127.0.0.1:4000/v1/prometheus/";
           }
           {
             name = "prometheus";

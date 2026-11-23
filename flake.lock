@@ -181,11 +181,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795427574,
-        "narHash": "sha256-zK2zJGXUg6hv8SatNcvglUewco/NO524aSwbxDoS/aM=",
+        "lastModified": 1795567796,
+        "narHash": "sha256-hfjHbyEadJIyQbHwQu+SiM3AtXG52tNQ8Iv7W57TVzY=",
         "ref": "refs/heads/main",
-        "rev": "d7a0d641d59c42b705c8798a1ecb0fd9557db0a0",
-        "revCount": 87,
+        "rev": "d604c82e01b1eb6bf2bd9ff8f4b7cf51eb076619",
+        "revCount": 99,
         "type": "git",
         "url": "ssh://git@github.com/happysalada/fundies"
       },

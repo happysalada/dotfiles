@@ -19,14 +19,15 @@ in
       # ../modules/postgresql.nix
       ../../modules/grafana
       ../../modules/chrony.nix
-      ../../modules/loki.nix
-      ../../modules/mimir.nix
+      ../../modules/greptimedb.nix
       ../../modules/caddy.nix
       ../../modules/prometheus.nix
       ../../modules/ssh.nix
       # ./gitea.nix
       # ./plausible.nix
     ];
+
+    services.greptimedb.enable = true;
 
     # Use GRUB2 as the boot loader.
     # We don't use systemd-boot because Hetzner uses BIOS legacy boot.

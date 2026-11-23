@@ -26,8 +26,7 @@ in
         # services.grafana.settings.security.secret_key and now asserts on it.
         # ../../modules/grafana
         ../../modules/ntpd-rs.nix
-        ../../modules/loki.nix
-        ../../modules/mimir.nix
+        ../../modules/greptimedb.nix
         ../../modules/caddy.nix
         ../../modules/prometheus.nix
         ../../modules/ssh.nix
@@ -56,6 +55,9 @@ in
         ../../modules/paperless.nix
         ../../modules/invidious.nix
       ];
+
+      # The local GreptimeDB store; Vector and Prometheus ship into it.
+      services.greptimedb.enable = true;
 
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi = {

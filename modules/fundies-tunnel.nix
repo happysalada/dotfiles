@@ -47,8 +47,8 @@ lib.mkIf (builtins.pathExists credentials) {
     };
   };
 
-  # Crawlers across every locale drove fundies-server to 500% CPU and pages past 30s. People are
-  # never matched; the crawlers share one budget and get a 429 with Retry-After beyond it.
+  # Crawlers across every locale drove fundies-server to 500% CPU. Behind the tunnel every peer is
+  # 127.0.0.1, so key on Cf-Connecting-IP; `everyone` catches the majority that spoof a browser UA.
   services.caddy.virtualHosts."http://fundies.io:8080, http://www.fundies.io:8080".extraConfig = ''
     rate_limit {
       zone crawlers {
@@ -56,9 +56,17 @@ lib.mkIf (builtins.pathExists credentials) {
           header_regexp User-Agent (?i)(bot|crawl|spider|slurp|scrape|python-requests|go-http|curl|wget|headless|bytespider|ccbot|semrush|ahrefs)
           not path /_app/* /health /robots.txt /sitemap*
         }
-        key static
-        events 5
-        window 1s
+        key {http.request.header.Cf-Connecting-Ip}
+        events 2
+        window 10s
+      }
+      zone everyone {
+        match {
+          not path /_app/* /health /robots.txt /sitemap*
+        }
+        key {http.request.header.Cf-Connecting-Ip}
+        events 10
+        window 10s
       }
     }
   '';
