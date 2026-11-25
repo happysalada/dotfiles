@@ -1,4 +1,4 @@
-# Local OTel Collector: journald and host metrics into the local GreptimeDB.
+# Local OTel Collector: journald, host metrics, and Fundies metrics into GreptimeDB.
 # The contrib distribution is required for the journald and hostmetrics
 # receivers; the core collector does not ship them.
 { pkgs, ... }:
@@ -34,6 +34,15 @@
             system = { };
           };
         };
+
+        "prometheus/fundies".config.scrape_configs = [
+          {
+            job_name = "fundies";
+            scrape_interval = "15s";
+            scrape_timeout = "5s";
+            static_configs = [ { targets = [ "127.0.0.1:9101" ]; } ];
+          }
+        ];
       };
 
       processors = {
@@ -73,7 +82,7 @@
             exporters = [ "otlphttp/logs" ];
           };
           metrics = {
-            receivers = [ "hostmetrics" ];
+            receivers = [ "hostmetrics" "prometheus/fundies" ];
             processors = [ "memory_limiter" "resourcedetection" "batch" ];
             exporters = [ "otlphttp/metrics" ];
           };

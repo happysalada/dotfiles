@@ -319,9 +319,12 @@
               ocr = true;
               verifyLimit = 100;
               endpoint = "http://127.0.0.1:11434";
-              model = "qwen3-vl:8b";
+              # The instruct build: the default tag thinks even with `think: false` and on hard rows runs
+              # out its context with no answer. Benchmarked 2026-11-25 against it on 100 rows: ~6x
+              # faster, no failed reads (it had 10), no less accurate.
+              model = "qwen3-vl:8b-instruct";
               limit = 20;
-              # The model re-reads handwritten and disputed rows OCR garbled, about a minute a scan.
+              # The model re-reads handwritten and disputed rows OCR garbled, a few seconds a row.
               handLimit = 1000;
             };
           };
@@ -542,7 +545,7 @@
           "mistral-nemo"
           "qwen3-embedding:4b"
           # Reads the text of scanned House filings (`fundies-house`); ~6GB, loaded on demand.
-          "qwen3-vl:8b"
+          "qwen3-vl:8b-instruct"
         ];
       };
 

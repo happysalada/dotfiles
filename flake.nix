@@ -5,12 +5,19 @@
     # Package sets
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
+    # Shared by flake-utils and llm-agents; without it the lock carries systems and systems_2.
+    systems.url = "github:nix-systems/default";
+
+    # Shared Rust build helper; fundies and iets follow it, so the lock has one crane.
+    crane.url = "github:ipetkov/crane";
+
     # fundies: the server, frontend and data pipelines as NixOS modules, from
     # the project's own flake, private on GitHub (fetched over SSH). The tunnel
     # that fronts them stays local.
     fundies.url = "git+ssh://git@github.com/happysalada/fundies";
     fundies.inputs.nixpkgs.follows = "nixpkgs";
     fundies.inputs.rust-overlay.follows = "rust-overlay";
+    fundies.inputs.crane.follows = "crane";
 
     # The agent CLIs, packaged together: claude-code, codex, opencode's v2 branch
     # (as `opencode2`), reasonix, openresearch, rtk, icm, nono and
@@ -21,6 +28,7 @@
     # `pkgs` are in machines/strix/default.nix; packages/ai.nix lists them.
     llm-agents.url = "github:numtide/llm-agents.nix";
     llm-agents.inputs.nixpkgs.follows = "nixpkgs";
+    llm-agents.inputs.systems.follows = "systems";
 
     # Hardware quirks (asus battery, nvidia prime, intel cpu, ...)
     # Its nixpkgs input only feeds its own checks, not the modules exported
@@ -35,6 +43,7 @@
 
     # nix
     flake-utils.url = "github:numtide/flake-utils";
+    flake-utils.inputs.systems.follows = "systems";
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
     nixinate.url = "github:matthewcroughan/nixinate";
@@ -53,6 +62,7 @@
     # here - minutes, not an error.
     iets.url = "github:numtide/iets";
     iets.inputs.nixpkgs.follows = "nixpkgs";
+    iets.inputs.crane.follows = "crane";
 
     # The site on bee. devshell and nuenv come in only through it, and each
     # carries its own 2023-era input - a flake-utils and a 45 MB rust-overlay -
