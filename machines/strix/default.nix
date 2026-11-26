@@ -168,8 +168,12 @@
       ];
 
       # Local GreptimeDB; the OTel collector in modules/otel-collector.nix
-      # ships journald and host metrics into it.
+      # ships journald and host metrics into it. The bundled landing page's
+      # /dashboard link 404s in the OSS binary, so the dashboard itself is the
+      # package in packages/services/greptimedb-dashboard.nix, served at the
+      # root of http://127.0.0.1:4004/ next to the DB's own API.
       services.greptimedb.enable = true;
+      services.greptimedb.dashboard.enable = true;
 
       # agenix decrypts the system secrets (rustic/b2/meilisearch, declared in
       # modules/*.nix) during activation, as root. Its default identity paths

@@ -129,8 +129,14 @@ let
   # ai-context.nix carries only the substitutions, and the rest of the toolbox
   # is worth loading in full only for the task that needs it.
   #
+  # next and check_and_fix are the two ends of a task: next ranks what is
+  # outstanding by value to the end user and starts nothing, check_and_fix
+  # audits a finished change, fixes what it finds and re-checks each fix. Both
+  # are habits of the harness, not of any one project, so they belong in the
+  # shared set.
+  #
   # Deliberately not the eleven modules of `--full`: always-listed, they would
-  # crowd the sixteen below. Upstream defaults to the shim alone for the same
+  # crowd the twenty-nine below. Upstream defaults to the shim alone for the same
   # reason.
   local = {
     writing-plans = ./skills/writing-plans;
@@ -138,6 +144,8 @@ let
     diff-metrics = ./skills/diff-metrics;
     condense-comments = ./skills/condense-comments;
     cli-toolbox = ./skills/cli-toolbox;
+    next = ./skills/next;
+    check_and_fix = ./skills/check_and_fix;
   };
 
   # Built into its package with the script paths pinned to the store, so the
