@@ -23,6 +23,29 @@
           directory = "/var/log/journal";
           start_at = "end";
           storage = "file_storage";
+          # journald PRIORITY is syslog 0..7. Without this every entry lands
+          # with severity unset, so "show me the errors" needs the number.
+          operators = [
+            {
+              type = "severity_parser";
+              parse_from = "body.PRIORITY";
+              overwrite_text = true;
+              mapping = {
+                fatal = [
+                  "0"
+                  "1"
+                  "2"
+                ];
+                error = "3";
+                warn = "4";
+                info = [
+                  "5"
+                  "6"
+                ];
+                debug = "7";
+              };
+            }
+          ];
         };
 
         host_metrics = {
@@ -31,7 +54,17 @@
           scrapers = {
             cpu = { };
             disk = { };
-            filesystem = { };
+            filesystem = {
+              # A read-only btrfs subvolume inside yt's home. The collector user
+              # cannot traverse /home/yt, so every scrape logged
+              # "failed to read usage at /home/yt/dev/fundies/target: permission
+              # denied". It is the same device as the rest of the root, so the
+              # metric said nothing the root mount does not.
+              exclude_mount_points = {
+                match_type = "strict";
+                mount_points = [ "/home/yt/dev/fundies/target" ];
+              };
+            };
             load = { };
             memory = { };
             network = { };
@@ -50,14 +83,30 @@
         };
         batch = { };
         resource_detection.detectors = [ "system" ];
+        # The journald input leaves the whole journalctl entry in the body as a
+        # map - MESSAGE plus every journal field, attributes empty - so the only
+        # way to query it was a substring match on one JSON blob. Merge it into
+        # attributes and put MESSAGE back in the body. OTLP logs from the
+        # services arrive with string bodies, so IsMap leaves them untouched.
+        "transform/journald" = {
+          error_mode = "ignore";
+          log_statements = [
+            {
+              context = "log";
+              statements = [
+                ''merge_maps(log.attributes, log.body, "insert") where IsMap(log.body)''
+                ''set(log.body, log.attributes["MESSAGE"]) where log.attributes["MESSAGE"] != nil''
+              ];
+            }
+          ];
+        };
         # The two service instances and the pipeline export their own stderr logs now, so the
-        # journald copy would duplicate them. This collector version keeps the raw journal entry
-        # in the body, so match the unit there. `fundies-server.service` is the rollout script
-        # and still has no OTLP path, so it is left alone.
+        # journald copy would duplicate them. `fundies-server.service` is the rollout script and
+        # still has no OTLP path, so it is left alone.
         "filter/drop_otel_units" = {
           error_mode = "ignore";
           logs.log_record = [
-            ''IsMatch(body, "\"_SYSTEMD_UNIT\":\"fundies-server@a.service\"") or IsMatch(body, "\"_SYSTEMD_UNIT\":\"fundies-server@b.service\"") or IsMatch(body, "\"_SYSTEMD_UNIT\":\"fundies-pipeline.service\"")''
+            ''attributes["_SYSTEMD_UNIT"] == "fundies-server@a.service" or attributes["_SYSTEMD_UNIT"] == "fundies-server@b.service" or attributes["_SYSTEMD_UNIT"] == "fundies-pipeline.service"''
           ];
         };
       };
@@ -91,7 +140,13 @@
         pipelines = {
           logs = {
             receivers = [ "otlp" "journald" ];
-            processors = [ "filter/drop_otel_units" "memory_limiter" "resource_detection" "batch" ];
+            processors = [
+              "transform/journald"
+              "filter/drop_otel_units"
+              "memory_limiter"
+              "resource_detection"
+              "batch"
+            ];
             exporters = [ "otlp_http/logs" ];
           };
           metrics = {

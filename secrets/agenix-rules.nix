@@ -61,6 +61,10 @@ in
   "openpermid.api.key.age".publicKeys = [ yt_at_strix ];
   "openfigi.api.key.age".publicKeys = [ yt_at_strix ];
 
+  # financialfilings.com filings API key, in the same shape as the four above:
+  # a raw key for LoadCredential, no service reads it yet. strix only.
+  "financialfilings.api.key.age".publicKeys = [ yt_at_strix ];
+
   # OpenPanel's COOKIE_SECRET, AUTH_SECRET and ENCRYPTION_KEY as an env file
   # (modules/openpanel-local.nix). Losing the ENCRYPTION_KEY loses the stored
   # integration credentials. strix only.

@@ -769,6 +769,30 @@
         };
       };
 
+      # A House run that fails (a lock never freed, the store unwritable) says so on the desktop.
+      # `OnFailure=` is no use here: with `Restart=on-failure` and no start limit the unit never
+      # reaches the failed state, so each run's result is read after it ends instead. A stop by
+      # signal (a deploy) is not a failure.
+      systemd.services.fundies-house.serviceConfig.ExecStopPost = "+${pkgs.writeShellScript "fundies-house-result" ''
+        case "$SERVICE_RESULT" in
+          exit-code|timeout|core-dump|watchdog|resources)
+            ${pkgs.systemd}/bin/systemctl start --no-block fundies-house-failed.service ;;
+        esac
+      ''}";
+      systemd.services.fundies-house-failed = {
+        description = "announce that a fundies-house run failed";
+        serviceConfig = {
+          Type = "oneshot";
+          User = "yt";
+          ExecStart = pkgs.writeShellScript "fundies-house-failed" ''
+            export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+            export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+            detail=$(journalctl -u fundies-house -n 40 --no-pager -o cat | grep -E 'rror|locked|Failed' | tail -n 1 | cut -c1-240)
+            ${pkgs.libnotify}/bin/notify-send -a fundies-house -u critical "fundies-house failed" "''${detail:-journalctl -u fundies-house}"
+          '';
+        };
+      };
+
       # No resident daemon: its ~1.5 GB of signatures sat idle all day, and the
       # module's scanner asserts on one, so the scan above is our own unit.
       services.clamav.daemon.enable = lib.mkForce false;
@@ -877,6 +901,30 @@
           agenix.packages.x86_64-linux.default
           # Run as `sudo -u fundies`: only the data's owner can set the trash's timestamps.
           fundies.packages.x86_64-linux.fundies-gc
+
+          # nushell 0.116 deprecated the positional external-completer input, and
+          # both vendored files still declare it - nh's comes from caress, iets's
+          # from src/cli/complete/iets.nu. The file itself is what nushell calls,
+          # so it has to be rewritten: config.nu loads first, and a completer set
+          # there is merely wrapped by these. Each substitution is exact, and the
+          # lower priority number wins the collision, so buildEnv keeps this copy
+          # and drops the packages' own. Becomes a no-op once either ships the new
+          # form, which is what upstream nh and iets have not done yet.
+          (runCommand "nushell-completions-place" { meta.priority = 1; } ''
+            install -Dm644 ${pkgs.nh}/share/nushell/vendor/autoload/nh.nu \
+              $out/share/nushell/vendor/autoload/nh.nu
+            substituteInPlace $out/share/nushell/vendor/autoload/nh.nu \
+              --replace 'do $previous $spans' 'do $previous $place' \
+              --replace '{|spans|' '{|place|' \
+              --replace '$spans' '$place.command'
+
+            install -Dm644 ${iets.packages.${pkgs.stdenv.hostPlatform.system}.default}/share/nushell/vendor/autoload/iets.nu \
+              $out/share/nushell/vendor/autoload/iets.nu
+            substituteInPlace $out/share/nushell/vendor/autoload/iets.nu \
+              --replace 'do $iets_previous $spans' 'do $iets_previous $place' \
+              --replace '{|spans|' '{|place|' \
+              --replace '$spans' '$place.command'
+          '')
         ];
 
         # /etc/set-environment, so the desktop session and sudo get helix too:

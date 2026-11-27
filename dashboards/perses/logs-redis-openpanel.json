@@ -1,0 +1,64 @@
+{
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "logs-redis-openpanel",
+    "project": "default",
+    "version": 0
+  },
+  "spec": {
+    "display": {
+      "name": "Logs — redis-openpanel.service"
+    },
+    "duration": "1h",
+    "refreshInterval": "30s",
+    "variables": [],
+    "layouts": [
+      {
+        "kind": "Grid",
+        "spec": {
+          "items": [
+            {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 16,
+              "content": {
+                "$ref": "#/spec/panels/logs"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "panels": {
+      "logs": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "redis-openpanel.service"
+          },
+          "plugin": {
+            "kind": "LogsTable",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "LogQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "GreptimeDBLogQuery",
+                  "spec": {
+                    "query": "SELECT\n  timestamp,\n  severity_text,\n  coalesce(nullif(json_get_string(log_attributes, '_SYSTEMD_UNIT'), ''), json_get_string(resource_attributes, '$.\"service.name\"')) AS source,\n  json_get_string(log_attributes, 'SYSLOG_IDENTIFIER') AS ident,\n  json_get_string(log_attributes, '_PID') AS pid,\n  body\nFROM opentelemetry_logs\nWHERE coalesce(nullif(json_get_string(log_attributes, '_SYSTEMD_UNIT'), ''), json_get_string(resource_attributes, '$.\"service.name\"')) = 'redis-openpanel.service'\n  AND timestamp BETWEEN to_timestamp_millis($__from) AND to_timestamp_millis($__to)\nORDER BY timestamp DESC\nLIMIT 1000",
+                    "datasource": {
+                      "kind": "GreptimeDBDatasource"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
